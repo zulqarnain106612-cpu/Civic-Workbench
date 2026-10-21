@@ -1,37 +1,39 @@
 # S00 — Toolchain and Hardware Matrix
 
-The machine-specific rows are currently unverified because the linked Desktop Commander device is offline. Do not read "unknown" as "missing" or install a second copy before inspection.
+**Inspection date:** 2026-10-22. Evidence was collected directly from `s752-LIFEBOOK-S752` via Desktop Commander. See `project/environment.yaml` for machine-readable details.
 
-| Component | Required/considered role | Observed status | Verification action |
-|---|---|---|---|
-| User development OS/architecture | Determines toolchain commands and native Proteus availability | Unknown | Run OS release and architecture commands on the connected device |
-| Python 3 | Python analysis, tooling and Proteus generator | Unknown | `python3 --version`, `python3 -m pip --version` |
-| Git | Repository and traceability | Unknown on device | `git --version`; `git status --short --branch` in project folder |
-| CMake + Ninja | ESP-IDF build | Unknown | `cmake --version`, `ninja --version` |
-| ESP-IDF | Recommended firmware framework for native TWAI driver | Unknown | Check `IDF_PATH`, source install/export script only after locating it, then `idf.py --version` |
-| Arduino-ESP32 | Alternative framework only if local constraints justify it | Unknown | Check installed core and examples; do not create a duplicate installation without need |
-| Original ESP32 board/module | Defines GPIO availability, flash/PSRAM pins and boot strapping | Exact board unknown | Record module marking, chip identification, board model and exposed GPIOs |
-| USB serial/flash path | Flashing and device logging | Unknown | Enumerate serial ports and note USB-UART/USB device identification |
-| NXP TJA1051T/3 SO8 | Required CAN physical layer | Project requirement; physical possession not verified | Inspect part marking/package and verify pin 1 orientation before schematic review |
-| Proteus Design Suite | Native schematic/project generation and validation | Installed/version unknown | Inspect installed app, Help/About, licensed modules, installed docs and examples |
-| Official Proteus Python automation | Required by desired delivery, but support path not identified from public pages checked | Unconfirmed | Check installed official help/API and ask Labcenter support if documentation is absent |
-| Repository checkout | Actual working tree may differ from GitHub | Desktop offline; local status unknown | Once online, inspect `git remote -v`, `git status`, branch and HEAD; avoid destructive sync |
+| Component | Observed value | State / implication |
+|---|---|---|
+| OS | Ubuntu 26.04.1 LTS | Verified |
+| Kernel / architecture | Linux 7.0.0-38-generic / x86-64 | Verified |
+| Python / pip | 3.14.4 / 25.1.1 | Verified |
+| Git | 2.53.0 | Verified |
+| PyYAML / pyserial | 6.0.3 / 3.5 | Installed in system Python |
+| pytest / python-can / system esptool | Not installed | Needed for future tests/CAN tooling as appropriate |
+| CMake / Ninja | Not found on PATH | Required by many ESP-IDF builds; select/install in S02 |
+| ESP-IDF / `idf.py` | Not found; `IDF_PATH` unset | No standalone ESP-IDF environment verified |
+| Arduino CLI | Not found on PATH | Not a blocker if building via ESP-IDF or PlatformIO |
+| PlatformIO CLI | Not found on PATH | Cached framework packages exist; shell build is not currently ready |
+| PlatformIO espressif32 | 6.9.0 | Cached under `~/.platformio/platforms` |
+| Arduino framework package | 3.20017.241212+sha.dcc1105b | Cached under `~/.platformio/packages` |
+| PlatformIO esptool package | 1.40501.0 | Cached |
+| Xtensa toolchain | ESP32-S3 only, 8.4.0+2021r2-patch5 | Does not satisfy the required original ESP32 target |
+| RISC-V toolchain | 8.4.0+2021r2-patch5 | Not the required original ESP32 target |
+| Classic ESP32 Xtensa toolchain | Not found in inspected PlatformIO cache | Must be installed/resolved before compiling for original ESP32 |
+| ESP32 board / module | Not identified | No board attached at inspection |
+| Serial connection | No `/dev/ttyUSB*` or `/dev/ttyACM*`; no Espressif/USB-UART device in `lsusb` | Hardware was not connected/detected at inspection |
+| NXP TJA1051T/3 SO8 | Required by project spec | Physical possession not verified |
+| Proteus | Installed in Wine, build identifier 8.3.19906.0 | Registry path label is “Proteus 8 Demonstration”; entitlement needs GUI/vendor confirmation |
+| Proteus local help | `HELP/ISIS.chm` exists | Present; full CHM content not extracted in this command session |
+| Proteus “Generator Scripts” | Eight `.pdsprj` examples | Simulation examples, not Python native-schematic generator |
+| Official Python native schematic utility/API | Not confirmed | Must investigate with the installed help/vendor before S09 implementation |
 
-## Firmware recommendation
+## Decisions
 
-Use the official ESP-IDF TWAI driver as the default firmware foundation. The original ESP32 has a TWAI controller but no integrated physical-layer transceiver; the fixed external TJA1051T/3 provides that layer. This ESP32 controller supports Classical CAN frames, not CAN FD. Confirm all assumptions against the selected exact ESP32/module and currently installed ESP-IDF documentation before pinning versions or writing hardware configuration.
-
-Reference: https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/twai.html
-
-## First diagnostic session after reconnection
-
-Run read-only inspection first and capture concise output:
-1. OS and architecture.
-2. Python, Git, CMake, Ninja versions.
-3. ESP-IDF path/version and installed toolchains.
-4. Existing Arduino-ESP32 versions, if present.
-5. Exact board/module markings and serial port.
-6. Proteus version, components/libraries, and official automation/help references.
-7. Local repository remote, branch, HEAD and dirty status.
-
-Do not flash the ESP32, change installed toolchains, alter repository branches, or connect the CAN wires to the vehicle during S00.
+1. Keep **original ESP32 + integrated TWAI + NXP TJA1051T/3 SO8** as the sole hardware baseline.
+2. Do not assume that the cached ESP32-S3 compiler or RISC-V compiler can compile for original ESP32.
+3. Do not install packages during discovery; record the current environment first. S02 will select and pin a reproducible build route.
+4. Keep the default boot/safety state passive, with hardware-enforced TX inhibition.
+5. Do not set board GPIOs without exact board/module identification.
+6. Proteus is available on the machine but active license features are unverified. S09 must prove native import/render, not only generate a file.
+7. Do not call the local waveform/stimulus sample projects a schematic-generation API.

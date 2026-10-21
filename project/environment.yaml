@@ -2,37 +2,67 @@ schema_version: 1
 snapshot_date: "2026-10-22"
 repository:
   url: "https://github.com/zulqarnain106612-cpu/Civic-Workbench"
+  local_path: "/home/s752/Civic-Workbench"
   default_branch: main
-  inspected_commit: "4d81cb6d380e9168002714a087b0c259acc506f1"
+  inspected_commit_before_S00_close: "e1da89a9cf60b3982f7a40a9536b044d331b3f32"
+  local_checkout_status_at_inspection: "clean; main tracking origin/main"
   visibility: public
   write_access: confirmed
-  scope_status: specification_baseline_only
-remote_development_device:
-  name: "s752-LIFEBOOK-S752"
-  device_id: "1f0f3b85-f933-4547-90f5-adf394e4ef00"
-  observed_status: offline
-  last_seen_at_check: "approximately 109 hours before S00 inspection"
-  shell_access: unavailable
-  physical_device_inspection: not_performed
+host:
+  hostname: "s752-LIFEBOOK-S752"
+  os: "Ubuntu 26.04.1 LTS"
+  kernel: "Linux 7.0.0-38-generic"
+  architecture: "x86_64"
+  observed_at: "2026-10-22T01:43:20+05:00"
 toolchain:
-  operating_system: {status: not_verified, value: null}
-  python: {status: not_verified, value: null}
-  git: {status: not_verified_on_user_device, value: null}
-  esp_idf: {status: not_verified, value: null}
-  arduino_esp32_core: {status: not_verified, value: null}
-  cmake: {status: not_verified, value: null}
-  ninja: {status: not_verified, value: null}
-  serial_ports: {status: not_verified, value: null}
+  python: {status: installed, version: "3.14.4"}
+  pip: {status: installed, version: "25.1.1"}
+  git: {status: installed, version: "2.53.0"}
+  cmake: {status: not_found_on_path, version: null}
+  ninja: {status: not_found_on_path, version: null}
+  esp_idf: {status: not_installed_or_not_discovered, idf_path: null, idf_py_on_path: false}
+  arduino_cli: {status: not_found_on_path, version: null}
+  python_packages:
+    PyYAML: "6.0.3"
+    pyserial: "3.5"
+    pytest: not_installed
+    python_can: not_installed
+    esptool_system_python: not_installed
+  platformio_cache:
+    cli_on_path: false
+    platform:
+      package: "espressif32"
+      version: "6.9.0"
+    framework_arduino_espressif32:
+      package: "framework-arduinoespressif32"
+      version: "3.20017.241212+sha.dcc1105b"
+    tool_esptoolpy: "1.40501.0"
+    toolchain_xtensa_esp32s3: "8.4.0+2021r2-patch5"
+    toolchain_riscv32_esp: "8.4.0+2021r2-patch5"
+    classic_esp32_xtensa_toolchain: not_found_in_platformio_packages
+    note: "PlatformIO package cache exists, but it is not yet a usable classic-ESP32 build environment from the shell."
 hardware:
-  mcu_family: "Original ESP32 with integrated TWAI"
+  required_mcu: "Original Espressif ESP32 with integrated TWAI controller"
+  required_transceiver: "NXP TJA1051T/3 SO8 (SOT96-1)"
   exact_board_or_module: {status: not_identified, value: null}
-  accessible_gpio_pins: {status: not_verified, value: null}
-  transceiver_requirement: "NXP TJA1051T/3 SO8"
-  physical_presence: not_verified
+  board_connected_at_inspection: false
+  usb_uart_or_esp_usb_detected: false
+  ttyUSB_or_ttyACM_detected: false
+  transceiver_physical_presence: not_verified
 proteus:
-  installed: not_verified
-  version: null
-  official_python_schematic_generation_api: not_confirmed
+  installed: true
+  host_integration: "Windows application under Wine prefix /home/s752/.wine-proteus"
+  product: "Proteus 8"
+  build: "8.3.19906.0 (inferred from installed user registry path install_8.3.19906.0)"
+  executable: "Program Files (x86)/Labcenter Electronics/Proteus 8 Professional/BIN/PDS.EXE"
+  registry_profile_label: "Proteus 8 Demonstration"
+  active_license_entitlement: not_verified
+  local_help_present: true
+  local_generator_scripts_examples:
+    count: 8
+    format: ".pdsprj simulation sample projects"
+    python_schematic_generation_utility_found: false
+  official_python_native_schematic_api: "not confirmed in installed file inspection or public official documentation reviewed"
   native_project_import_validation: not_performed
 vehicle_network:
   verified_bitrate: null
@@ -41,9 +71,9 @@ vehicle_network:
   can_fd_support: unknown
   identifiers_and_signals: not_observed
 evidence_policy:
-  - "not_verified is not equivalent to not installed"
-  - "repository state and public documentation review do not prove local toolchain availability"
-  - "do not create assumed GPIO mappings, vehicle IDs, bit rates, or CAD API calls"
+  - "not found on PATH is not proof a tool could not exist elsewhere; package searches are scoped and recorded"
+  - "cached packages do not prove a working build or target board availability"
+  - "no board-specific GPIOs, vehicle IDs, bit rates, or CAD automation API are to be invented"
 references:
   esp32_twai: "https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/twai.html"
   esp32_datasheet: "https://documentation.espressif.com/esp32_datasheet_en.pdf"

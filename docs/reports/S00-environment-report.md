@@ -1,97 +1,98 @@
 # S00 — Environment and Repository Discovery
 
-**Snapshot date:** 2026-10-22  
-**Status:** Partially completed; blocked on the user's development computer being offline.  
-**Repository snapshot:** `main` at `4d81cb6d380e9168002714a087b0c259acc506f1`
+**Status: COMPLETE (2026-10-22).** S00 acceptance criteria are satisfied: the local checkout and repository map were inspected, host/tool availability was recorded, the ESP32 framework options were investigated, and Proteus availability and the schematic-generation gap were documented. Open board-specific and vendor-API questions are assigned to downstream stages; they do not make the environment inventory itself incomplete.
 
-## 1. Executive result
-
-The online repository audit is complete for the inspected commit. The required hardware architecture is consistent with the official Espressif and NXP documentation: original ESP32 TWAI controller plus an external NXP TJA1051T/3 SO8 high-speed CAN transceiver.
-
-The user's registered Desktop Commander device `s752-LIFEBOOK-S752` was reported **offline** at inspection time (last seen approximately 109 hours earlier). Consequently, no shell commands could be run on that machine. Python, Git, ESP-IDF, Arduino-ESP32, CMake/Ninja, serial ports, the exact ESP32 board/module, and the Proteus installation/version remain **not verified**. This does not mean the software is absent; it means no evidence was accessible to check it.
-
-S00 is therefore **not complete**. The repository now records an explicit environment snapshot and risk register so work can resume without re-discovering known facts or mistaking unknowns for confirmed values.
-
-## 2. Repository facts observed
+## 1. Repository and local checkout
 
 - Repository: [Civic-Workbench](https://github.com/zulqarnain106612-cpu/Civic-Workbench)
-- Default branch: `main`
-- Snapshot commit: [`4d81cb6`](https://github.com/zulqarnain106612-cpu/Civic-Workbench/commit/4d81cb6d380e9168002714a087b0c259acc506f1)
-- The connected GitHub integration reported admin, maintain, push, and pull permissions.
-- The root tree contains the project contract/specification files, Python-oriented `.gitignore`, README, and MIT license.
-- No firmware source tree, application source tree, build/test implementation, dependency lockfile, CI workflow, Proteus project/schematic, or generated artifact was present in this inspected tree.
-- The project is at the specification-baseline stage; no implementation is claimed by this report.
+- Local project path: `/home/s752/Civic-Workbench`
+- Branch: `main`, tracking `origin/main`
+- Snapshot before S00 completion commit: `e1da89a9cf60b3982f7a40a9536b044d331b3f32`
+- Initial inspection found the requested local directory empty, with no files or Git metadata. It was therefore safe to clone the remote repository into that empty directory. Clone completed successfully and local `main` matched `origin/main`.
+- The existing `/home/s752/Workspace` Git repository was left untouched.
+- This is an independent repository; no source was copied from `build-a-web-page-for-ios`.
 
-The exact file map is in [S00 repository map](S00-repository-map.md).
+## 2. Host facts observed directly
 
-## 3. Development environment findings
+| Item | Observed value |
+|---|---|
+| Hostname | `s752-LIFEBOOK-S752` |
+| Operating system | Ubuntu 26.04.1 LTS |
+| Kernel | Linux 7.0.0-38-generic |
+| Architecture | x86-64 |
+| Python | 3.14.4 |
+| pip | 25.1.1 |
+| Git | 2.53.0 |
+| PyYAML | 6.0.3 |
+| pyserial | 3.5 |
+| pytest | Not installed in system Python |
+| python-can | Not installed in system Python |
+| esptool in system Python | Not installed |
 
-| Item | Finding | Evidence status |
-|---|---|---|
-| User development computer | `s752-LIFEBOOK-S752` listed offline | Directly observed from Desktop Commander device list |
-| Shell on user computer | Not available | Direct result of device being offline |
-| Operating system | Unknown | Not inspected |
-| Python / Git / CMake / Ninja | Unknown on user computer | Not inspected |
-| ESP-IDF installation and version | Unknown | Not inspected |
-| Arduino-ESP32 installation and version | Unknown | Not inspected |
-| Serial port / attached ESP32 | Unknown | Not inspected |
-| Exact ESP32 module/board and exposed GPIOs | Unknown | No board or local machine access |
-| Proteus installation/version and component libraries | Unknown | No local machine access |
-| Native Proteus import/render test | Not performed | Requires installed application/artifact |
-| Vehicle CAN bit rate/topology/capture point | Unknown | No validated capture evidence supplied |
-| Vehicle CAN identifiers/signals | None observed in this repository | No raw vehicle capture in inspected tree |
+`cmake`, `ninja`, `idf.py`, `esptool.py`, and `arduino-cli` were not found on `PATH`. `IDF_PATH` and `VIRTUAL_ENV` were unset. This is a snapshot of the current shell; it is not a claim that a utility cannot exist in any unsearched path.
 
-A repeatable command checklist is recorded in [S00 toolchain matrix](S00-toolchain-matrix.md). It has deliberately not been marked as executed.
+## 3. ESP32 firmware environment
 
-## 4. Official technical references checked
+The machine has a PlatformIO package cache under `/home/s752/.platformio`, but the `pio`/PlatformIO CLI is not available on `PATH`. Inspected package manifests reported:
 
-### ESP32 TWAI
+- PlatformIO `espressif32` platform: `6.9.0`.
+- Arduino framework package `framework-arduinoespressif32`: `3.20017.241212+sha.dcc1105b`.
+- PlatformIO `tool-esptoolpy`: `1.40501.0`.
+- Cached Xtensa compiler package is for **ESP32-S3**, version `8.4.0+2021r2-patch5`.
+- Cached RISC-V compiler package is `toolchain-riscv32-esp`, version `8.4.0+2021r2-patch5`.
+- No classic ESP32 `toolchain-xtensa-esp32` package or standalone ESP-IDF installation was found in the inspected locations.
 
-Espressif documents the original ESP32 TWAI controller as a classical CAN controller and explicitly says the ESP32 does not contain an integrated CAN transceiver. An external transceiver is required. The documented frame identifiers are standard 11-bit or extended 29-bit, and this ESP32's TWAI controller is not CAN-FD compatible. Therefore, the eventual firmware should use the ESP-IDF TWAI driver unless local compatibility evidence establishes a compelling reason otherwise; the exact toolchain version remains unselected until the real environment is inspected.
+**Decision:** do not begin a firmware build on the assumption that this is already a configured original-ESP32 environment. The target remains the original ESP32 with integrated TWAI; not ESP32-S3/C3. S02 must install/select a reproducible toolchain after the exact target configuration is confirmed. Keep the source project portable and lock exact versions in repository configuration as part of S02.
 
-References:
-- [ESP-IDF TWAI documentation for ESP32 (release/v5.5)](https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/twai.html)
+## 4. Connected hardware
+
+No `/dev/ttyUSB*` or `/dev/ttyACM*` device was present at inspection time, and `lsusb` showed no Espressif device or recognizable USB-UART bridge. Therefore:
+- An ESP32 board was not connected/detected during this inspection.
+- Exact board/module, chip marking, accessible GPIOs, and strap/flash-reserved pins remain unknown.
+- Physical possession of the required NXP TJA1051T/3 SO8 is not verified.
+- The vehicle bus bit rate, topology, frame format, connector/capture point, and identifiers have not been measured.
+
+These are recorded as open hardware/vehicle dependencies, not guessed. Do not select TXD/RXD GPIOs or active vehicle transmission settings until supported by the exact board and network evidence.
+
+## 5. Proteus installation and Python generator investigation
+
+Proteus is installed under Wine at:
+
+`/home/s752/.wine-proteus/drive_c/Program Files (x86)/Labcenter Electronics/Proteus 8 Professional`
+
+The main executable `BIN/PDS.EXE` and local `HELP/ISIS.chm` exist. The installed user registry path contains `install_8.3.19906.0`, identifying build `8.3.19906.0`. Its user profile path is labelled **Proteus 8 Demonstration**; the live activation/license entitlement was not verified, so this should not be represented as a confirmed fully licensed Professional installation.
+
+The local `SAMPLES/Generator Scripts` directory contains eight `.pdsprj` examples (signal/waveform/stimulus generator simulation projects). These are not a Python utility for generating a native schematic from source. Public Labcenter resources reviewed document schematic capture, samples, downloads, and tutorials, but did not confirm an official Python API/utility that programmatically generates native `.DSN`/`.pdsprj` schematics. No native import/render validation was performed.
+
+**Decision for S09:** preserve the requirement to generate a native Proteus project from Python, but do not invent or falsely label an official API. Before choosing implementation, inspect the installed ISIS help in detail or obtain a direct answer from Labcenter support. Then validate the chosen native-file or automation route using a minimal generated project opened by the installed Proteus build. A static image or simulation stimulus project is not an acceptable substitute.
+
+Official references:
+- [Espressif ESP-IDF TWAI documentation for original ESP32](https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/twai.html)
 - [Espressif original ESP32 datasheet](https://documentation.espressif.com/esp32_datasheet_en.pdf)
-
-### NXP TJA1051T/3 SO8
-
-The NXP datasheet identifies the TJA1051T/3 as the variant with VIO on pin 5 and an SO8 package. It specifies VCC from 4.5 V to 5.5 V and VIO from 2.8 V to 5.5 V. Pin 5 VIO should be connected to the MCU I/O supply. Pin 8 S selects the mode: HIGH selects Silent mode and disables the transmitter while the receiver continues operating; LOW selects Normal mode. This is consistent with making hardware-defined Silent mode the default.
-
-Reference:
 - [NXP TJA1051 official datasheet](https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf)
+- [Labcenter schematic capture](https://www.labcenter.com/schematic/)
+- [Labcenter downloads and utilities](https://www.labcenter.com/downloads/)
 
-These are component-level facts only. They do not validate an assembled circuit or establish the target vehicle's bus parameters.
+## 6. Hardware facts relevant to downstream work
 
-### Proteus and Python schematic generation
+The primary design target remains **original ESP32 + integrated TWAI + NXP TJA1051T/3 SO8 (SOT96-1)**. The original ESP32 has a TWAI controller but no integrated CAN physical-layer transceiver and its TWAI controller is Classical CAN, not CAN FD. The NXP datasheet gives VCC 4.5–5.5 V, VIO 2.8–5.5 V, VIO on pin 5, and S on pin 8; S HIGH selects Silent mode and disables the transmitter while reception remains active. Validate actual wiring and mode control against the exact datasheets during S02.
 
-The official Labcenter pages reviewed document Proteus schematic capture, downloads/utilities, and product features. The public material inspected did **not** establish an official Python utility/API for programmatically generating a native schematic/project. This is an unresolved verification issue—not proof that no supported utility exists in a particular installed release or support package.
+These are component documentation facts only, not proof of a built circuit or vehicle compatibility.
 
-Required next check when the user's machine is online:
-1. Record the exact Proteus version and installed documentation/help.
-2. Search the installed product directory and official downloads/help for supported automation interfaces and native project formats.
-3. Validate any proposed generation route with a tiny native test project before building the full circuit generator.
-4. If there is no supported official API, preserve REQ-PROT-001 and document an honest, tested fallback; do not fabricate a utility name, API, or import-validation result.
+## 7. S00 exit checklist
 
-References:
-- [Labcenter official schematic capture page](https://www.labcenter.com/schematic/)
-- [Labcenter official downloads and utilities](https://www.labcenter.com/downloads/)
+- [x] Local repository path, branch, remote, HEAD and initial tree inspected.
+- [x] Empty local project directory safely populated by cloning the intended remote.
+- [x] Host OS/architecture and available core build tools recorded.
+- [x] Python and relevant installed/missing packages recorded.
+- [x] PlatformIO cache and its actual target-specific compiler packages inspected.
+- [x] ESP-IDF/Arduino toolchain readiness assessed without installing packages or changing system configuration.
+- [x] Proteus installation, build indicator, help file, and local generator samples inspected.
+- [x] Python-to-native-schematic API gap recorded without fabricating support.
+- [x] Exact target hardware and no-source-copy constraint retained.
+- [x] Open board/network/licensing/API facts assigned to downstream stages.
+- [ ] No physical build or vehicle test was attempted; not an S00 acceptance criterion.
 
-## 5. Decisions supported by S00
+## 8. Handoff to S01
 
-1. Keep the fixed hardware requirement: **original ESP32 + integrated TWAI + NXP TJA1051T/3 SO8**. No substitute is introduced.
-2. Prefer ESP-IDF for the firmware foundation because the official ESP-IDF documentation provides the native TWAI driver and explicit mode/error behavior. Version selection remains pending local inspection.
-3. Do not assign TXD/RXD GPIO numbers until the exact module/board is identified and boot-strapping/flash-reserved pin restrictions are checked against its datasheet.
-4. Keep the device in listen-only and the transceiver's S input in a hardware-defined Silent state at startup. A UI-only TX checkbox is not a safety interlock.
-5. Do not infer the vehicle bit rate, CAN/CAN-FD mode, identifiers, signal meanings, or diagnostic operations from the model/year alone.
-6. Treat official Python-to-Proteus schematic generation as unconfirmed until verified against the installed version's official documentation/API.
-
-## 6. Exit criteria and remaining work
-
-S00 exit is blocked on local environment access. When the device reconnects, gather and record:
-- OS/kernel and architecture; Python, Git, CMake and Ninja versions.
-- Existing ESP-IDF and Arduino-ESP32 installations without installing or changing anything first.
-- Exact board/module markings, ESP32 chip family, exposed pins and any attached serial device.
-- Proteus installed/version/licensing availability and official automation/help documentation.
-- Local repository status and whether any implementation changes exist outside the GitHub snapshot.
-
-After evidence is collected, update `project/environment.yaml`, this report, the risk register, and `project/progress.json`. Then mark S00 complete only after its acceptance criteria are genuinely met. S01 schema/contract implementation work should proceed only after the unresolved environment/board decisions that affect the interfaces are documented.
+S00 is complete. S01 is now the next ready stage: implement the versioned frame/session/analysis/TX/safety schemas and contract tests. The exact board/GPIO and firmware toolchain must be decided before S02 firmware/hardware acceptance; Proteus API validation stays open for S09. No firmware, UI, native schematic, vehicle mapping, or physical test is claimed complete.

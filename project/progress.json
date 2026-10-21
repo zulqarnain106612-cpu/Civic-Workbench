@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "project": "Civic-Workbench",
+  "overall_status": "specification-baseline-committed",
+  "application_implementation_status": "not_started",
+  "physical_hardware_validation_status": "not_performed",
+  "last_updated": "2026-10-22",
+  "current_focus": "S00",
+  "stage_status": {
+    "S00": "ready",
+    "S01": "specification-baseline-created",
+    "S02": "blocked-on-S00",
+    "S03": "blocked-on-S02",
+    "S04": "blocked-on-contracts-and-S03",
+    "S05": "blocked-on-contracts-and-S03",
+    "S06": "blocked-on-S01-S03-S05",
+    "S07": "blocked-on-S01-S03-S06",
+    "S08": "blocked-on-S01-S03-S04",
+    "S09": "blocked-on-S02-S08",
+    "S10": "blocked-on-integration-prerequisites",
+    "S11": "blocked-on-S10",
+    "S12": "blocked-on-S11"
+  },
+  "baseline_evidence": {
+    "requirements_file": "project/requirements.yaml",
+    "dependency_graph": "project/dependencies.yaml",
+    "stage_acceptance": "project/stages.yaml",
+    "hardware_reference": "project/hardware.yaml",
+    "safety_constraints": "project/constraints.yaml",
+    "traceability": "tests/requirements-traceability.yaml"
+  },
+  "decisions": [
+    "This repository is independent of build-a-web-page-for-ios.",
+    "Hardware target is original ESP32 integrated TWAI plus NXP TJA1051T/3 SO8.",
+    "Default runtime state must be passive/listen-only with a hardware-enforced transmitter inhibit.",
+    "Vehicle CAN identifiers and signal mappings remain unknown until supported by evidence.",
+    "The initial baseline contains project specifications only, not application firmware or a completed schematic."
+  ],
+  "open_questions": [
+    "Exact ESP32 module/board and accessible GPIOs",
+    "Firmware framework/version after environment discovery",
+    "Available Proteus version, Python automation path, and official symbol/library availability",
+    "Verified bus bit rate(s), topology, and safely available capture points for the target vehicle"
+  ],
+  "stage_reports": {}
+}

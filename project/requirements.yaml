@@ -1,0 +1,71 @@
+schema_version: 1
+project: Civic-Workbench
+target_vehicle:
+  description: "Pakistan-market 2013 Honda Civic, ninth generation, 1.8 L, full-option trim as supplied by the owner"
+  identification_policy: "Confirm vehicle/market/ECU facts from measurements or primary sources; do not infer trim-specific network mappings."
+hardware_baseline:
+  mcu: "Original Espressif ESP32 with integrated TWAI controller"
+  transceiver: "NXP TJA1051T/3, SO8 (SOT96-1)"
+  substitutions_allowed: false
+
+requirements:
+  - id: REQ-ARCH-001
+    priority: MUST
+    statement: "Use a modular, testable architecture with explicit contracts between firmware, transport, persistence, analysis, simulation, and UI."
+    acceptance: "Interfaces are schema-defined; contract tests cover module boundaries; stage and requirement IDs link to evidence."
+  - id: REQ-HW-001
+    priority: MUST
+    statement: "Use only the specified original ESP32 TWAI controller and NXP TJA1051T/3 SO8 transceiver as the primary hardware baseline."
+    acceptance: "Hardware docs, firmware config, pin map, and generated schematic agree with official datasheets."
+  - id: REQ-CAN-001
+    priority: MUST
+    statement: "Capture raw direct-CAN frames with timestamps, identifier format, DLC, bytes, direction/observation metadata where known, and error/overflow status."
+    acceptance: "Deterministic frame-parser and capture tests cover standard/extended identifiers, valid/invalid DLC, timing, buffer overflow, and error states."
+  - id: REQ-CAN-002
+    priority: MUST
+    statement: "Support identifier filters, frame-rate/statistics summaries, session capture, and export without altering the immutable raw record."
+    acceptance: "Filter and export round-trip tests prove raw record preservation."
+  - id: REQ-CAN-003
+    priority: MUST
+    statement: "Provide direct-CAN raw-frame transmission, including explicit arbitration format, payload, DLC, cadence, repeat count, and cancellation."
+    acceptance: "The feature is exercised against simulated/bench CAN first; hardware-inhibit, arming, rate bounds, audit record, and abort tests pass."
+  - id: REQ-REV-001
+    priority: MUST
+    statement: "Provide identifier discovery and signal reverse-engineering tools for observed frame timing, byte/bit changes, candidate signal boundaries, counters, and checksums."
+    acceptance: "All outputs are labeled observed, candidate, or validated; each inference references raw samples and records its method/confidence."
+  - id: REQ-DATA-001
+    priority: MUST
+    statement: "Persist raw sessions, metadata, analysis annotations, mapping versions, and evidence locally with versioned schemas."
+    acceptance: "Restart/reopen tests pass; schema migration and export/import behavior are documented."
+  - id: REQ-UI-001
+    priority: MUST
+    statement: "Provide a browser-based engineering workbench for live/recorded frames, filters, plots, analysis, transmission controls, status, and logs."
+    acceptance: "Core user journeys work with both simulated frames and the connected firmware transport; keyboard/accessibility and error states are tested."
+  - id: REQ-SIM-001
+    priority: MUST
+    statement: "Provide an interactive virtual CAN lab that can generate, replay, mutate, and compare frames and simulate bus nodes without a physical vehicle."
+    acceptance: "Deterministic scenario tests validate message timing, filtering, TX scheduling, error handling, replay, and analysis pipeline."
+  - id: REQ-DIAG-001
+    priority: MUST
+    statement: "Implement a capability-driven direct-CAN diagnostic/parameter workflow framework; enable protocols and parameter definitions only when supported by observed evidence or a cited primary source."
+    acceptance: "Unknown IDs and unsupported operations remain explicitly unknown/unsupported; no guessed vehicle mappings are shipped as facts."
+  - id: REQ-PROT-001
+    priority: MUST
+    statement: "Generate a native Proteus schematic/project from Python source using a maintainable generator, not a screenshot-only diagram."
+    acceptance: "The generator is deterministic and tested; output contains the ESP32/TWAI boundary, exact transceiver and pin mapping, supply/decoupling, CAN connectors, mode interlock, and clearly marked design assumptions; native tool validation is recorded when available."
+  - id: REQ-SAFE-001
+    priority: MUST
+    statement: "Default to receive-only/passive operation and require independent hardware TX inhibition plus deliberate software arming before any bus transmission."
+    acceptance: "Power-on/reset/disconnect/fault tests show transmission stays inhibited; arm/disarm, interlock, timeout, bus-off, rate limit, and emergency abort are covered."
+  - id: REQ-EVID-001
+    priority: MUST
+    statement: "Maintain traceability from requirement to implementation, automated test, simulation evidence, and (only if performed) physical validation."
+    acceptance: "Every MUST requirement has a named test/evidence location or an explicit open gap."
+  - id: REQ-QUAL-001
+    priority: MUST
+    statement: "Provide reproducible builds, static checks, focused tests, integration tests, and a final handoff with exact results."
+    acceptance: "Commands, toolchain versions, test summaries, artifacts, and unresolved limitations are stored in the repository."
+  - id: REQ-TOK-001
+    priority: SHOULD
+    statement: "Minimize agent token consumption through a dependency DAG, stable requirement IDs, on-demand context, focused test output, and durable stage checkpoints."
+    acceptance: "Stage tasks reference IDs/files rather than reprinting the full spec; token savings never waive verification."

@@ -1,0 +1,26 @@
+schema_version: 1
+model: directed_acyclic_graph
+rule: "A node may start when all prerequisites are complete or explicitly accepted as simulated/interface-only prerequisites."
+nodes:
+  S00: {name: "Repository and environment discovery", depends_on: []}
+  S01: {name: "Requirements, schemas, interfaces, and contracts", depends_on: [S00]}
+  S02: {name: "Hardware design and firmware foundation", depends_on: [S01]}
+  S03: {name: "CAN receive/transmit core and transport", depends_on: [S02]}
+  S04: {name: "Browser engineering UI", depends_on: [S01, S03]}
+  S05: {name: "Session persistence and export", depends_on: [S01, S03]}
+  S06: {name: "Identifier discovery and signal-analysis engine", depends_on: [S01, S03, S05]}
+  S07: {name: "Gated direct-CAN TX and diagnostic framework", depends_on: [S01, S03, S06]}
+  S08: {name: "Interactive virtual CAN simulation lab", depends_on: [S01, S03, S04]}
+  S09: {name: "Python Proteus generator and native project", depends_on: [S02, S08]}
+  S10: {name: "Integration, end-to-end workflows, and isolation", depends_on: [S04, S05, S06, S07, S08, S09]}
+  S11: {name: "Hardening, performance, regression, and fault tests", depends_on: [S10]}
+  S12: {name: "Packaging, traceability audit, and handoff", depends_on: [S11]}
+parallelism:
+  - "S04 and S05 may proceed independently after their contracts are stable."
+  - "S06 can proceed against recorded/synthetic datasets while live capture hardware is unavailable."
+  - "S08 may use synthetic frames and mock nodes; it must not wait for undocumented vehicle mappings."
+  - "S09 may use a documented ESP32 module footprint and an explicitly marked schematic stub, but must not misrepresent an unverified board symbol as a validated package."
+gate_policy:
+  - "A failed acceptance criterion blocks dependent nodes."
+  - "An interface change requires updating schemas and all affected contract tests."
+  - "No stage is marked complete based only on code existence."

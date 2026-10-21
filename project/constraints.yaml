@@ -1,0 +1,40 @@
+schema_version: 1
+scope:
+  included:
+    - "Direct CAN physical-layer monitoring and raw-frame engineering"
+    - "Identifier/signal discovery based on collected evidence"
+    - "Controlled direct-CAN frame transmission through layered safety gates"
+    - "Capability-driven diagnostics/parameter workflows only when support is evidenced"
+    - "Local persistence, import/export, analysis, browser UI, virtual CAN, and native Proteus generation"
+  excluded:
+    - "Using OBD-II/ELM or an equivalent adapter/PID abstraction as the primary interface"
+    - "Copying source code or project structure from build-a-web-page-for-ios"
+    - "Presenting guesses or generated traces as measured facts about the target vehicle"
+    - "Claiming physical testing that has not been performed and evidenced"
+evidence_states:
+  observed: "Directly captured raw measurement or trace, with timestamp/context and provenance."
+  candidate: "An inferred interpretation linked to observations and method; not safe to treat as established fact."
+  validated: "Confirmed by an explicit independent validation method, with reproducible evidence and scope stated."
+safety:
+  default_boot_state: "Passive/listen-only and transmitter inhibited"
+  tx_gates:
+    - "Firmware TX permission is false after reset, reboot, disconnect, and faults."
+    - "A physical hardware interlock must independently prevent transceiver normal mode by forcing S HIGH while inactive."
+    - "Software arm requires deliberate user action and displays an unambiguous armed state."
+    - "The physical interlock and software arm must both be active before normal mode/TX is permitted."
+    - "All TX requests pass through one policy-enforcing API; no direct transport or UI bypass."
+    - "Rate, duration, and repeat bounds are enforced in the TX scheduler and audited."
+    - "Every send records request, frame data, rate, result/error, timestamp, arm/interlock state, and operator action."
+    - "Disarm, interlock opening, cancellation, timeout, bus-off, queue overflow, or firmware fault aborts pending TX and returns to inhibit."
+    - "Physical CAN TX validation starts on an isolated bench/simulator; in-vehicle active TX requires an explicitly reviewed, known-safe test."
+  interpretation:
+    - "Do not infer an ECU's supported services, semantics, or security state from a CAN ID alone."
+    - "Do not ship guessed signal definitions or undocumented byte layouts as validated."
+    - "Keep raw logs immutable and separate from decoded interpretations."
+    - "Unknown, contradictory, and insufficient evidence must be represented explicitly."
+engineering:
+  - "Use stable requirement/stage IDs and maintain requirement-to-test-to-evidence links."
+  - "Fail closed on malformed frames, unknown mode, missing interlock state, or stale command authorization."
+  - "Do not expose secrets or persist credentials in source control."
+  - "Simulation success does not imply physical electrical correctness or vehicle compatibility."
+  - "If official Proteus automation/API capability is unavailable, record the gap and provide tested generator code plus a native-project import/validation procedure; do not fabricate native validation."

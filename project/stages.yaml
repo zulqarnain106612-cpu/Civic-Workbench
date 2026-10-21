@@ -1,0 +1,98 @@
+schema_version: 1
+stages:
+  - id: S00
+    title: Repository and environment discovery
+    goal: Establish a reproducible baseline without assuming the local toolchain or available hardware.
+    deliverables: [environment-report, repo-map, toolchain-matrix, risk-register]
+    acceptance:
+      - "Default branch, current files, available build tools, Python, ESP-IDF/Arduino-ESP32 option, and Proteus availability are recorded."
+      - "Original ESP32 and TJA1051T/3 remain the required hardware target."
+      - "No code is copied from the unrelated build-a-web-page-for-ios repository."
+  - id: S01
+    title: Requirements, schemas, interfaces, and contracts
+    goal: Freeze stable payloads and module boundaries before implementing broad features.
+    deliverables: [versioned-frame-schema, API-contracts, storage-schema, event-contracts, traceability]
+    acceptance:
+      - "Schema and contract tests exist for frame, session, analysis finding, diagnostic capability, TX request, and safety state."
+      - "Dependency DAG has no cycle; requirements each have IDs and verification methods."
+  - id: S02
+    title: Hardware design and firmware foundation
+    goal: Create a reproducible original-ESP32 firmware skeleton and verified transceiver schematic.
+    deliverables: [firmware-skeleton, pin-config, build-config, schematic-source, hardware-review]
+    acceptance:
+      - "Firmware compiles for the specified ESP32 target using documented versions."
+      - "TJA1051T/3 pin 5 VIO, pin 8 S mode, supply limits, and pinout match the official NXP datasheet."
+      - "Reset/power-up state leaves transmission inhibited; all hardware assumptions are explicit."
+  - id: S03
+    title: CAN receive/transmit core and transport
+    goal: Implement frame acquisition, controller state reporting, buffering, transport, and gated TX APIs.
+    deliverables: [twai-driver, frame-ingress, transport-contract, error-state-model, tx-gate]
+    acceptance:
+      - "Loopback/mocks and simulated bus test standard and extended IDs, DLC, timestamping, queues, drops, bus-off, and recovery."
+      - "Default passive state and hardware inhibit are verified in tests; no unguarded TX endpoint exists."
+  - id: S04
+    title: Browser engineering UI
+    goal: Deliver the core dashboard for live/recorded frame inspection and analysis.
+    deliverables: [frame-table, filters, detail-pane, live-status, charts, error-states]
+    acceptance:
+      - "A synthetic session can be explored end-to-end without hardware."
+      - "Loading, no-data, disconnected, stale-data, overflow, and error conditions are visible."
+  - id: S05
+    title: Session persistence and export
+    goal: Make raw capture and metadata durable and portable.
+    deliverables: [versioned-store, import-export, session-browser, migration-tests]
+    acceptance:
+      - "Round-trip import/export preserves raw bytes, identifier flags, timing basis, and provenance."
+      - "Analysis annotations do not mutate the raw capture."
+  - id: S06
+    title: Identifier discovery and signal-analysis engine
+    goal: Rank evidence-backed candidates for IDs, periods, counters, checksums, and bit/byte signals.
+    deliverables: [periodicity-analysis, change-analysis, candidate-mapping-schema, confidence-model, analysis-tests]
+    acceptance:
+      - "Synthetic known-answer datasets return correct measurements."
+      - "No inferred mapping is labeled validated without an independent validation method and evidence."
+  - id: S07
+    title: Gated direct-CAN TX and diagnostic framework
+    goal: Support carefully controlled raw frame transmission and extensible capability-based workflows.
+    deliverables: [tx-scheduler, rate-limits, audit-log, cancellation, diagnostic-capability-model, workflow-tests]
+    acceptance:
+      - "TX can be tested in simulation, has explicit arming and hardware interlock state, rate/repeat limits, cancellation, and audit log."
+      - "Protocol operations and parameter decoders remain unavailable unless supported; no guessed vehicle IDs are embedded."
+  - id: S08
+    title: Interactive virtual CAN simulation lab
+    goal: Make the main workflows demonstrable and testable with virtual nodes and deterministic traces.
+    deliverables: [virtual-bus, virtual-nodes, trace-replay, mutation-tools, scenario-editor, simulator-tests]
+    acceptance:
+      - "Scenarios support scheduled frames, filtering, replay, controlled transmission, and repeatable outcomes."
+      - "Simulation is clearly distinguished from physical CAN and vehicle evidence."
+  - id: S09
+    title: Python Proteus generator and native project
+    goal: Generate a maintainable, native schematic/project from Python source.
+    deliverables: [generator, component-map, schematic-project, generated-artifact-manifest, design-review]
+    acceptance:
+      - "Generator output is deterministic and versioned; native project/schematic files are generated, not only raster/vector pictures."
+      - "The exact ESP32/TJA1051T/3 signal and supply relationship is documented; unknown library symbols/footprints are visibly marked."
+      - "Import/render validation is recorded using the available official Proteus toolchain; unavailable tooling is reported as an open verification gap."
+  - id: S10
+    title: Integration, end-to-end workflows, and isolation
+    goal: Join firmware/simulation, storage, analysis, UI, and TX safety controls.
+    deliverables: [e2e-scenarios, integration-report, protocol-boundary-tests, safety-state-tests]
+    acceptance:
+      - "A capture-to-analysis-to-export workflow and a simulation-to-TX-audit workflow pass end-to-end."
+      - "Browser/client input cannot bypass firmware safety state or TX policy."
+  - id: S11
+    title: Hardening, performance, regression, and fault tests
+    goal: Validate responsiveness, bounded memory, recovery, correctness, and operational failure behavior.
+    deliverables: [performance-report, fault-matrix, regression-suite, security-review, known-limitations]
+    acceptance:
+      - "Capture queue behavior under defined load is measured and losses are reported."
+      - "Reconnect, malformed data, queue exhaustion, timeouts, bus-off, disarm, and application restart are covered."
+      - "No performance claim appears without a reproducible measurement."
+  - id: S12
+    title: Packaging, traceability audit, and handoff
+    goal: Deliver reproducible setup/run steps, artifacts, and an evidence-based acceptance matrix.
+    deliverables: [setup-guide, build-artifacts, evidence-index, final-traceability-matrix, final-report]
+    acceptance:
+      - "All MUST requirements are implemented and verified or explicitly marked blocked with evidence and owner."
+      - "Final report distinguishes unit tests, simulation, tool validation, and physical vehicle validation."
+      - "Only actual completed work is claimed."

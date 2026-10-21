@@ -1,0 +1,47 @@
+schema_version: 1
+baseline:
+  mcu: "Original Espressif ESP32 with integrated TWAI controller"
+  can_transceiver:
+    part: "NXP TJA1051T/3"
+    package: "SO8, SOT96-1"
+    official_datasheet: "https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf"
+  controller_reference: "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html"
+electrical_reference_from_datasheet:
+  vcc:
+    pin: 3
+    required_range_v: [4.5, 5.5]
+  vio:
+    pin: 5
+    role: "I/O logic supply; connect to MCU I/O voltage in accordance with the datasheet"
+    required_range_v: [2.8, 5.5]
+    target_v_for_original_esp32: 3.3
+  gnd: {pin: 2, role: "Common logic/transceiver ground"}
+  txd: {pin: 1, role: "ESP32 TWAI TX output to transceiver"}
+  rxd: {pin: 4, role: "Transceiver RX output to ESP32 TWAI RX input"}
+  canl: {pin: 6, role: "CAN bus low"}
+  canh: {pin: 7, role: "CAN bus high"}
+  s:
+    pin: 8
+    role: "Transceiver operating mode control"
+    normal_mode: "LOW; permits transmit and receive"
+    silent_mode: "HIGH; disables transmitter while receiver remains active"
+    default: "HIGH, provided by a hardware-defined state"
+pin_mapping:
+  txd_to_esp32_gpio: "Select in a documented board config after confirming module pin availability; do not assume a universal GPIO mapping."
+  rxd_to_esp32_gpio: "Select in a documented board config after confirming module pin availability; do not assume a universal GPIO mapping."
+  s_control: "Hardware gate/interlock must force S HIGH unless the physical enable condition and software arm condition are both satisfied."
+  bus_connection: "Provide accessible CANH, CANL, signal ground, and an explicitly documented connector/pinout."
+design_requirements:
+  - "Never connect CANH/CANL directly to ESP32 GPIO."
+  - "Do not power TJA1051T/3 VCC from the ESP32 3.3 V rail; respect the datasheet VCC range."
+  - "Connect VIO to the ESP32-compatible I/O rail; validate TXD/RXD/S behavior using the exact part datasheet."
+  - "Add local supply decoupling close to the IC and document component values and placement rationale."
+  - "Include protection, connector labeling, test points, and termination strategy based on intended bus topology."
+  - "Do not blindly add 120-ohm termination to an existing vehicle network; termination is a bus-topology property."
+  - "Provide power/reset-safe state and a hardware-enforced TX inhibit, not only a UI checkbox."
+  - "Verify GPIO boot-strapping constraints and avoid pins whose boot behavior can unintentionally enable transmit."
+  - "Keep the transceiver part/package exact; do not silently substitute TJA1050, TJA1051T, or a development-board transceiver."
+open_items:
+  - "Confirm the exact ESP32 module/board identifier and exposed GPIOs during S00."
+  - "Choose the firmware framework and lock its version during S00/S02."
+  - "Select connector, supply protection, termination/jumper policy, and interlock implementation with a design review."

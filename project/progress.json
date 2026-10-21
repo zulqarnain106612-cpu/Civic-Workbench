@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S01-complete-ready-for-S02",
-  "application_implementation_status": "contract_foundation_implemented_product_modules_not_started",
+  "overall_status": "S02-complete-ready-for-S03",
+  "application_implementation_status": "contract-and-firmware-foundation-implemented-product-modules-not-started",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-22",
-  "current_focus": "S02",
+  "current_focus": "S03",
   "stage_status": {
     "S00": "complete",
     "S01": "complete",
-    "S02": "ready-toolchain-and-exact-board-discovery-first",
-    "S03": "blocked-on-S02",
+    "S02": "complete-source-and-build-foundation",
+    "S03": "ready",
     "S04": "blocked-on-contracts-and-S03",
     "S05": "blocked-on-contracts-and-S03",
     "S06": "blocked-on-S01-S03-S05",
@@ -32,7 +32,10 @@
     "versioned_schemas": "schemas/v1/",
     "host_api_contract": "contracts/openapi.yaml",
     "semantic_contract_validator": "src/civic_workbench/contracts.py",
-    "contract_documentation": "docs/contracts-v1.md"
+    "contract_documentation": "docs/contracts-v1.md",
+    "firmware_foundation": "firmware/esp32/",
+    "hardware_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+    "hardware_interlock_design_contract": "hardware/reference/safety-interlock.md"
   },
   "s00_evidence": {
     "report": "docs/reports/S00-environment-report.md",
@@ -81,7 +84,11 @@
     "Unknown/unsupported diagnostic capabilities remain disabled; validated findings require independent evidence.",
     "Vehicle CAN identifiers, bit rate, topology, and signal mappings remain unknown until supported by evidence.",
     "No official Python API/utility for native Proteus schematic generation was confirmed in local examples or official public resources reviewed; S09 must verify the route rather than invent one.",
-    "S01 test results prove contract-layer behavior only, not live CAN, hardware, UI, persistence, simulator, or vehicle compatibility."
+    "S01 test results prove contract-layer behavior only, not live CAN, hardware, UI, persistence, simulator, or vehicle compatibility.",
+    "S02 source/build foundation compiled for original ESP32 using PlatformIO Core 6.2.0, espressif32 6.9.0 and ESP-IDF 5.3.1.",
+    "S02 TWAI controller startup is Listen Only and disabled by default; no hardware transmit API is present in S02.",
+    "GPIOs and vehicle bitrate remain unassigned/unconfirmed; the generic esp32dev 4MB profile proves compilation only and is not a physical-board profile.",
+    "TX safety policy host tests and source guards pass; the independent physical interlock and physical board have not been bench-tested."
   ],
   "open_questions": [
     "Exact ESP32 module/board and accessible GPIOs, because no board was detected during S00 inspection",
@@ -93,6 +100,41 @@
   ],
   "stage_reports": {
     "S00": "docs/reports/S00-environment-report.md",
-    "S01": "docs/reports/S01-contract-report.md"
+    "S01": "docs/reports/S01-contract-report.md",
+    "S02": "docs/reports/S02-firmware-report.md"
+  },
+  "s02_evidence": {
+    "report": "docs/reports/S02-firmware-report.md",
+    "firmware_root": "firmware/esp32/",
+    "hardware_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+    "safety_interlock_contract": "hardware/reference/safety-interlock.md",
+    "build_command": "cd firmware/esp32 && ~/.venvs/civic-workbench-pio/bin/pio run",
+    "build_result": "SUCCESS; exit code 0",
+    "compile_target": "PlatformIO esp32dev, original ESP32 profile; generic compile-only 4MB profile",
+    "platformio_core": "6.2.0",
+    "platform": "espressif32 6.9.0",
+    "framework": "ESP-IDF 5.3.1 (framework-espidf 3.50301.0)",
+    "xtensa_toolchain": "13.2.0+20240530",
+    "cmake": "3.16.4",
+    "ninja": "1.7.1",
+    "esptool": "4.5.1",
+    "ram_used_bytes": 10788,
+    "ram_total_bytes": 327680,
+    "ram_percent": 3.3,
+    "application_flash_used_bytes": 161588,
+    "application_flash_region_bytes": 1048576,
+    "application_flash_percent": 15.4,
+    "python_test_result": "51 tests passed",
+    "host_c_safety_policy": "7 assertions passed with gcc -std=c11 -Wall -Wextra -Werror -pedantic",
+    "static_checks": [
+      "python3 -m compileall -q src tests passed",
+      "git diff --check passed",
+      "14 JSON Schemas validated",
+      "project YAML and progress JSON parsed"
+    ],
+    "hardware_flash_performed": false,
+    "physical_hardware_validation": "not_performed",
+    "vehicle_validation": "not_performed",
+    "native_proteus_project": "not_generated; assigned to S09"
   }
 }

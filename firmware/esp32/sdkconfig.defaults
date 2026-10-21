@@ -1,0 +1,7 @@
+# Civic-Workbench: original ESP32 target configuration.
+# No GPIO assignment is assumed until the exact module is identified.
+CONFIG_IDF_TARGET="esp32"
+# Generic PlatformIO esp32dev compile profile only; do not flash an unidentified board.
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+CONFIG_LOG_DEFAULT_LEVEL_WARN=y

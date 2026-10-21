@@ -17,12 +17,13 @@ stages:
       - "Dependency DAG has no cycle; requirements each have IDs and verification methods."
   - id: S02
     title: Hardware design and firmware foundation
-    goal: Create a reproducible original-ESP32 firmware skeleton and verified transceiver schematic.
+    goal: Create a reproducible original-ESP32 firmware skeleton and datasheet-reviewed transceiver connection contract; native Proteus artifact generation and import validation are owned by S09.
     deliverables: [firmware-skeleton, pin-config, build-config, schematic-source, hardware-review]
     acceptance:
-      - "Firmware compiles for the specified ESP32 target using documented versions."
-      - "TJA1051T/3 pin 5 VIO, pin 8 S mode, supply limits, and pinout match the official NXP datasheet."
-      - "Reset/power-up state leaves transmission inhibited; all hardware assumptions are explicit."
+      - "Firmware compiles for the original ESP32 compile target using documented versions; the exact physical module remains unselected until identified."
+      - "TJA1051T/3 pin 5 VIO, pin 8 S mode, supply limits, pinout, and reset-safe inhibit requirements are recorded against the official NXP datasheet."
+      - "Firmware TX initialization is disabled by default, bitrate evidence must be explicitly confirmed, GPIOs remain unassigned pending board verification, and the S02 firmware exposes no transmit call."
+      - "The source-level netlist and safety-interlock requirements document all unverified electrical assumptions; native Proteus generation/import validation remains S09."
   - id: S03
     title: CAN receive/transmit core and transport
     goal: Implement frame acquisition, controller state reporting, buffering, transport, and gated TX APIs.

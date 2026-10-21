@@ -195,7 +195,8 @@ class JsonSchemaTests(unittest.TestCase):
                      ROOT / "project" / "hardware.yaml",
                      ROOT / "project" / "constraints.yaml",
                      ROOT / "project" / "environment.yaml",
-                     ROOT / "tests" / "requirements-traceability.yaml"]:
+                     ROOT / "tests" / "requirements-traceability.yaml",
+                     ROOT / "hardware" / "reference" / "esp32-tja1051t3-netlist.yaml"]:
             with self.subTest(path=path.relative_to(ROOT)):
                 yaml.safe_load(path.read_text(encoding="utf-8"))
 
@@ -614,7 +615,10 @@ class ApiAndTraceabilityTests(unittest.TestCase):
         )
         self.assertEqual(progress["stage_status"]["S00"], "complete")
         self.assertEqual(progress["stage_status"]["S01"], "complete")
-        self.assertEqual(progress["current_focus"], "S02")
+        self.assertEqual(progress["stage_status"]["S02"], "complete-source-and-build-foundation")
+        self.assertEqual(progress["stage_status"]["S03"], "ready")
+        self.assertEqual(progress["current_focus"], "S03")
+        self.assertEqual(progress["s02_evidence"]["build_result"], "SUCCESS; exit code 0")
         self.assertEqual(progress["s01_evidence"]["test_result"], "42 tests passed")
 
     def test_stage_dependency_graph_is_complete_and_acyclic(self):

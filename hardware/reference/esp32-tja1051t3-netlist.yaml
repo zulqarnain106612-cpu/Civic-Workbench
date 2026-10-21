@@ -1,0 +1,81 @@
+schema_version: 1
+design_id: civic-workbench-original-esp32-tja1051t3
+status: "schematic-source-contract; not a generated or validated native schematic"
+controller:
+  target: "Original Espressif ESP32 with integrated TWAI"
+  package_or_module: unknown
+  twai_driver: "ESP-IDF legacy TWAI API pending pinned build verification"
+  tx_gpio: null
+  rx_gpio: null
+  gpio_assignment_status: "intentionally unassigned pending exact board/module identification"
+transceiver:
+  manufacturer: NXP
+  part: TJA1051T/3
+  package: SO8
+  package_code: SOT96-1
+  reference_designator: U1
+  pins:
+    1: {name: TXD, net: TWAI_TX_TO_TRANSCEIVER}
+    2: {name: GND, net: LOGIC_GND}
+    3: {name: VCC, net: TRANSCEIVER_5V}
+    4: {name: RXD, net: TRANSCEIVER_RX_TO_TWAI}
+    5: {name: VIO, net: MCU_IO_3V3}
+    6: {name: CANL, net: CAN_LOW}
+    7: {name: CANH, net: CAN_HIGH}
+    8: {name: S, net: TRANSCEIVER_MODE_S}
+power_and_decoupling:
+  logic_supply:
+    net: MCU_IO_3V3
+    nominal_v: 3.3
+    evidence: "Target original ESP32 uses 3.3 V I/O; validate against exact board."
+  transceiver_supply:
+    net: TRANSCEIVER_5V
+    nominal_v: 5.0
+    constraints_v: [4.5, 5.5]
+    evidence: "NXP TJA1051 datasheet limits."
+  vio:
+    net: MCU_IO_3V3
+    constraints_v: [2.8, 5.5]
+    evidence: "NXP TJA1051T/3 datasheet."
+  decoupling:
+    status: "must be defined and reviewed during native schematic generation"
+    requirements:
+      - "Place local decoupling next to U1 VCC/GND."
+      - "Place/verify logic-level decoupling for VIO according to the final PCB/power topology."
+      - "Record exact capacitor values, voltage ratings and placement evidence in the generated artifact manifest."
+can_bus:
+  connector:
+    nets: [CAN_HIGH, CAN_LOW, LOGIC_GND]
+    pinout_status: unknown
+  termination:
+    fitted_by_default: false
+    policy: "Only add/enable termination after intended topology and existing bus termination are established."
+  protection:
+    status: "to be designed and reviewed for intended connection point"
+tx_inhibit:
+  default_state: silent
+  transceiver_mode_pin: "U1 pin 8 S"
+  silent_level: high
+  silent_bias:
+    implementation: "external resistor pull-up to MCU_IO_3V3"
+    value: null
+    requirement: "value must be assigned and reviewed in schematic stage; default must hold S HIGH with unpowered/reset MCU"
+  gate:
+    implementation_requirement: "a physical interlock and firmware TX request must both be necessary to pull S LOW"
+    mcu_request_gpio: null
+    physical_interlock_gpio_feedback: null
+    circuit_status: "not yet generated or bench validated"
+    note: "MCU request signal must never directly connect to S as the only safety control."
+artifacts:
+  native_proteus_project: "not generated"
+  python_generator: "planned S09"
+  import_render_validation: "not performed"
+open_items:
+  - "Exact ESP32 module/board and available non-strapping GPIOs"
+  - "Document and review hardware gate topology, component values and failure modes"
+  - "Confirm intended CAN connector and protection design"
+  - "Confirm transceiver supply and power sequencing for chosen installation"
+  - "Generate native Proteus artifact and validate actual import/render with installed Proteus version"
+references:
+  esp32_twai: "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html"
+  tja1051_datasheet: "https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf"

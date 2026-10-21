@@ -8,7 +8,7 @@ This repository is independent of the older build-a-web-page-for-ios project. It
 
 The intended product includes live CAN frame capture, identifier and signal discovery, controlled direct-CAN transmission, capability-driven diagnostics/parameter workflows where evidenced, a browser engineering UI, local persistence, a virtual CAN lab, and a Python-generated native Proteus schematic/project.
 
-**Status:** this first baseline contains specifications and delivery controls only. Application code, firmware, vehicle mappings, generated CAD, and physical operation are not yet implemented or validated by this commit. No Honda-specific CAN identifier, bit layout, signal scale, diagnostic service, or ECU behavior may be presented as fact without traceable evidence.
+**Current status:** S00 environment discovery, S01 versioned contracts, and the S02 original-ESP32 firmware/source build foundation are complete. The generic original-ESP32 firmware profile compiles successfully; it has not been flashed or physically validated. Application UI, durable capture service, analysis algorithms, virtual CAN lab, vehicle mappings, generated native Proteus CAD, and physical operation remain outstanding. No Honda-specific CAN identifier, bit layout, signal scale, diagnostic service, or ECU behavior may be presented as fact without traceable evidence.
 
 ## Start here
 
@@ -26,6 +26,8 @@ The intended product includes live CAN frame capture, identifier and signal disc
 12. Requirements traceability: tests/requirements-traceability.yaml
 13. Progress ledger: project/progress.json
 14. S01 contract implementation and verification report: docs/reports/S01-contract-report.md
+15. S02 firmware foundation and build report: docs/reports/S02-firmware-report.md
+16. S02 hardware safety/netlist sources: hardware/reference/
 
 ## Required hardware baseline
 

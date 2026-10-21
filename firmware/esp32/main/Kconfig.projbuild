@@ -1,0 +1,60 @@
+menu "Civic-Workbench firmware"
+
+    config CIVIC_TWAI_TX_GPIO
+        int "TWAI TX GPIO (confirm exact board first)"
+        range -1 39
+        default -1
+        help
+            GPIO number for ESP32 TWAI TX. -1 intentionally disables driver
+            initialization until the exact module pin mapping is documented.
+
+    config CIVIC_TWAI_RX_GPIO
+        int "TWAI RX GPIO (confirm exact board first)"
+        range -1 39
+        default -1
+        help
+            GPIO number for ESP32 TWAI RX. -1 intentionally disables driver
+            initialization until the exact module pin mapping is documented.
+
+    config CIVIC_TX_GATE_REQUEST_GPIO
+        int "Hardware TX gate request GPIO (confirm exact board first)"
+        range -1 39
+        default -1
+        help
+            Output requesting TX mode through an external physical interlock
+            gate. Must never drive transceiver S directly. -1 disables CAN.
+
+    config CIVIC_INTERLOCK_SENSE_GPIO
+        int "Physical interlock feedback GPIO (confirm exact board first)"
+        range -1 39
+        default -1
+        help
+            Input sensing physical interlock state. This is status feedback;
+            it is not a substitute for the independent hardware TX gate.
+
+    config CIVIC_CAN_BITRATE
+        int "CAN bitrate in bit/s (only set after evidence)"
+        range 10000 1000000
+        default 500000
+        help
+            Compilation default only. Hardware startup remains disabled until
+            a bitrate has been explicitly confirmed and enabled. Do not assume
+            this value matches the vehicle.
+
+    config CIVIC_BITRATE_EVIDENCE_CONFIRMED
+        bool "Bitrate was explicitly confirmed by evidence"
+        default n
+        help
+            Must remain disabled until the selected CAN bitrate is supported
+            by a reliable source or controlled measurement. Without this flag,
+            hardware TWAI initialization is denied.
+
+    config CIVIC_ALLOW_HARDWARE_CAN_INIT
+        bool "Allow CAN controller startup after verified pin/config selection"
+        default n
+        help
+            Remains disabled by default. Enable only after the exact ESP32
+            module, GPIOs, bitrate, transceiver wiring and hardware interlock
+            have been reviewed and documented. This is not permission for TX.
+
+endmenu

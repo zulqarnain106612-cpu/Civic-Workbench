@@ -616,9 +616,13 @@ class ApiAndTraceabilityTests(unittest.TestCase):
         self.assertEqual(progress["stage_status"]["S00"], "complete")
         self.assertEqual(progress["stage_status"]["S01"], "complete")
         self.assertEqual(progress["stage_status"]["S02"], "complete-source-and-build-foundation")
-        self.assertEqual(progress["stage_status"]["S03"], "ready")
-        self.assertEqual(progress["current_focus"], "S03")
+        self.assertEqual(progress["stage_status"]["S03"], "complete-source-build-and-host-mock-verified")
+        self.assertEqual(progress["stage_status"]["S04"], "ready")
+        self.assertEqual(progress["stage_status"]["S05"], "ready")
+        self.assertEqual(progress["current_focus"], "S04")
         self.assertEqual(progress["s02_evidence"]["build_result"], "SUCCESS; exit code 0")
+        self.assertEqual(progress["s03_evidence"]["build_result"], "SUCCESS; exit code 0")
+        self.assertEqual(progress["s03_evidence"]["python_test_result"], "64 tests passed")
         self.assertEqual(progress["s01_evidence"]["test_result"], "42 tests passed")
 
     def test_stage_dependency_graph_is_complete_and_acyclic(self):

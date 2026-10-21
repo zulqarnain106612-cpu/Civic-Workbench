@@ -29,6 +29,14 @@ All JSON Schemas use Draft 2020-12 and reject unknown properties unless an expli
 - Monotonic nanoseconds are the ordering/timing basis for a capture process. UTC timestamps may be absent for frames captured without a reliable wall clock.
 - A session manifest describes capture configuration, source/provenance, software/firmware versions, record/drop counts and the relative raw-capture location. A raw-capture location must be a safe POSIX relative path: absolute paths, drive-prefixed paths, backslashes and parent traversal are rejected. A null bitrate means it is not yet established; do not fill it by guessing. A hardware capture-start request must be rejected until a valid bitrate is explicitly selected from trustworthy evidence or otherwise established.
 
+## Firmware clock and status semantics
+
+- Version-1 device status accepts a trustworthy `observed_at_utc` or a monotonic-only `observed_monotonic_ns` with `clock_source: monotonic_only`. Firmware must not invent UTC values when no reliable wall clock has been established.
+- The original-ESP32 S03 serial wire transport emits `CW1 ` followed by a schema-v1 JSON payload and newline. Only this prefix identifies a protocol record; other UART console lines are diagnostics.
+- The firmware `device_status` record provides controller state (including `recovering`), bitrate or `null`, TX-capability/arm state, driver and app queue depth, TWAI error counters, missed/overrun/failed-frame counters, arbitration loss, bus errors, malformed observations, software drops, a cumulative drop total, and structured fault codes. Queue depth is not a loss count.
+- `captured_monotonic_ns` is the device's frame observation/dequeue time. It is not a hardware start-of-frame timestamp. The host may attach its own UTC envelope timestamp but must preserve the original monotonic value and source provenance.
+- Firmware frame and status telemetry are diagnostic data. They do not authorize transmission. In S03, the single-frame C TX API is gated and not exposed as a serial command; browser TX controls, repeat scheduling and persistent TX audit records remain downstream work.
+
 ## Analysis and capability rules
 
 - Findings always reference one or more existing frame UUIDs and state the method and confidence.

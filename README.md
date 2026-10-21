@@ -8,7 +8,7 @@ This repository is independent of the older build-a-web-page-for-ios project. It
 
 The intended product includes live CAN frame capture, identifier and signal discovery, controlled direct-CAN transmission, capability-driven diagnostics/parameter workflows where evidenced, a browser engineering UI, local persistence, a virtual CAN lab, and a Python-generated native Proteus schematic/project.
 
-**Current status:** S00 environment discovery, S01 versioned contracts, and the S02 original-ESP32 firmware/source build foundation are complete. The generic original-ESP32 firmware profile compiles successfully; it has not been flashed or physically validated. Application UI, durable capture service, analysis algorithms, virtual CAN lab, vehicle mappings, generated native Proteus CAD, and physical operation remain outstanding. No Honda-specific CAN identifier, bit layout, signal scale, diagnostic service, or ECU behavior may be presented as fact without traceable evidence.
+**Current status:** S00 environment discovery, S01 contracts, S02 firmware foundation, and S03 CAN receive/guarded-TX core plus schema-v1 serial telemetry are source/build/host-mock verified. The generic original-ESP32 firmware profile compiles successfully but has not been flashed or physically validated. Hardware TX remains disabled by default; the C API for one guarded frame is not exposed as a serial command yet. Browser UI, durable persistence, signal/identifier discovery, diagnostic workflows, virtual CAN, generated native Proteus CAD, and physical operation remain outstanding. No Honda-specific CAN identifier, bit layout, scale, diagnostic service, or ECU behavior may be presented as fact without traceable evidence.
 
 ## Start here
 
@@ -28,6 +28,10 @@ The intended product includes live CAN frame capture, identifier and signal disc
 14. S01 contract implementation and verification report: docs/reports/S01-contract-report.md
 15. S02 firmware foundation and build report: docs/reports/S02-firmware-report.md
 16. S02 hardware safety/netlist sources: hardware/reference/
+17. S03 CAN core/transport implementation report: docs/reports/S03-can-transport-report.md
+18. Firmware serial protocol: docs/protocol/firmware-serial-v1.md
+19. Host-mocked CAN integration tests: tests/firmware/test_can_core_mock.c and tests/test_firmware_can_core.py
+20. Schema-validated serial output tests: tests/firmware/test_serial_transport.c and tests/test_firmware_serial_transport.py
 
 ## Required hardware baseline
 

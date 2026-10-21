@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S02-complete-ready-for-S03",
-  "application_implementation_status": "contract-and-firmware-foundation-implemented-product-modules-not-started",
+  "overall_status": "S03-source-build-host-mock-verified-ready-for-S04-S05",
+  "application_implementation_status": "contract-and-firmware-can-core-transport-implemented-ui-persistence-analysis-and-simulator-not-started",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-22",
-  "current_focus": "S03",
+  "current_focus": "S04",
   "stage_status": {
     "S00": "complete",
     "S01": "complete",
     "S02": "complete-source-and-build-foundation",
-    "S03": "ready",
-    "S04": "blocked-on-contracts-and-S03",
-    "S05": "blocked-on-contracts-and-S03",
+    "S03": "complete-source-build-and-host-mock-verified",
+    "S04": "ready",
+    "S05": "ready",
     "S06": "blocked-on-S01-S03-S05",
     "S07": "blocked-on-S01-S03-S06",
     "S08": "blocked-on-S01-S03-S04",
@@ -50,7 +50,7 @@
     "repository_checkout": "main tracks origin/main at the completion of S00",
     "hardware_connected_at_inspection": false,
     "proteus": "Installed under Wine; build 8.3.19906.0 indicated by registry path; registry profile labelled Proteus 8 Demonstration",
-    "local_toolchain_verification": "completed; a classic ESP32 firmware build toolchain is not ready"
+    "local_toolchain_verification": "Environment discovery originally found no original-ESP32 toolchain; S02 installed the pinned isolated PlatformIO environment and S02/S03 target builds compiled successfully."
   },
   "s01_evidence": {
     "report": "docs/reports/S01-contract-report.md",
@@ -88,20 +88,25 @@
     "S02 source/build foundation compiled for original ESP32 using PlatformIO Core 6.2.0, espressif32 6.9.0 and ESP-IDF 5.3.1.",
     "S02 TWAI controller startup is Listen Only and disabled by default; no hardware transmit API is present in S02.",
     "GPIOs and vehicle bitrate remain unassigned/unconfirmed; the generic esp32dev 4MB profile proves compilation only and is not a physical-board profile.",
-    "TX safety policy host tests and source guards pass; the independent physical interlock and physical board have not been bench-tested."
+    "TX safety policy host tests and source guards pass; the independent physical interlock and physical board have not been bench-tested.",
+    "S03 implements bounded TWAI/application queues and explicit software drop/malformed-frame counters; armed TX auto-disarms on application-queue overflow.",
+    "Firmware serial telemetry uses CW1-prefixed schema-v1 handshake/device_status/can_frame JSON records; timestamps are monotonic observation times, not hardware SOF or UTC.",
+    "The single-frame C TX API is centrally guarded but intentionally not exposed as a serial command; hardware-init, bitrate evidence and TX capability remain disabled by default.",
+    "Host-mocked integration validates firmware logic deterministically but is not physical bus, bench interlock, or vehicle evidence."
   ],
   "open_questions": [
     "Exact ESP32 module/board and accessible GPIOs, because no board was detected during S00 inspection",
     "Physical presence/marking of NXP TJA1051T/3",
-    "Install/pin a working original-ESP32 firmware toolchain; cached compiler packages currently target ESP32-S3/RISC-V rather than classic ESP32",
     "Proteus activation/licensed modules and native import/render behavior",
     "Supported official native schematic automation/generation route, if any",
-    "Verified bus bit rate(s), topology, protocol/frame format, and safely available capture points for the target vehicle"
+    "Verified bus bit rate(s), topology, protocol/frame format, and safely available capture points for the target vehicle",
+    "Identify the exact physical ESP32 module/board and verify its flash size, GPIO strapping, UART/PSRAM reservations and board profile before programming."
   ],
   "stage_reports": {
     "S00": "docs/reports/S00-environment-report.md",
     "S01": "docs/reports/S01-contract-report.md",
-    "S02": "docs/reports/S02-firmware-report.md"
+    "S02": "docs/reports/S02-firmware-report.md",
+    "S03": "docs/reports/S03-can-transport-report.md"
   },
   "s02_evidence": {
     "report": "docs/reports/S02-firmware-report.md",
@@ -135,6 +140,46 @@
     "hardware_flash_performed": false,
     "physical_hardware_validation": "not_performed",
     "vehicle_validation": "not_performed",
+    "native_proteus_project": "not_generated; assigned to S09"
+  },
+  "s03_evidence": {
+    "report": "docs/reports/S03-can-transport-report.md",
+    "firmware_root": "firmware/esp32/",
+    "core_implementation": "firmware/esp32/main/civic_can.c",
+    "serial_transport": "firmware/esp32/main/civic_transport.c",
+    "portable_frame_formatter": "firmware/esp32/main/civic_transport_format.c",
+    "serial_protocol": "docs/protocol/firmware-serial-v1.md",
+    "build_command": "cd firmware/esp32 && ~/.venvs/civic-workbench-pio/bin/pio run",
+    "build_result": "SUCCESS; exit code 0",
+    "compile_target": "PlatformIO esp32dev, original ESP32 family; generic compile-only 4MB profile",
+    "platformio_core": "6.2.0",
+    "platform": "espressif32 6.9.0",
+    "framework": "ESP-IDF 5.3.1 (framework-espidf 3.50301.0)",
+    "xtensa_toolchain": "13.2.0+20240530",
+    "cmake": "3.16.4",
+    "ninja": "1.7.1",
+    "esptool": "4.5.1",
+    "ram_used_bytes": 10828,
+    "ram_total_bytes": 327680,
+    "ram_percent": 3.3,
+    "application_flash_used_bytes": 179252,
+    "application_flash_region_bytes": 1048576,
+    "application_flash_percent": 17.1,
+    "python_test_result": "64 tests passed",
+    "host_can_core_mock": "production civic_can.c + safety core passes host-mocked queue, frame validation, guarded TX, interlock-open disarm, overflow disarm, controller-loss telemetry, and bus-off recovery tests",
+    "host_c_safety_policy": "7 assertions passed with gcc -std=c11 -Wall -Wextra -Werror -pedantic",
+    "host_frame_formatter": "7 C assertions plus schema validation of standard, extended, remote and recovering-state frame records",
+    "host_serial_protocol": "6 tests validate CW1 prefix, handshake, disabled/running/recovering status, raw frame records and controller-state fidelity against v1 JSON Schemas",
+    "static_checks": [
+      "python3 -m compileall -q src tests passed",
+      "git diff --check passed",
+      "JSON Schema Draft 2020-12 meta-schema checks passed",
+      "project YAML, traceability YAML and progress JSON parsed"
+    ],
+    "hardware_flash_performed": false,
+    "physical_hardware_validation": "not_performed",
+    "vehicle_validation": "not_performed",
+    "tx_serial_command": "not_exposed_in_S03",
     "native_proteus_project": "not_generated; assigned to S09"
   }
 }

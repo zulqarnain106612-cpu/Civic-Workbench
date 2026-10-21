@@ -22,7 +22,7 @@
     "direction": {"enum": ["rx", "tx", "unknown"]},
     "capture_source": {"enum": ["hardware", "simulator", "import"]},
     "device_id": {"type": "string", "minLength": 1, "maxLength": 128},
-    "controller_state": {"enum": ["unknown", "running", "stopped", "bus_off", "error"]},
+    "controller_state": {"enum": ["unknown", "running", "stopped", "bus_off", "recovering", "error"]},
     "dropped_frames_before": {"type": "integer", "minimum": 0},
     "dropped_frames_after": {"type": "integer", "minimum": 0},
     "source_record_ref": {"type": "string", "minLength": 1, "maxLength": 512}

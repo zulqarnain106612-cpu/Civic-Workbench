@@ -1,32 +1,42 @@
-# ESP32 Firmware Foundation
+# Original ESP32 Firmware
 
-## Target and scope
+## Scope
 
-This project targets the **original Espressif ESP32** with its integrated TWAI controller and the required external NXP TJA1051T/3 SO8 transceiver. The generic PlatformIO board target is used only to prove code compiles for the classic ESP32 family; it is not a verified physical-board definition.
+S03 extends the S02 original-ESP32 foundation into a bounded TWAI receive core, controller diagnostics/recovery surface, schema-v1 JSON record formatting, prefixed serial telemetry and a centrally guarded single-frame TX API.
 
-S02 provides the build skeleton, passive TWAI receive loop, controller status API, frame representation and safety-policy foundation. **There is no hardware transmit API in S02.** Active TX is a later stage and must pass the physical interlock and firmware-side guards.
+Target: **original Espressif ESP32 with integrated TWAI and external NXP TJA1051T/3 SO8 transceiver**. The PlatformIO `esp32dev` profile is a generic 4 MB compile target only; the physical module remains unidentified. Do not flash it or connect it to a vehicle until the actual board, flash size, GPIO mapping, wiring, bitrate evidence and hardware interlock are reviewed.
 
 ## Build
 
-The root Linux environment was inspected on 2026-10-22. It does not have standalone ESP-IDF or the PlatformIO CLI on PATH. A separate isolated PlatformIO venv is used on that host:
+Use the pinned isolated PlatformIO environment:
 
 ```sh
-python3 -m venv ~/.venvs/civic-workbench-pio
-~/.venvs/civic-workbench-pio/bin/python -m pip install -r tools/requirements-platformio.txt
+~/.venvs/civic-workbench-pio/bin/pio --version
 cd firmware/esp32
 ~/.venvs/civic-workbench-pio/bin/pio run
 ```
 
-The project pins PlatformIO's ESP32 platform to 6.9.0. Actual resolved toolchain/framework package versions and build output must be recorded in the S02 stage report. Avoid silently updating the platform or framework.
+Pins: PlatformIO Core 6.2.0, Espressif32 platform 6.9.0, ESP-IDF 5.3.1, Xtensa toolchain 13.2.0+20240530. Do not silently upgrade platform/framework dependencies.
 
-## Why the safe defaults do not start CAN
+## Receive path and telemetry
 
-The exact ESP32 module is not yet identified and no board was detected during S00. Therefore all GPIO selectors default to -1, CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT defaults disabled, and CONFIG_CIVIC_BITRATE_EVIDENCE_CONFIRMED defaults disabled. The numeric bitrate default exists only so the generic compile-time timing selection can be type-checked; it is **not** a measured or recommended vehicle bitrate. Firmware must refuse controller initialization unless the evidence-confirmation and explicit enable flags are set and real TX/RX/interlock GPIOs have been reviewed.
+The TWAI driver uses a bounded driver-owned RX queue plus a bounded FreeRTOS application-ingress queue. A dedicated receive-pump validates identifier width and DLC, stamps the dequeue observation time, copies raw bytes, and increments explicit software drops when the application queue is full. Diagnostics report driver RX queue depth, app queue depth, malformed observations, TWAI missed/overrun counts, controller state, error counters and loss categories.
 
-Do not flash this generic build to a board or connect it to the vehicle. A board-specific config must be produced only after reading the exact module/board marking and reviewing GPIO strapping, flash/PSRAM use, and the hardware gate circuit.
+The serial wire format is defined in [firmware-serial-v1.md](../../docs/protocol/firmware-serial-v1.md). Each protocol record is prefixed with `CW1 `; non-prefixed ESP-IDF log lines are diagnostic output. Time is monotonic observation time, not a hardware wire timestamp or fabricated UTC wall-clock time.
 
-## References
+## TX safety boundary
 
-- [Espressif ESP-IDF TWAI guide for ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html)
-- [NXP TJA1051 datasheet](https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf)
-- Hardware inhibit rationale: [hardware/reference/safety-interlock.md](../../hardware/reference/safety-interlock.md)
+- `CIVIC_ALLOW_HARDWARE_CAN_INIT` defaults off.
+- `CIVIC_BITRATE_EVIDENCE_CONFIRMED` defaults off.
+- `CIVIC_ALLOW_HARDWARE_CAN_TX` defaults off and depends on the other two gates.
+- All GPIOs remain unassigned until the physical module/pinout is identified.
+- When TX capability is not explicitly built in, TWAI remains `TWAI_MODE_LISTEN_ONLY`.
+- TX queue length is configured as zero; the one-frame guarded API validates the request and requires software arm, an active interlock sense, a healthy running controller and reviewed configuration.
+- Software disarm requests the inactive level on the TX-gate request GPIO. The external hardware interlock and external default-inactive transceiver Silent bias remain essential; software is not the independent safety barrier.
+- This stage does not provide periodic/repeated TX scheduling, diagnostic workflows, a browser/serial command to arm TX, or persistent TX audit storage. Those remain downstream work.
+
+## Test scope
+
+`make test` runs repository contracts, firmware source guards, a native C safety policy test, and a native host-compiled JSON formatter validated against the JSON Schemas. `make firmware-build` calls the pinned PlatformIO executable if it is on PATH; otherwise run the explicit command above.
+
+Host checks and compilation do not substitute for serial-link, isolated-bench, physical interlock, or vehicle tests. No physical board or vehicle was exercised for S03.

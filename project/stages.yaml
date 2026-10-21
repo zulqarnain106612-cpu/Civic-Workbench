@@ -29,8 +29,10 @@ stages:
     goal: Implement frame acquisition, controller state reporting, buffering, transport, and gated TX APIs.
     deliverables: [twai-driver, frame-ingress, transport-contract, error-state-model, tx-gate]
     acceptance:
-      - "Loopback/mocks and simulated bus test standard and extended IDs, DLC, timestamping, queues, drops, bus-off, and recovery."
-      - "Default passive state and hardware inhibit are verified in tests; no unguarded TX endpoint exists."
+      - "The production CAN core is host-mock tested for standard/extended IDs, DLC, monotonic observation timestamps, bounded ingress, queue overflow/drop counters, malformed frames, controller statistics, guarded single-frame TX, interlock-open disarm, and bus-off recovery/restart."
+      - "Handshake, device-status, and raw CAN-frame serial records are validated against the versioned JSON Schemas, including monotonic-only time and loss provenance."
+      - "The default ESP32 build remains Listen Only with hardware-init, bitrate-evidence, and TX-capability gates off; the direct-frame API is centrally guarded and is not exposed as a serial command."
+      - "Host-mock tests do not count as physical bus/bench evidence; loopback, real-controller fault behavior, and electrical interlock validation remain S10/S11 requirements."
   - id: S04
     title: Browser engineering UI
     goal: Deliver the core dashboard for live/recorded frame inspection and analysis.

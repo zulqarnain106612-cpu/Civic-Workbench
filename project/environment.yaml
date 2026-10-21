@@ -1,0 +1,52 @@
+schema_version: 1
+snapshot_date: "2026-10-22"
+repository:
+  url: "https://github.com/zulqarnain106612-cpu/Civic-Workbench"
+  default_branch: main
+  inspected_commit: "4d81cb6d380e9168002714a087b0c259acc506f1"
+  visibility: public
+  write_access: confirmed
+  scope_status: specification_baseline_only
+remote_development_device:
+  name: "s752-LIFEBOOK-S752"
+  device_id: "1f0f3b85-f933-4547-90f5-adf394e4ef00"
+  observed_status: offline
+  last_seen_at_check: "approximately 109 hours before S00 inspection"
+  shell_access: unavailable
+  physical_device_inspection: not_performed
+toolchain:
+  operating_system: {status: not_verified, value: null}
+  python: {status: not_verified, value: null}
+  git: {status: not_verified_on_user_device, value: null}
+  esp_idf: {status: not_verified, value: null}
+  arduino_esp32_core: {status: not_verified, value: null}
+  cmake: {status: not_verified, value: null}
+  ninja: {status: not_verified, value: null}
+  serial_ports: {status: not_verified, value: null}
+hardware:
+  mcu_family: "Original ESP32 with integrated TWAI"
+  exact_board_or_module: {status: not_identified, value: null}
+  accessible_gpio_pins: {status: not_verified, value: null}
+  transceiver_requirement: "NXP TJA1051T/3 SO8"
+  physical_presence: not_verified
+proteus:
+  installed: not_verified
+  version: null
+  official_python_schematic_generation_api: not_confirmed
+  native_project_import_validation: not_performed
+vehicle_network:
+  verified_bitrate: null
+  topology: null
+  safe_capture_point: null
+  can_fd_support: unknown
+  identifiers_and_signals: not_observed
+evidence_policy:
+  - "not_verified is not equivalent to not installed"
+  - "repository state and public documentation review do not prove local toolchain availability"
+  - "do not create assumed GPIO mappings, vehicle IDs, bit rates, or CAD API calls"
+references:
+  esp32_twai: "https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/twai.html"
+  esp32_datasheet: "https://documentation.espressif.com/esp32_datasheet_en.pdf"
+  tja1051_datasheet: "https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf"
+  labcenter_schematic: "https://www.labcenter.com/schematic/"
+  labcenter_downloads: "https://www.labcenter.com/downloads/"

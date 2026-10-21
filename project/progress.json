@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "specification-baseline-committed",
+  "overall_status": "S00-discovery-incomplete-local-access-blocked",
   "application_implementation_status": "not_started",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-22",
   "current_focus": "S00",
   "stage_status": {
-    "S00": "ready",
+    "S00": "partially-complete-blocked-on-local-desktop-access",
     "S01": "specification-baseline-created",
     "S02": "blocked-on-S00",
     "S03": "blocked-on-S02",
@@ -16,7 +16,7 @@
     "S06": "blocked-on-S01-S03-S05",
     "S07": "blocked-on-S01-S03-S06",
     "S08": "blocked-on-S01-S03-S04",
-    "S09": "blocked-on-S02-S08",
+    "S09": "blocked-on-S02-S08-and-proteus-api-discovery",
     "S10": "blocked-on-integration-prerequisites",
     "S11": "blocked-on-S10",
     "S12": "blocked-on-S11"
@@ -29,18 +29,35 @@
     "safety_constraints": "project/constraints.yaml",
     "traceability": "tests/requirements-traceability.yaml"
   },
+  "s00_evidence": {
+    "report": "docs/reports/S00-environment-report.md",
+    "repository_map": "docs/reports/S00-repository-map.md",
+    "toolchain_matrix": "docs/reports/S00-toolchain-matrix.md",
+    "risk_register": "docs/reports/S00-risk-register.md",
+    "environment_manifest": "project/environment.yaml",
+    "inspected_commit": "4d81cb6d380e9168002714a087b0c259acc506f1",
+    "remote_device_status": "offline",
+    "official_reference_review": "completed",
+    "local_toolchain_verification": "blocked"
+  },
   "decisions": [
     "This repository is independent of build-a-web-page-for-ios.",
     "Hardware target is original ESP32 integrated TWAI plus NXP TJA1051T/3 SO8.",
+    "ESP-IDF TWAI is the default firmware-framework recommendation pending version and installation inspection.",
     "Default runtime state must be passive/listen-only with a hardware-enforced transmitter inhibit.",
-    "Vehicle CAN identifiers and signal mappings remain unknown until supported by evidence.",
-    "The initial baseline contains project specifications only, not application firmware or a completed schematic."
+    "Vehicle CAN identifiers, bus bit rate, topology, and signal mappings remain unknown until supported by evidence.",
+    "Official public Labcenter pages reviewed did not confirm a Python schematic-generation API; verify installed documentation or vendor support rather than inventing one.",
+    "S00 cannot be closed until the user's actual development environment and exact ESP32 board/module are inspectable."
   ],
   "open_questions": [
+    "Exact operating system, architecture and existing Python/Git/CMake/Ninja versions",
+    "Installed ESP-IDF and Arduino-ESP32 versions",
     "Exact ESP32 module/board and accessible GPIOs",
-    "Firmware framework/version after environment discovery",
-    "Available Proteus version, Python automation path, and official symbol/library availability",
-    "Verified bus bit rate(s), topology, and safely available capture points for the target vehicle"
+    "Available Proteus version, licensed features, Python automation path and official symbol/library availability",
+    "Verified bus bit rate(s), topology, protocol/frame format and safely available capture points for the target vehicle",
+    "Current local checkout status and whether it contains unpushed/uncommitted work"
   ],
-  "stage_reports": {}
+  "stage_reports": {
+    "S00": "docs/reports/S00-environment-report.md"
+  }
 }

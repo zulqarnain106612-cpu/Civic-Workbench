@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S00-complete-ready-for-S01",
-  "application_implementation_status": "not_started",
+  "overall_status": "S01-complete-ready-for-S02",
+  "application_implementation_status": "contract_foundation_implemented_product_modules_not_started",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-22",
-  "current_focus": "S01",
+  "current_focus": "S02",
   "stage_status": {
     "S00": "complete",
-    "S01": "ready",
-    "S02": "blocked-on-S01-and-exact-board-toolchain-setup",
+    "S01": "complete",
+    "S02": "ready-toolchain-and-exact-board-discovery-first",
     "S03": "blocked-on-S02",
     "S04": "blocked-on-contracts-and-S03",
     "S05": "blocked-on-contracts-and-S03",
@@ -26,8 +26,13 @@
     "dependency_graph": "project/dependencies.yaml",
     "stage_acceptance": "project/stages.yaml",
     "hardware_reference": "project/hardware.yaml",
+    "environment_manifest": "project/environment.yaml",
     "safety_constraints": "project/constraints.yaml",
-    "traceability": "tests/requirements-traceability.yaml"
+    "traceability": "tests/requirements-traceability.yaml",
+    "versioned_schemas": "schemas/v1/",
+    "host_api_contract": "contracts/openapi.yaml",
+    "semantic_contract_validator": "src/civic_workbench/contracts.py",
+    "contract_documentation": "docs/contracts-v1.md"
   },
   "s00_evidence": {
     "report": "docs/reports/S00-environment-report.md",
@@ -35,35 +40,59 @@
     "toolchain_matrix": "docs/reports/S00-toolchain-matrix.md",
     "risk_register": "docs/reports/S00-risk-register.md",
     "environment_manifest": "project/environment.yaml",
-    "baseline_commit": "e1da89a9cf60b3982f7a40a9536b044d331b3f32",
+    "completion_commit": "8aef9546927e0cb0737113ce10bdf2e8d91500db",
     "host": "Ubuntu 26.04.1 LTS x86_64; kernel 7.0.0-38-generic",
     "python": "3.14.4",
     "git": "2.53.0",
-    "repository_checkout": "Cloned into empty /home/s752/Civic-Workbench; main tracks origin/main",
-    "remote_device_status": "online; live commands executed successfully",
-    "hardware_connected": false,
+    "repository_checkout": "main tracks origin/main at the completion of S00",
+    "hardware_connected_at_inspection": false,
     "proteus": "Installed under Wine; build 8.3.19906.0 indicated by registry path; registry profile labelled Proteus 8 Demonstration",
-    "local_toolchain_verification": "completed; classic ESP32 firmware build environment not ready"
+    "local_toolchain_verification": "completed; a classic ESP32 firmware build toolchain is not ready"
+  },
+  "s01_evidence": {
+    "report": "docs/reports/S01-contract-report.md",
+    "contract_specification": "docs/contracts-v1.md",
+    "schema_directory": "schemas/v1/",
+    "schema_count": 14,
+    "openapi_contract": "contracts/openapi.yaml",
+    "semantic_validator": "src/civic_workbench/contracts.py",
+    "test_file": "tests/test_contracts.py",
+    "test_command": "make test-contracts",
+    "test_result": "42 tests passed",
+    "additional_checks": [
+      "python3 -m compileall -q src tests passed",
+      "git diff --check passed",
+      "all project YAML files parsed",
+      "project/progress.json parsed",
+      "14 JSON Schemas passed Draft 2020-12 meta-schema check",
+      "OpenAPI YAML parsed; required paths and relative schema references checked",
+      "all requirements have unique IDs and acceptance criteria",
+      "13-stage dependency graph is complete and acyclic"
+    ],
+    "runtime": "Python 3.14.4; jsonschema 4.19.2; PyYAML 6.0.3"
   },
   "decisions": [
     "This repository is independent of build-a-web-page-for-ios.",
     "Hardware target is original ESP32 integrated TWAI plus NXP TJA1051T/3 SO8.",
-    "S00 environment inventory is complete; unresolved hardware, target compiler and Proteus API items are tracked as downstream dependencies.",
-    "ESP-IDF/TWAI remains the preferred firmware API candidate; select/pin an actually buildable toolchain in S02 after exact target confirmation.",
     "Default runtime state must be passive/listen-only with a hardware-enforced transmitter inhibit.",
-    "Vehicle CAN identifiers, bus bit rate, topology, and signal mappings remain unknown until supported by evidence.",
+    "Version 1 contracts use JSON Schema Draft 2020-12 and a logical OpenAPI 3.1 host API.",
+    "Data-frame payload byte count must match DLC; standard IDs use 11 bits; extended IDs use 29 bits; this contract models Classical CAN only.",
+    "A TX request never grants authorization; host-side checks require fresh firmware-originated state and firmware/physical interlock checks remain independent.",
+    "Unknown/unsupported diagnostic capabilities remain disabled; validated findings require independent evidence.",
+    "Vehicle CAN identifiers, bit rate, topology, and signal mappings remain unknown until supported by evidence.",
     "No official Python API/utility for native Proteus schematic generation was confirmed in local examples or official public resources reviewed; S09 must verify the route rather than invent one.",
-    "No application implementation or physical hardware validation has been performed."
+    "S01 test results prove contract-layer behavior only, not live CAN, hardware, UI, persistence, simulator, or vehicle compatibility."
   ],
   "open_questions": [
-    "Exact ESP32 module/board and accessible GPIOs, because no board was detected at S00 inspection",
+    "Exact ESP32 module/board and accessible GPIOs, because no board was detected during S00 inspection",
     "Physical presence/marking of NXP TJA1051T/3",
-    "Classic ESP32 target toolchain installation and reproducible version pinning",
+    "Install/pin a working original-ESP32 firmware toolchain; cached compiler packages currently target ESP32-S3/RISC-V rather than classic ESP32",
     "Proteus activation/licensed modules and native import/render behavior",
     "Supported official native schematic automation/generation route, if any",
     "Verified bus bit rate(s), topology, protocol/frame format, and safely available capture points for the target vehicle"
   ],
   "stage_reports": {
-    "S00": "docs/reports/S00-environment-report.md"
+    "S00": "docs/reports/S00-environment-report.md",
+    "S01": "docs/reports/S01-contract-report.md"
   }
 }

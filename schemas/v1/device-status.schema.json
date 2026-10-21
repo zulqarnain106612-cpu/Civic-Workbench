@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/device-status.schema.json",
+  "title": "Civic-Workbench device status",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "observed_at_utc", "connected", "controller_state", "bitrate_bps", "dropped_frames_total", "faults"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "device_status"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "connected": {"type": "boolean"},
+    "controller_state": {"enum": ["running", "stopped", "bus_off", "error", "unknown"]},
+    "firmware_version": {"type": ["string", "null"], "maxLength": 128},
+    "bitrate_bps": {"type": ["integer", "null"], "minimum": 1},
+    "dropped_frames_total": {"type": "integer", "minimum": 0},
+    "faults": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+  }
+}

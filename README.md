@@ -20,8 +20,12 @@ The intended product includes live CAN frame capture, identifier and signal disc
 6. Stage definitions: project/stages.yaml
 7. Hardware baseline: project/hardware.yaml
 8. Safety and engineering constraints: project/constraints.yaml
-9. Requirements traceability: tests/requirements-traceability.yaml
-10. Progress ledger: project/progress.json
+9. Versioned contracts: docs/contracts-v1.md and schemas/v1/
+10. Logical API contract: contracts/openapi.yaml
+11. Contract tests: tests/test_contracts.py (run with `make test-contracts` or `PYTHONPATH=src python3 -m unittest discover -s tests -v`)
+12. Requirements traceability: tests/requirements-traceability.yaml
+13. Progress ledger: project/progress.json
+14. S01 contract implementation and verification report: docs/reports/S01-contract-report.md
 
 ## Required hardware baseline
 

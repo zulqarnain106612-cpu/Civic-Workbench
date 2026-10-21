@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/handshake.schema.json",
+  "title": "Civic-Workbench connection handshake",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "agent_role", "agent_id", "software_version", "supported_schema_versions", "supported_message_types"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "handshake"},
+    "agent_role": {"enum": ["browser", "host_service", "firmware", "simulator", "importer"]},
+    "agent_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "software_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "supported_schema_versions": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "integer", "minimum": 1}, "uniqueItems": true}
+    },
+    "supported_message_types": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["hello", "hello_ack", "device_status", "can_frame", "capture_start", "capture_started", "capture_stop", "capture_stopped", "analysis_finding", "tx_request", "tx_cancel", "tx_result", "safety_state", "error"]}
+    }
+  }
+}

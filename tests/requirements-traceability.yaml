@@ -7,23 +7,99 @@ verification_levels:
   hardware_bench: "Test with the target board/transceiver on an isolated electrical setup"
   vehicle: "Deliberate on-vehicle procedure with recorded setup and outcome"
 requirements:
-  REQ-ARCH-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-HW-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-CAN-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-CAN-002: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-CAN-003: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-REV-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-DATA-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-UI-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-SIM-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-DIAG-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-PROT-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-SAFE-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-EVID-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-QUAL-001: {implementation: null, tests: [], evidence: [], status: open}
-  REQ-TOK-001: {implementation: "CLAUDE.md; docs/staged-delivery.md", tests: [], evidence: ["Specification baseline"], status: partial}
+  REQ-ARCH-001:
+    implementation: ["schemas/v1/", "contracts/openapi.yaml", "src/civic_workbench/contracts.py"]
+    tests: ["tests/test_contracts.py::JsonSchemaTests", "tests/test_contracts.py::ApiAndTraceabilityTests"]
+    evidence: ["docs/contracts-v1.md", "S01 contract-test run"]
+    status: partial
+    limitation: "S01 defines and tests contract boundaries; firmware, persistence, analysis, simulator and UI modules are not implemented."
+  REQ-HW-001:
+    implementation: ["project/hardware.yaml", "project/environment.yaml"]
+    tests: []
+    evidence: ["docs/reports/S00-environment-report.md"]
+    status: partial
+    limitation: "Required bill of hardware is documented; board GPIOs and a generated native schematic remain unverified."
+  REQ-CAN-001:
+    implementation: ["schemas/v1/can-frame.schema.json", "src/civic_workbench/contracts.py"]
+    tests: ["tests/test_contracts.py::CanFrameContractTests"]
+    evidence: ["docs/contracts-v1.md", "S01 contract-test run"]
+    status: partial
+    limitation: "Record contract verified; physical CAN acquisition and controller fault capture are not implemented."
+  REQ-CAN-002:
+    implementation: ["schemas/v1/capture-session.schema.json"]
+    tests: ["tests/test_contracts.py::SessionAndFindingContractTests"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Session metadata and raw-capture references are defined; persistence, filtering, statistics and round-trip export are not implemented."
+  REQ-CAN-003:
+    implementation: ["schemas/v1/tx-request.schema.json", "schemas/v1/safety-state.schema.json", "src/civic_workbench/contracts.py::authorize_transmission"]
+    tests: ["tests/test_contracts.py::DiagnosticAndSafetyContractTests"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Request shape and fail-closed host contract guard are tested; no driver or transmission scheduler sends frames."
+  REQ-REV-001:
+    implementation: ["schemas/v1/analysis-finding.schema.json"]
+    tests: ["tests/test_contracts.py::SessionAndFindingContractTests"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Finding/evidence shape is defined; discovery algorithms are not implemented."
+  REQ-DATA-001:
+    implementation: ["schemas/v1/capture-session.schema.json", "schemas/v1/can-frame.schema.json"]
+    tests: ["tests/test_contracts.py::JsonSchemaTests"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Versioned storage contract is defined; durable persistence, migration and import/export implementation remain open."
+  REQ-UI-001:
+    implementation: []
+    tests: []
+    evidence: []
+    status: open
+    limitation: "Browser UI not started."
+  REQ-SIM-001:
+    implementation: []
+    tests: []
+    evidence: []
+    status: open
+    limitation: "Virtual CAN bus and scenario runner not started."
+  REQ-DIAG-001:
+    implementation: ["schemas/v1/diagnostic-capability.schema.json", "src/civic_workbench/contracts.py"]
+    tests: ["tests/test_contracts.py::DiagnosticAndSafetyContractTests"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Capability/evidence model is implemented; no target-specific diagnostic capability is asserted or enabled."
+  REQ-PROT-001:
+    implementation: []
+    tests: []
+    evidence: ["docs/reports/S00-environment-report.md"]
+    status: open
+    limitation: "Python generator and native Proteus project remain for S09; native generation route is not yet verified."
+  REQ-SAFE-001:
+    implementation: ["schemas/v1/safety-state.schema.json", "src/civic_workbench/contracts.py::authorize_transmission"]
+    tests: ["tests/test_contracts.py::DiagnosticAndSafetyContractTests"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Contract guard is not a substitute for firmware authorization or hardware interlock implementation and testing."
+  REQ-EVID-001:
+    implementation: ["tests/requirements-traceability.yaml", "project/progress.json"]
+    tests: ["tests/test_contracts.py::ApiAndTraceabilityTests::test_requirement_traceability_covers_all_declared_requirements"]
+    evidence: ["docs/contracts-v1.md"]
+    status: partial
+    limitation: "Requirement IDs are mapped; evidence will be filled per implementation stage."
+  REQ-QUAL-001:
+    implementation: ["requirements.txt", "requirements-dev.txt", "Makefile", "tests/test_contracts.py"]
+    tests: ["PYTHONPATH=src python3 -m unittest discover -s tests -v", "git diff --check"]
+    evidence: ["docs/reports/S01-contract-report.md"]
+    status: partial
+    limitation: "Contract tests run locally; production build, CI, integration, performance and hardware test suite are not implemented."
+  REQ-TOK-001:
+    implementation: ["CLAUDE.md", "docs/staged-delivery.md", "project/dependencies.yaml"]
+    tests: ["tests/test_contracts.py::ApiAndTraceabilityTests"]
+    evidence: ["docs/contracts-v1.md", "docs/reports/S01-contract-report.md"]
+    status: partial
+    limitation: "Stage IDs, on-demand contracts and persistent evidence reduce repeated context; no token-cost benchmark is claimed."
 rules:
   - "Use repository-relative paths and stable test identifiers for every implementation/evidence reference."
-  - "Set status to verified only when evidence exists and the test result is recorded."
+  - "Set status to verified only when evidence exists and the full requirement acceptance criteria pass."
+  - "Partial means a specific subset is implemented and tested; it does not mean the requirement is complete."
   - "Simulation evidence must not be labeled hardware_bench or vehicle evidence."
   - "Any exception requires a reason, risk, approving person, and expiry/revisit condition."

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/diagnostic-capability.schema.json",
+  "title": "Civic-Workbench evidence-backed diagnostic capability",
+  "description": "Describes a verified or unknown capability, not an invented Honda protocol or address.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "capability_id", "status", "enabled", "protocol", "operation", "supporting_evidence"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "diagnostic_capability"},
+    "capability_id": {"type": "string", "format": "uuid"},
+    "status": {"enum": ["supported", "unsupported", "unknown"]},
+    "enabled": {"type": "boolean"},
+    "protocol": {"enum": ["unknown", "iso-tp", "uds-over-can", "kwp2000-over-can", "custom"]},
+    "operation": {"type": "string", "minLength": 1, "maxLength": 256},
+    "ecu_label": {"type": ["string", "null"], "maxLength": 128},
+    "addressing": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["id_format", "request_id", "response_id"],
+      "properties": {
+        "id_format": {"enum": ["standard", "extended"]},
+        "request_id": {"type": "integer", "minimum": 0, "maximum": 536870911},
+        "response_id": {"type": "integer", "minimum": 0, "maximum": 536870911}
+      }
+    },
+    "supporting_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reference", "notes"],
+        "properties": {
+          "kind": {"enum": ["official_document", "observed_capture", "isolated_bench_test", "vendor_confirmation"]},
+          "reference": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "notes": {"type": "string", "minLength": 1, "maxLength": 2000}
+        }
+      },
+      "uniqueItems": true
+    },
+    "reviewed_at_utc": {"type": ["string", "null"], "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "supported"}}, "required": ["status"]},
+      "then": {
+        "properties": {"enabled": {"const": true}, "supporting_evidence": {"minItems": 1}}
+      }
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["unsupported", "unknown"]}}, "required": ["status"]},
+      "then": {"properties": {"enabled": {"const": false}}}
+    },
+    {
+      "if": {"properties": {"enabled": {"const": true}}, "required": ["enabled"]},
+      "then": {
+        "properties": {"status": {"const": "supported"}, "supporting_evidence": {"minItems": 1}}
+      }
+    }
+  ]
+}

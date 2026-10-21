@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/tx-request.schema.json",
+  "title": "Civic-Workbench direct-CAN transmission request",
+  "description": "A bounded request only. Acceptance of this document never authorizes transmission by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "request_id", "created_at_utc", "arbitration_id", "id_format", "frame_type", "dlc", "payload", "period_ms", "repeat_count", "timeout_ms", "requested_by"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "tx_request"},
+    "request_id": {"type": "string", "format": "uuid"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "arbitration_id": {"type": "integer", "minimum": 0, "maximum": 536870911},
+    "id_format": {"enum": ["standard", "extended"]},
+    "frame_type": {"enum": ["data", "remote"]},
+    "dlc": {"type": "integer", "minimum": 0, "maximum": 8},
+    "payload": {"type": "array", "items": {"type": "integer", "minimum": 0, "maximum": 255}, "maxItems": 8},
+    "period_ms": {"type": "integer", "minimum": 1, "maximum": 60000},
+    "repeat_count": {"type": "integer", "minimum": 1, "maximum": 1000},
+    "timeout_ms": {"type": "integer", "minimum": 1, "maximum": 60000},
+    "requested_by": {"type": "string", "minLength": 1, "maxLength": 128},
+    "operator_note": {"type": "string", "maxLength": 2000}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"id_format": {"const": "standard"}}, "required": ["id_format"]},
+      "then": {"properties": {"arbitration_id": {"maximum": 2047}}}
+    },
+    {
+      "if": {"properties": {"frame_type": {"const": "remote"}}, "required": ["frame_type"]},
+      "then": {"properties": {"payload": {"maxItems": 0}}}
+    }
+  ]
+}

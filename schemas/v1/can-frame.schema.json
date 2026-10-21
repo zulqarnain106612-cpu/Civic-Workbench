@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/can-frame.schema.json",
+  "title": "Civic-Workbench raw CAN frame",
+  "description": "Versioned, immutable observation record. Payload bytes are raw values; decoded meanings belong in separate analysis findings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "frame_id", "session_id", "captured_monotonic_ns", "arbitration_id", "id_format", "frame_type", "dlc", "payload", "direction", "capture_source", "controller_state"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "can_frame"},
+    "frame_id": {"type": "string", "format": "uuid"},
+    "session_id": {"type": "string", "format": "uuid"},
+    "captured_monotonic_ns": {"type": "integer", "minimum": 0},
+    "captured_at_utc": {"type": "string", "format": "date-time"},
+    "clock_source": {"enum": ["monotonic_and_wall_clock", "monotonic_only", "imported"]},
+    "arbitration_id": {"type": "integer", "minimum": 0, "maximum": 536870911},
+    "id_format": {"enum": ["standard", "extended"]},
+    "frame_type": {"enum": ["data", "remote"]},
+    "dlc": {"type": "integer", "minimum": 0, "maximum": 8},
+    "payload": {"type": "array", "items": {"type": "integer", "minimum": 0, "maximum": 255}, "maxItems": 8},
+    "direction": {"enum": ["rx", "tx", "unknown"]},
+    "capture_source": {"enum": ["hardware", "simulator", "import"]},
+    "device_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "controller_state": {"enum": ["unknown", "running", "stopped", "bus_off", "error"]},
+    "dropped_frames_before": {"type": "integer", "minimum": 0},
+    "dropped_frames_after": {"type": "integer", "minimum": 0},
+    "source_record_ref": {"type": "string", "minLength": 1, "maxLength": 512}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"id_format": {"const": "standard"}}, "required": ["id_format"]},
+      "then": {"properties": {"arbitration_id": {"maximum": 2047}}}
+    },
+    {
+      "if": {"properties": {"frame_type": {"const": "remote"}}, "required": ["frame_type"]},
+      "then": {"properties": {"payload": {"maxItems": 0}}}
+    }
+  ]
+}

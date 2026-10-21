@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/capture-session.schema.json",
+  "title": "Civic-Workbench capture session manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "session_id", "created_at_utc", "started_at_utc", "capture_source", "software_version", "capture_config", "record_count", "dropped_frame_count", "raw_capture"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "capture_session"},
+    "session_id": {"type": "string", "format": "uuid"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "started_at_utc": {"type": "string", "format": "date-time"},
+    "ended_at_utc": {"type": ["string", "null"], "format": "date-time"},
+    "capture_source": {"enum": ["hardware", "simulator", "import"]},
+    "software_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "firmware_version": {"type": ["string", "null"], "maxLength": 128},
+    "device_id": {"type": ["string", "null"], "maxLength": 128},
+    "hardware_profile": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["mcu", "transceiver"],
+      "properties": {
+        "mcu": {"type": "string", "minLength": 1},
+        "transceiver": {"type": "string", "minLength": 1},
+        "board_revision": {"type": ["string", "null"]},
+        "verified": {"type": "boolean"}
+      }
+    },
+    "capture_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "bitrate_bps", "identifier_filter"],
+      "properties": {
+        "mode": {"enum": ["listen_only", "simulated", "imported"]},
+        "bitrate_bps": {"type": ["integer", "null"], "minimum": 1},
+        "identifier_filter": {"type": "array", "items": {"type": "integer", "minimum": 0, "maximum": 536870911}, "uniqueItems": true},
+        "notes": {"type": "string", "maxLength": 2000}
+      }
+    },
+    "record_count": {"type": "integer", "minimum": 0},
+    "dropped_frame_count": {"type": "integer", "minimum": 0},
+    "raw_capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "format"],
+      "properties": {
+        "relative_path": {"type": "string", "minLength": 1, "maxLength": 512},
+        "format": {"enum": ["jsonl"]},
+        "sha256": {"type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$"},
+        "bytes": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "annotation_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "user_notes": {"type": "string", "maxLength": 10000}
+  }
+}

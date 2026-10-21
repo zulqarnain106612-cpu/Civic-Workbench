@@ -1,0 +1,324 @@
+openapi: 3.1.0
+info:
+  title: Civic-Workbench Local Engineering API
+  version: 1.0.0
+  description: |
+    Transport/API contract only; server implementation is not part of S01.
+    Transmission endpoints must be fail-closed. The host service and firmware
+    must independently enforce the safety gates; a valid TX request is not
+    authorization to transmit.
+servers:
+  - url: http://127.0.0.1:8765
+    description: Local host service default (port is configurable at implementation time)
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Host service health
+      responses:
+        "200":
+          description: Service is responding
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [schema_version, status]
+                properties:
+                  schema_version: {const: 1}
+                  status: {enum: [ok, degraded]}
+                  details:
+                    type: array
+                    items: {type: string}
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/capabilities:
+    get:
+      operationId: getCapabilities
+      summary: Report discovered implementation capabilities
+      responses:
+        "200":
+          description: Capability inventory
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [schema_version, features, diagnostic_capabilities]
+                properties:
+                  schema_version: {const: 1}
+                  features:
+                    type: array
+                    items: {type: string, minLength: 1}
+                  diagnostic_capabilities:
+                    type: array
+                    items:
+                      $ref: "../schemas/v1/diagnostic-capability.schema.json"
+  /api/v1/safety/state:
+    get:
+      operationId: getSafetyState
+      summary: Report the latest safety state; not an authorization lease by itself
+      responses:
+        "200":
+          description: Current safety snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/v1/safety-state.schema.json"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/capture/start:
+    post:
+      operationId: startCapture
+      summary: Start listen-only hardware capture or deterministic simulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/v1/capture-start.schema.json"
+      responses:
+        "202":
+          description: Capture request accepted
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/v1/capture-session.schema.json"
+        "409":
+          description: Capture could not start in the current state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "422":
+          description: Contract validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /api/v1/capture/stop:
+    post:
+      operationId: stopCapture
+      summary: Stop a capture session and finalize its manifest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/v1/capture-stop.schema.json"
+      responses:
+        "200":
+          description: Final session manifest
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/v1/capture-session.schema.json"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/sessions:
+    get:
+      operationId: listSessions
+      summary: List persisted capture session manifests
+      parameters:
+        - in: query
+          name: limit
+          schema: {type: integer, minimum: 1, maximum: 500}
+        - in: query
+          name: cursor
+          schema: {type: string, minLength: 1}
+      responses:
+        "200":
+          description: Page of sessions
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [schema_version, items, next_cursor]
+                properties:
+                  schema_version: {const: 1}
+                  items:
+                    type: array
+                    items:
+                      $ref: "../schemas/v1/capture-session.schema.json"
+                  next_cursor: {type: [string, "null"]}
+  /api/v1/sessions/{session_id}:
+    get:
+      operationId: getSession
+      summary: Retrieve a session manifest
+      parameters:
+        - $ref: "#/components/parameters/SessionId"
+      responses:
+        "200":
+          description: Session manifest
+          content:
+            application/json:
+              schema:
+                $ref: "../schemas/v1/capture-session.schema.json"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/sessions/{session_id}/frames:
+    get:
+      operationId: listSessionFrames
+      summary: Read raw frame records without decoded-value mutation
+      parameters:
+        - $ref: "#/components/parameters/SessionId"
+        - in: query
+          name: limit
+          schema: {type: integer, minimum: 1, maximum: 5000}
+        - in: query
+          name: after_sequence
+          schema: {type: integer, minimum: 0}
+      responses:
+        "200":
+          description: Page of immutable raw observations
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [schema_version, items, next_sequence]
+                properties:
+                  schema_version: {const: 1}
+                  items:
+                    type: array
+                    items:
+                      $ref: "../schemas/v1/can-frame.schema.json"
+                  next_sequence: {type: ["integer", "null"], minimum: 0}
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/analysis/findings:
+    get:
+      operationId: listAnalysisFindings
+      summary: List evidence-linked analysis annotations
+      parameters:
+        - in: query
+          name: session_id
+          schema: {type: string, format: uuid}
+        - in: query
+          name: status
+          schema: {enum: [observed, candidate, validated]}
+      responses:
+        "200":
+          description: Analysis annotations; the raw capture is never rewritten
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [schema_version, items]
+                properties:
+                  schema_version: {const: 1}
+                  items:
+                    type: array
+                    items:
+                      $ref: "../schemas/v1/analysis-finding.schema.json"
+  /api/v1/tx/requests:
+    post:
+      operationId: submitTxRequest
+      summary: Submit a bounded raw-frame TX request to the central safety policy
+      description: |
+        The server must reject requests unless fresh device safety state,
+        software arming, and physical hardware interlock all pass. The firmware
+        must independently recheck permission at send time. Validation/acceptance
+        of the request body alone never authorizes a physical transmission.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../schemas/v1/tx-request.schema.json"
+      responses:
+        "202":
+          description: Request accepted for guarded scheduling; not necessarily sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TxAcceptance"
+        "409":
+          description: Safety policy or device state denied the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "422":
+          description: Contract/schema validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /api/v1/tx/requests/{request_id}/cancel:
+    post:
+      operationId: cancelTxRequest
+      summary: Cancel a queued or repeating transmission request
+      parameters:
+        - in: path
+          name: request_id
+          required: true
+          schema: {type: string, format: uuid}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reason: {type: string, maxLength: 1000}
+      responses:
+        "200":
+          description: Cancellation recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [schema_version, request_id, status]
+                properties:
+                  schema_version: {const: 1}
+                  request_id: {type: string, format: uuid}
+                  status: {enum: [cancelled, already_complete, not_found]}
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+components:
+  parameters:
+    SessionId:
+      in: path
+      name: session_id
+      required: true
+      schema: {type: string, format: uuid}
+  schemas:
+    ApiError:
+      type: object
+      additionalProperties: false
+      required: [schema_version, code, message, retryable]
+      properties:
+        schema_version: {const: 1}
+        code: {type: string, minLength: 1, maxLength: 128}
+        message: {type: string, minLength: 1, maxLength: 2000}
+        retryable: {type: boolean}
+        correlation_id: {type: [string, "null"], format: uuid}
+        details: {type: object}
+    TxAcceptance:
+      type: object
+      additionalProperties: false
+      required: [schema_version, request_id, status]
+      properties:
+        schema_version: {const: 1}
+        request_id: {type: string, format: uuid}
+        status: {enum: [queued, rejected]}
+        policy_code: {type: [string, "null"]}
+  responses:
+    NotFound:
+      description: Requested resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    ServiceUnavailable:
+      description: Required hardware/device/safety service is unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"

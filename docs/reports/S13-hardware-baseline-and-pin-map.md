@@ -8,7 +8,7 @@
 This project uses the owner's exact hardware baseline:
 
 - **Controller board:** ESP32S NodeMCU / NodeMCU-32S; original/classic ESP32 with integrated TWAI. PlatformIO board identifier: nodemcu-32s.
-- **CAN transceiver:** NXP TJA1051, SO8 (SOT96-1), as specified in the project requirements. The owner-reported visible marking is recorded literally as NXP TJA1051 25 06 ND312; the extra marking is not treated as a different ordering code.
+- **CAN transceiver:** NXP TJA1051, SO8 (SOT96-1), as specified in the project requirements. The full owner-reported visible marking is preserved verbatim as `NXP TJA1051 25 06 ND312`. No segment of that marking is decoded, assigned an orderable suffix, or otherwise interpreted here.
 - No successor, predecessor, substitute board, substitute transceiver, or substitute item is authorized.
 
 Primary part source: [NXP TJA1051 official datasheet](https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf). The exact physical item is NXP TJA1051 marked NXP TJA1051 25 06 ND312; no substitute is permitted. The marking is not decoded here, and no orderable suffix is inferred. Since TJA1051 variants can differ at pin 5, the project does not assign its function: leave it unconnected and do not power the assembly until the exact pinout is established for this item.

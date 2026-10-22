@@ -27,8 +27,8 @@ Use docs/setup-and-run.md to run locally. Use docs/evidence-index.md for artifac
 
 ## Post-handoff update — S13 exact hardware baseline
 
-The owner has specified the fixed physical items: **ESP32S NodeMCU / NodeMCU-32S (classic ESP32)** and **NXP TJA1051T/3 SO8**. The reported visible IC marking is stored verbatim as NXP TJA1051 25 06 ND312. This does not authorize any substitute or successor component.
+The owner has specified the fixed physical items: **ESP32S NodeMCU / NodeMCU-32S (classic ESP32)** and **NXP TJA1051 SO8**. The reported visible IC marking is stored verbatim as NXP TJA1051 25 06 ND312. This does not authorize any substitute or successor component.
 
-The source and PlatformIO target have since been revised to NodeMCU-32S (nodemcu-32s). GPIO21 is mapped as TWAI_TX to TJA1051T/3 pin 1 TXD; TJA1051T/3 pin 4 RXD is mapped as TWAI_RX to GPIO22. The receive-only baseline keeps pin 8 S externally biased HIGH. Hardware initialization, bitrate authorization and physical TX remain disabled.
+The source and PlatformIO target have since been revised to NodeMCU-32S (nodemcu-32s). GPIO21 is mapped as TWAI_TX to TJA1051 pin 1 TXD; TJA1051 pin 4 RXD is mapped as TWAI_RX to GPIO22. The receive-only baseline keeps pin 8 S externally biased HIGH. Hardware initialization, bitrate authorization and physical TX remain disabled.
 
 The board-specific source mapping and build are not a substitute for physical continuity checks, pin-1 orientation inspection, circuit review, or isolated bench tests. See docs/reports/S13-hardware-baseline-and-pin-map.md. No hardware was flashed and no vehicle bus was attached during this update.

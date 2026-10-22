@@ -36,7 +36,7 @@ Then:
 |---|---|---|
 | S00 | Toolchain, repository, hardware, Proteus and risks inventoried | Environment report and decisions |
 | S01 | Versioned frame/session/analysis/TX contracts are stable | Schema and contract tests |
-| S02 | ESP32 + TJA1051T/3 firmware/hardware foundation is reproducible | Build output, pin review, schematic source |
+| S02 | ESP32 + TJA1051 firmware/hardware foundation is reproducible | Build output, pin review, schematic source |
 | S03 | Frame capture, state reporting, transport and gated TX core work | Driver tests, loopback/mocks, fault tests |
 | S04 | Main browser workbench works on synthetic and connected sources | UI journey and accessibility tests |
 | S05 | Sessions persist and export/import without raw-data mutation | Round-trip and migration tests |
@@ -47,7 +47,7 @@ Then:
 | S10 | End-to-end workflows join all modules without safety bypass | E2E and boundary tests |
 | S11 | Faults, load, regressions and recovery behavior are measured | Test/fault/performance reports |
 | S12 | Setup and final evidence package is reproducible | Traceability audit and final handoff |
-| S13 | Exact NodeMCU-32S and NXP TJA1051T/3 source mapping is pinned; receive-only safe defaults retained | Board-profile build, GPIO21/22 guards, generated design-source artifacts; physical bench remains pending |
+| S13 | Exact NodeMCU-32S and NXP TJA1051 source mapping is pinned; receive-only safe defaults retained | Board-profile build, GPIO21/22 guards, generated design-source artifacts; physical bench remains pending |
 
 ## Token-efficient agent workflow
 

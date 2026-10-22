@@ -22,7 +22,7 @@
 | Classic ESP32 Xtensa toolchain | Not found in inspected PlatformIO cache | Must be installed/resolved before compiling for original ESP32 |
 | ESP32 board / module | Not identified | No board attached at inspection |
 | Serial connection | No `/dev/ttyUSB*` or `/dev/ttyACM*`; no Espressif/USB-UART device in `lsusb` | Hardware was not connected/detected at inspection |
-| NXP TJA1051T/3 SO8 | Required by project spec | Physical possession not verified |
+| NXP TJA1051 SO8 | Required by project spec | Physical possession not verified |
 | Proteus | Installed in Wine, build identifier 8.3.19906.0 | Registry path label is “Proteus 8 Demonstration”; entitlement needs GUI/vendor confirmation |
 | Proteus local help | `HELP/ISIS.chm` exists | Present; full CHM content not extracted in this command session |
 | Proteus “Generator Scripts” | Eight `.pdsprj` examples | Simulation examples, not Python native-schematic generator |
@@ -30,7 +30,7 @@
 
 ## Decisions
 
-1. Keep **original ESP32 + integrated TWAI + NXP TJA1051T/3 SO8** as the sole hardware baseline.
+1. Keep **original ESP32 + integrated TWAI + NXP TJA1051 SO8** as the sole hardware baseline.
 2. Do not assume that the cached ESP32-S3 compiler or RISC-V compiler can compile for original ESP32.
 3. Do not install packages during discovery; record the current environment first. S02 will select and pin a reproducible build route.
 4. Keep the default boot/safety state passive, with hardware-enforced TX inhibition.

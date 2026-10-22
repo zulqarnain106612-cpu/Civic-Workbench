@@ -1,8 +1,8 @@
 # S03 — CAN Receive/Guarded-TX Core and Serial Transport
 
-**Stage status:** complete at the source/build/host-mock verification boundary.  
-**Date:** 2026-10-22  
-**Target:** original ESP32 integrated TWAI + NXP TJA1051T/3 SO8 transceiver.  
+**Stage status:** complete at the source/build/host-mock verification boundary.
+**Date:** 2026-10-22
+**Target:** original ESP32 integrated TWAI + NXP TJA1051 SO8 transceiver.
 **Baseline commit:** S02 `365cc619cd0daf93fa32af60ad32e414645705ea`.
 
 ## 1. Scope and result

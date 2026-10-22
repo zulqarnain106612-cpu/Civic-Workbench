@@ -69,4 +69,4 @@ S01 does not implement physical CAN capture or transmission, session persistence
 
 ## 6. Handoff
 
-S01 acceptance criteria are met. **S02 is next**: confirm the exact original ESP32 module when available, choose/pin a working classic-ESP32 firmware toolchain, and implement the firmware/hardware foundation around TWAI plus the exact TJA1051T/3 SO8. S02 must keep hardware TX inhibited by default. S09 retains the documented open question about a supported native Proteus schematic-generation route.
+S01 acceptance criteria are met. **S02 is next**: confirm the exact original ESP32 module when available, choose/pin a working classic-ESP32 firmware toolchain, and implement the firmware/hardware foundation around TWAI plus the exact TJA1051 SO8. S02 must keep hardware TX inhibited by default. S09 retains the documented open question about a supported native Proteus schematic-generation route.

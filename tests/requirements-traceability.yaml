@@ -38,7 +38,7 @@ requirements:
     - project/hardware.yaml
     - project/environment.yaml
     - firmware/esp32/main/Kconfig.projbuild
-    - hardware/reference/esp32-tja1051t3-netlist.yaml
+    - hardware/reference/esp32-tja1051-netlist.yaml
     - hardware/reference/safety-interlock.md
     - firmware/esp32/main/civic_safety.c
     tests:
@@ -51,7 +51,7 @@ requirements:
     - docs/reports/S03-can-transport-report.md
     - hardware/reference/safety-interlock.md
     status: source-and-compile-verified;physical-hardware-validation-pending
-    limitation: NodeMCU-32S board profile, GPIO21/GPIO22 source mapping, and exact TJA1051T/3 pin contract are documented and compile-checked; physical board revision, header continuity, transceiver orientation, power circuit, and isolated-bench behavior remain unverified.
+    limitation: NodeMCU-32S board profile, GPIO21/GPIO22 source mapping, and exact TJA1051 pin contract are documented and compile-checked; physical board revision, header continuity, transceiver orientation, power circuit, and isolated-bench behavior remain unverified.
   REQ-CAN-001:
     implementation:
     - schemas/v1/can-frame.schema.json
@@ -203,7 +203,7 @@ requirements:
     implementation:
     - tools/generate_proteus_reference.py
     - hardware/proteus/generated/
-    - hardware/reference/esp32-tja1051t3-netlist.yaml
+    - hardware/reference/esp32-tja1051-netlist.yaml
     tests:
     - tests/test_proteus_generator.py
     - tests/test_packaging.py

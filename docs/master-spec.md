@@ -6,7 +6,7 @@
 
 Build a maintainable direct-CAN engineering workbench for the owner's Pakistan-market 2013 Honda Civic, ninth generation, 1.8 L full-option vehicle. The bench must permit evidence-led investigation of CAN traffic, identifier behavior, signal changes, diagnostic capabilities where supported, and controlled raw-frame transmission. The UI must also operate entirely against a deterministic virtual CAN lab.
 
-The primary hardware target is fixed: **original ESP32 with integrated TWAI controller + NXP TJA1051T/3 SO8 transceiver**. A candidate mapping or protocol is not considered a fact merely because its result looks plausible.
+The primary hardware target is fixed: **original ESP32 with integrated TWAI controller + NXP TJA1051 SO8 transceiver**. A candidate mapping or protocol is not considered a fact merely because its result looks plausible.
 
 ## 2. Architectural boundaries
 
@@ -80,7 +80,7 @@ Use Python source to generate native Proteus schematic/project artifacts. Keep t
 
 ## 9. Hardware grounding
 
-The selected NXP datasheet identifies the TJA1051T/3 as an SO8 variant with VIO on pin 5. The datasheet lists VCC at 4.5–5.5 V and VIO at 2.8–5.5 V; VIO adjusts logic levels and should be connected to the MCU I/O supply. For this part, S HIGH selects Silent mode and disables transmission; S LOW selects Normal mode. Validate all design decisions against the exact current datasheet and selected module.
+The exact physical transceiver specified for this project is NXP TJA1051 marked NXP TJA1051 25 06 ND312; no substitute is permitted. Do not infer an orderable suffix from that marking. TJA1051 orderable variants can differ at pin 5, so the pin-5 function must be confirmed for the exact installed item before wiring or applying power. Use the matching official datasheet once that identity is established.
 
 The original ESP32 TWAI controller is not itself a CAN transceiver and requires an external physical-layer device. See:
 - [Espressif TWAI — ESP32](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html)

@@ -6,7 +6,7 @@
 
 ## 1. Result
 
-The project now has a reproducible PlatformIO/ESP-IDF target for the **original ESP32** (not ESP32-S2/S3/C3), a compiling TWAI receive-only firmware skeleton, a fail-closed firmware safety-policy module, a machine-readable TJA1051T/3 pin-to-net contract, and a hardware interlock design note. S02 provides no physical CAN transmit API.
+The project now has a reproducible PlatformIO/ESP-IDF target for the **original ESP32** (not ESP32-S2/S3/C3), a compiling TWAI receive-only firmware skeleton, a fail-closed firmware safety-policy module, a machine-readable TJA1051 pin-to-net contract, and a hardware interlock design note. S02 provides no physical CAN transmit API.
 
 The local build profile is the generic PlatformIO `esp32dev` profile, set to a 4 MB flash configuration for compile reproducibility. This is **not** identification of the physical board and must not be flashed onto an unidentified module. At S00 the actual board was not connected/detected. No firmware was flashed, no physical transceiver was electrically tested, and no vehicle CAN wires were connected.
 
@@ -62,8 +62,8 @@ No physical gate was built or measured during S02. Software checks are not proof
 
 ## 5. Hardware source baseline
 
-- `hardware/reference/esp32-tja1051t3-netlist.yaml` defines the required pin-to-net relationship for **NXP TJA1051T/3 SO8 (SOT96-1)**. MCU GPIO assignments remain null until the board is identified.
-- `hardware/reference/safety-interlock.md` describes power ranges, pin 5 VIO, pin 8 S mode, external Silent-mode bias, interlock topology requirements, termination caveats and evidence that must precede vehicle attachment.
+- `hardware/reference/esp32-tja1051-netlist.yaml` defines the required pin-to-net relationship for **NXP TJA1051 SO8 (SOT96-1)**. MCU GPIO assignments remain null until the board is identified.
+- `hardware/reference/safety-interlock.md` describes the TJA1051 boundary, variant-dependent pin-5 gate, pin 8 S mode, external Silent-mode bias design intent, interlock topology requirements, termination caveats and evidence that must precede vehicle attachment.
 - Source reference: [NXP TJA1051 official datasheet](https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf).
 - TWAI implementation reference: [Espressif ESP-IDF TWAI documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html).
 
@@ -102,7 +102,7 @@ These results establish source-contract and build-profile correctness. They do n
 - [x] No S02 CAN transmit path.
 - [x] TX request, bitrate evidence and hardware-init switches fail closed by default.
 - [x] Unassigned/reused/flash/strapping GPIO guard and tests added.
-- [x] NXP TJA1051T/3 pin-to-net/source contract recorded.
+- [x] NXP TJA1051 pin-to-net/source contract recorded.
 - [x] Unit, contract, source-guard and native C safety-policy tests passed.
 - [ ] Exact physical ESP32 board/module and actual GPIOs identified — no board was detected during S00.
 - [ ] Physical transceiver/assembled hardware and hardware-only interlock bench-verified — not performed.

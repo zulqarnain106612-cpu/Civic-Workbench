@@ -49,7 +49,7 @@ The machine has a PlatformIO package cache under `/home/s752/.platformio`, but t
 No `/dev/ttyUSB*` or `/dev/ttyACM*` device was present at inspection time, and `lsusb` showed no Espressif device or recognizable USB-UART bridge. Therefore:
 - An ESP32 board was not connected/detected during this inspection.
 - Exact board/module, chip marking, accessible GPIOs, and strap/flash-reserved pins remain unknown.
-- Physical possession of the required NXP TJA1051T/3 SO8 is not verified.
+- Physical possession of the required NXP TJA1051 SO8 is not verified.
 - The vehicle bus bit rate, topology, frame format, connector/capture point, and identifiers have not been measured.
 
 These are recorded as open hardware/vehicle dependencies, not guessed. Do not select TXD/RXD GPIOs or active vehicle transmission settings until supported by the exact board and network evidence.
@@ -75,7 +75,7 @@ Official references:
 
 ## 6. Hardware facts relevant to downstream work
 
-The primary design target remains **original ESP32 + integrated TWAI + NXP TJA1051T/3 SO8 (SOT96-1)**. The original ESP32 has a TWAI controller but no integrated CAN physical-layer transceiver and its TWAI controller is Classical CAN, not CAN FD. The NXP datasheet gives VCC 4.5–5.5 V, VIO 2.8–5.5 V, VIO on pin 5, and S on pin 8; S HIGH selects Silent mode and disables the transmitter while reception remains active. Validate actual wiring and mode control against the exact datasheets during S02.
+The primary design target remains **original ESP32 + integrated TWAI + NXP TJA1051 SO8 (SOT96-1)**. The original ESP32 has a TWAI controller but no integrated CAN physical-layer transceiver and its TWAI controller is Classical CAN, not CAN FD. The NXP datasheet describes variant-specific electrical details. Because the exact physical item is specified as NXP TJA1051 marked NXP TJA1051 25 06 ND312 without an inferred suffix, pin 5 must not be assigned as VIO until its function is confirmed for that item. No substitute is authorized.
 
 These are component documentation facts only, not proof of a built circuit or vehicle compatibility.
 

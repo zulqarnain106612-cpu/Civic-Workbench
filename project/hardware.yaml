@@ -5,10 +5,10 @@ baseline:
   platformio_environment: "esp32dev (legacy environment name; exact board target nodemcu-32s)"
   board_note: "Exact target specified by the owner; not an ESP32-S2/S3/C3 and not a substitute board."
   can_transceiver:
-    part: "NXP TJA1051T/3"
-    package: "SO8, SOT96-1"
+    part: "NXP TJA1051"
+    package: "SO8, as recorded in project; verify physical package/orientation before wiring"
     reported_top_marking: "NXP TJA1051 25 06 ND312"
-    marking_note: "Record the visible marking verbatim; do not interpret 25 06 ND312 as a substitute part number."
+    marking_note: "The exact physical component is NXP TJA1051 marked NXP TJA1051 25 06 ND312. No substitute is permitted. Do not infer an orderable suffix from the visible marking."
     substitutions_allowed: false
     official_datasheet: "https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf"
   controller_reference: "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html"
@@ -16,11 +16,10 @@ electrical_reference_from_datasheet:
   vcc:
     pin: 3
     required_range_v: [4.5, 5.5]
-  vio:
+  pin5_variant_dependent:
     pin: 5
-    role: "I/O logic supply; connect to MCU I/O voltage in accordance with the datasheet"
-    required_range_v: [2.8, 5.5]
-    target_v_for_original_esp32: 3.3
+    role: "Exact physical NXP TJA1051 variant is not established by this configuration; do not assign VIO, EN, or NC without authoritative evidence for this marked item"
+    connection_state: "DO_NOT_CONNECT until function is established; no power-up before confirmation"
   gnd: {pin: 2, role: "Common logic/transceiver ground"}
   txd: {pin: 1, role: "ESP32 TWAI TX output to transceiver"}
   rxd: {pin: 4, role: "Transceiver RX output to ESP32 TWAI RX input"}
@@ -35,26 +34,26 @@ electrical_reference_from_datasheet:
 pin_mapping:
   board_pinout_source: "PlatformIO nodemcu-32s board target plus Espressif classic-ESP32 GPIO documentation"
   twai_tx_gpio: 21
-  mapping_to_transceiver: "ESP32 GPIO21/TWAI_TX -> TJA1051T/3 pin 1 TXD"
+  mapping_to_transceiver: "ESP32 GPIO21/TWAI_TX -> TJA1051 pin 1 TXD"
   twai_rx_gpio: 22
-  mapping_from_transceiver: "TJA1051T/3 pin 4 RXD -> ESP32 GPIO22/TWAI_RX"
+  mapping_from_transceiver: "TJA1051 pin 4 RXD -> ESP32 GPIO22/TWAI_RX"
   reserved_functions: "GPIO21/22 reserved by this design for TWAI; do not reuse them for I2C."
   pinout_verification_state: "Source-mapped; physical header continuity and PCB revision have not been measured."
-  s_control: "Receive-only baseline: TJA1051T/3 pin 8 S is externally biased HIGH from the 3.3 V logic rail; no direct MCU control. TX remains disabled."
+  s_control: "Receive-only design intent: pin 8 S held HIGH only after exact physical pinout and circuit review; no direct MCU control. TX remains disabled."
   bus_connection: "Provide accessible CANH, CANL, signal ground, and an explicitly documented connector/pinout."
 design_requirements:
   - "Never connect CANH/CANL directly to ESP32 GPIO."
-  - "Do not power TJA1051T/3 VCC from the ESP32 3.3 V rail; respect the datasheet VCC range."
-  - "Connect VIO to the ESP32-compatible I/O rail; validate TXD/RXD/S behavior using the exact part datasheet."
+  - "Do not power TJA1051 VCC from the ESP32 3.3 V rail; respect the datasheet VCC range."
+  - "Do not wire variant-dependent pin 5 from a family-name assumption; use manufacturer evidence for the exact marked item before any connection or power-up."
   - "Add local supply decoupling close to the IC and document component values and placement rationale."
   - "Include protection, connector labeling, test points, and termination strategy based on intended bus topology."
   - "Do not blindly add 120-ohm termination to an existing vehicle network; termination is a bus-topology property."
   - "Provide power/reset-safe state and a hardware-enforced TX inhibit, not only a UI checkbox."
   - "Verify GPIO boot-strapping constraints and avoid pins whose boot behavior can unintentionally enable transmit."
-  - "Keep the transceiver part/package exact; do not silently substitute TJA1050, TJA1051T, or a development-board transceiver."
+  - "Use only the specified physical NXP TJA1051 marked NXP TJA1051 25 06 ND312; do not substitute a different transceiver or development-board circuit."
 open_items:
   - "On the physical NodeMCU-32S, verify board silkscreen/revision and continuity of GPIO21/GPIO22 headers before wiring."
-  - "Verify the physical SO8 pin-1 orientation and footprint before applying power; preserve the exact reported marking verbatim and do not infer a TJA1051 suffix from 25 06 ND312. The established design baseline is TJA1051T/3; do not energize if the exact physical variant is inconsistent or unestablished because pin 5 differs by variant."
+  - "Preserve the exact marking NXP TJA1051 25 06 ND312 and do not substitute another part. Confirm physical SO8 pin-1 orientation and the exact pin-5 function before wiring; do not energize the circuit while pin 5 remains unresolved."
   - "Complete component-value and failure-mode review for the receive-only Silent bias and supply decoupling."
   - "Select connector, supply protection, and termination/jumper policy from the actual intended bus topology; no default vehicle termination."
   - "Do not enable firmware hardware initialization until the controlled bench supply, transceiver wiring, and independently evidenced bitrate are reviewed."

@@ -197,7 +197,7 @@ class JsonSchemaTests(unittest.TestCase):
                      ROOT / "project" / "constraints.yaml",
                      ROOT / "project" / "environment.yaml",
                      ROOT / "tests" / "requirements-traceability.yaml",
-                     ROOT / "hardware" / "reference" / "esp32-tja1051t3-netlist.yaml"]:
+                     ROOT / "hardware" / "reference" / "esp32-tja1051-netlist.yaml"]:
             with self.subTest(path=path.relative_to(ROOT)):
                 yaml.safe_load(path.read_text(encoding="utf-8"))
 

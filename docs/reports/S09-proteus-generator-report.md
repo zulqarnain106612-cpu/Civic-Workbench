@@ -2,7 +2,7 @@
 
 ## Delivered artifacts
 
-The deterministic generator is tools/generate_proteus_reference.py. It consumes hardware/reference/esp32-tja1051t3-netlist.yaml and writes:
+The deterministic generator is tools/generate_proteus_reference.py. It consumes hardware/reference/esp32-tja1051-netlist.yaml and writes:
 - hardware/proteus/generated/reference-design.netlist.json
 - hardware/proteus/generated/component-map.json
 - hardware/proteus/generated/reference-design.svg
@@ -11,7 +11,7 @@ The deterministic generator is tools/generate_proteus_reference.py. It consumes 
 - hardware/proteus/generated/artifact-manifest.json
 - hardware/proteus/generated/README.md
 
-The source captures the original ESP32 integrated TWAI and required NXP TJA1051T/3 SO8 boundary without fabricating GPIO numbers, resistor/capacitor values, connector pinout, termination, or part-library validation. The SVG is an explicitly labelled vector-review companion, not a screenshot and not a native project.
+The source captures the original ESP32 integrated TWAI and required NXP TJA1051 SO8 boundary without fabricating GPIO numbers, resistor/capacitor values, connector pinout, termination, or part-library validation. The SVG is an explicitly labelled vector-review companion, not a screenshot and not a native project.
 
 ## Native project status — blocked
 

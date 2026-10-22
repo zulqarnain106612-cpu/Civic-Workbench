@@ -30,7 +30,7 @@
     "twai_driver": "ESP-IDF TWAI API, pinned PlatformIO build",
     "tx_gpio": 21
   },
-  "design_id": "civic-workbench-original-esp32-tja1051t3",
+  "design_id": "civic-workbench-original-esp32-tja1051",
   "open_items": [
     "Exact ESP32 module/board and available non-strapping GPIOs",
     "Document and review hardware gate topology, component values and failure modes",
@@ -42,7 +42,7 @@
     "decoupling": {
       "requirements": [
         "Place local decoupling next to U1 VCC/GND.",
-        "Place/verify logic-level decoupling for VIO according to the final PCB/power topology.",
+        "Finalize any pin-5 logic-supply decoupling only if the exact physical variant confirms pin 5 is VIO.",
         "Record exact capacitor values, voltage ratings and placement evidence in the generated artifact manifest."
       ],
       "status": "must be defined and reviewed during native schematic generation"
@@ -52,6 +52,9 @@
       "net": "MCU_IO_3V3",
       "nominal_v": 3.3
     },
+    "pin5_variant_gate": {
+      "status": "unresolved for the exact physical marking; do not connect or power until pin-5 function is confirmed"
+    },
     "transceiver_supply": {
       "constraints_v": [
         4.5,
@@ -60,14 +63,6 @@
       "evidence": "NXP TJA1051 datasheet limits.",
       "net": "TRANSCEIVER_5V",
       "nominal_v": 5.0
-    },
-    "vio": {
-      "constraints_v": [
-        2.8,
-        5.5
-      ],
-      "evidence": "NXP TJA1051T/3 datasheet.",
-      "net": "MCU_IO_3V3"
     }
   },
   "references": {
@@ -78,10 +73,10 @@
   "status": "schematic-source-contract; not a generated or validated native schematic",
   "transceiver": {
     "manufacturer": "NXP",
-    "marking_code_interpretation": "Not inferred; literal marking recorded from the owner.",
+    "marking_code_interpretation": "Not decoded; preserve the complete owner-supplied marking literally.",
     "package": "SO8",
     "package_code": "SOT96-1",
-    "part": "TJA1051T/3",
+    "part": "TJA1051",
     "pins": {
       "1": {
         "name": "TXD",
@@ -100,8 +95,8 @@
         "net": "TRANSCEIVER_RX_TO_TWAI"
       },
       "5": {
-        "name": "VIO",
-        "net": "MCU_IO_3V3"
+        "name": "VARIANT_DEPENDENT_DO_NOT_CONNECT",
+        "net": "UNRESOLVED_PIN5_DO_NOT_CONNECT"
       },
       "6": {
         "name": "CANL",

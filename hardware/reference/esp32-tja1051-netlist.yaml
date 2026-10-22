@@ -1,5 +1,5 @@
 schema_version: 1
-design_id: civic-workbench-original-esp32-tja1051t3
+design_id: civic-workbench-original-esp32-tja1051
 status: "schematic-source-contract; not a generated or validated native schematic"
 controller:
   target: "ESP32S NodeMCU / NodeMCU-32S, classic ESP32 with integrated TWAI"
@@ -11,9 +11,9 @@ controller:
   gpio_assignment_status: "source-mapped to the specified NodeMCU-32S; physical header continuity/revision remains to be checked on the actual board"
 transceiver:
   manufacturer: NXP
-  part: TJA1051T/3
+  part: TJA1051
   reported_top_marking: "NXP TJA1051 25 06 ND312"
-  marking_code_interpretation: "Not inferred; literal marking recorded from the owner."
+  marking_code_interpretation: "Not decoded; preserve the complete owner-supplied marking literally."
   substitutions_allowed: false
   package: SO8
   package_code: SOT96-1
@@ -23,7 +23,7 @@ transceiver:
     2: {name: GND, net: LOGIC_GND}
     3: {name: VCC, net: TRANSCEIVER_5V}
     4: {name: RXD, net: TRANSCEIVER_RX_TO_TWAI}
-    5: {name: VIO, net: MCU_IO_3V3}
+    5: {name: VARIANT_DEPENDENT_DO_NOT_CONNECT, net: UNRESOLVED_PIN5_DO_NOT_CONNECT}
     6: {name: CANL, net: CAN_LOW}
     7: {name: CANH, net: CAN_HIGH}
     8: {name: S, net: TRANSCEIVER_MODE_S}
@@ -37,15 +37,13 @@ power_and_decoupling:
     nominal_v: 5.0
     constraints_v: [4.5, 5.5]
     evidence: "NXP TJA1051 datasheet limits."
-  vio:
-    net: MCU_IO_3V3
-    constraints_v: [2.8, 5.5]
-    evidence: "NXP TJA1051T/3 datasheet."
+  pin5_variant_gate:
+    status: "unresolved for the exact physical marking; do not connect or power until pin-5 function is confirmed"
   decoupling:
     status: "must be defined and reviewed during native schematic generation"
     requirements:
       - "Place local decoupling next to U1 VCC/GND."
-      - "Place/verify logic-level decoupling for VIO according to the final PCB/power topology."
+      - "Finalize any pin-5 logic-supply decoupling only if the exact physical variant confirms pin 5 is VIO."
       - "Record exact capacitor values, voltage ratings and placement evidence in the generated artifact manifest."
 can_bus:
   connector:

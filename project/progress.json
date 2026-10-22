@@ -5,7 +5,7 @@
   "application_implementation_status": "local-ui-api-storage-analysis-simulation-cad-source-packaging-and-host-integration-verified",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-22",
-  "current_focus": "NODEMCU32S_TJA1051T3_RECEIVE_ONLY_BENCH",
+  "current_focus": "NODEMCU32S_TJA1051_RECEIVE_ONLY_BENCH",
   "stage_status": {
     "S00": "complete",
     "S01": "complete",
@@ -35,7 +35,7 @@
     "semantic_contract_validator": "src/civic_workbench/contracts.py",
     "contract_documentation": "docs/contracts-v1.md",
     "firmware_foundation": "firmware/esp32/",
-    "hardware_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+    "hardware_netlist": "hardware/reference/esp32-tja1051-netlist.yaml",
     "hardware_interlock_design_contract": "hardware/reference/safety-interlock.md"
   },
   "s00_evidence": {
@@ -85,9 +85,9 @@
   ],
   "open_questions": [
     "Verify the physical NodeMCU-32S board silkscreen/revision and GPIO21/GPIO22 header continuity before wiring.",
-    "Verify NXP TJA1051T/3 SO8 pin-1 orientation and the exact assembled footprint before powering the circuit.",
-    "Confirm physical TJA1051T/3 order-code/variant before wiring pin 5; NXP documents NC, EN and VIO pin-5 variants, and the reported extra top-marking text is not interpreted as a suffix.",
-    "Review transceiver VCC/VIO supplies, decoupling, external Silent-mode pull-up, connector protection and termination policy on an isolated bench.",
+    "Verify NXP TJA1051 SO8 pin-1 orientation and the exact assembled footprint before powering the circuit.",
+    "Confirm the pin-5 function for the exact physical NXP TJA1051 marked NXP TJA1051 25 06 ND312 before wiring; no orderable suffix is inferred.",
+    "Review transceiver VCC supply, confirmed pin-5 function, decoupling, external Silent-mode pull-up, connector protection and termination policy on an isolated bench.",
     "Confirm the intended CAN bitrate, topology and safe capture point using separate reliable evidence; no Honda IDs/signals or diagnostic capability are assumed.",
     "Confirm an official Labcenter-supported native Proteus generation route, then create/import/render and review a genuine DSN/PDSPRJ."
   ],
@@ -110,7 +110,7 @@
   "s02_evidence": {
     "report": "docs/reports/S02-firmware-report.md",
     "firmware_root": "firmware/esp32/",
-    "hardware_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+    "hardware_netlist": "hardware/reference/esp32-tja1051-netlist.yaml",
     "safety_interlock_contract": "hardware/reference/safety-interlock.md",
     "build_command": "cd firmware/esp32 && ~/.venvs/civic-workbench-pio/bin/pio run",
     "build_result": "SUCCESS; exit code 0",
@@ -325,7 +325,7 @@
   "s13_evidence": {
     "report": "docs/reports/S13-hardware-baseline-and-pin-map.md",
     "board": "ESP32S NodeMCU / NodeMCU-32S (PlatformIO board id nodemcu-32s)",
-    "transceiver": "NXP TJA1051T/3 SO8 (SOT96-1), substitutions_allowed=false",
+    "transceiver": "NXP TJA1051 marked NXP TJA1051 25 06 ND312; no substitute; orderable suffix not inferred",
     "reported_transceiver_top_marking": "NXP TJA1051 25 06 ND312",
     "twai_tx_gpio": 21,
     "twai_rx_gpio": 22,
@@ -347,6 +347,6 @@
     "host_safety_test": "7 C assertions passed",
     "schema_package_yaml_checks": "15 versioned schemas synchronized and validated; project YAML parsed; wheel assets passed",
     "git_diff_check": "passed before final metadata changes; rerun after all updates",
-    "transceiver_variant_safety_gate": "TJA1051T/3 remains the required baseline; exact suffix is not inferred from extra top-marking text; pin-5 wiring/power-up blocked until the physical item is consistent with baseline"
+    "transceiver_variant_safety_gate": "Exact NXP TJA1051 marking retained; no substitute and no suffix inference; pin 5 remains disconnected and power-up blocked until its function is confirmed for this item"
   }
 }

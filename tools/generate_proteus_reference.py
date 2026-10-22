@@ -15,7 +15,7 @@ import xml.sax.saxutils as xml
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "hardware/reference/esp32-tja1051t3-netlist.yaml"
+SOURCE = ROOT / "hardware/reference/esp32-tja1051-netlist.yaml"
 DEFAULT_OUTPUT = ROOT / "hardware/proteus/generated"
 
 
@@ -28,7 +28,7 @@ def svg_source(design: dict) -> str:
     out = [
         '<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="830" viewBox="0 0 1240 830">',
         '<rect width="100%" height="100%" fill="#fbfcfe"/>',
-        '<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + TJA1051T/3</text>',
+        '<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + TJA1051</text>',
         '<text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - physical header checks and unresolved values remain open</text>',
         '<rect x="45" y="135" width="345" height="330" rx="10" fill="#edf4fc" stroke="#486c94" stroke-width="2"/>',
         '<text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">ESP32S NodeMCU / NodeMCU-32S</text>',
@@ -40,7 +40,7 @@ def svg_source(design: dict) -> str:
         '<text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">Hardware initialization and physical TX disabled</text>',
         '<text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">TX_GATE_GPIO = UNASSIGNED; physical TX OFF</text>',
         '<rect x="470" y="155" width="300" height="280" rx="10" fill="#f2f8ed" stroke="#658b4a" stroke-width="2"/>',
-        '<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / NXP TJA1051T/3 SO8</text>',
+        '<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / NXP TJA1051 SO8</text>',
     ]
     y = 226
     for pin, info in sorted(pins.items(), key=lambda pair: int(pair[0])):
@@ -69,9 +69,9 @@ def svg_source(design: dict) -> str:
         '<path d="M217 465 V540 H620 V435" stroke="#8f743d" stroke-width="2" stroke-dasharray="7 6" fill="none"/>',
         '<rect x="45" y="565" width="1140" height="180" rx="9" fill="#fff9e9" stroke="#c29a47" stroke-width="1.5"/>',
         '<text x="70" y="600" font-family="sans-serif" font-size="17" font-weight="bold" fill="#765718">Open electrical / CAD decisions</text>',
-        '<text x="72" y="630" font-family="sans-serif" font-size="13" fill="#765718">- 5 V VCC and 3.3 V VIO must match datasheet limits and the exact host board.</text>',
+        '<text x="72" y="630" font-family="sans-serif" font-size="13" fill="#765718">- Confirm the exact marked TJA1051 pin-5 function before assigning its net or power rail.</text>',
         '<text x="72" y="657" font-family="sans-serif" font-size="13" fill="#765718">- Decoupling, transient protection, connector pinout and bus termination remain unassigned.</text>',
-        '<text x="72" y="684" font-family="sans-serif" font-size="13" fill="#765718">- TJA1051T/3 S must default HIGH (Silent), including MCU reset/unpowered conditions.</text>',
+        '<text x="72" y="684" font-family="sans-serif" font-size="13" fill="#765718">- TJA1051 S must default HIGH (Silent), including MCU reset/unpowered conditions.</text>',
         '<text x="72" y="711" font-family="sans-serif" font-size="13" fill="#765718">- Native Proteus DSN/PDSPRJ generation/import is blocked pending supported automation.</text>',
         '</svg>',
     ]
@@ -94,19 +94,19 @@ def main() -> int:
     with (output / "bill-of-materials.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(["Reference", "Manufacturer", "Part", "Package", "Status", "Notes"])
-        writer.writerow(["U1", "NXP", "TJA1051T/3", "SO8 / SOT96-1", "required", "Reported marking: NXP TJA1051 25 06 ND312; no substitutions; verify SO8 pin 1 before assembly"])
+        writer.writerow(["U1", "NXP", "TJA1051", "SO8 / SOT96-1", "required", "Reported marking: NXP TJA1051 25 06 ND312; no substitutions; verify SO8 pin 1 before assembly"])
         writer.writerow(["U_MCU", "Espressif / NodeMCU", "ESP32S NodeMCU / NodeMCU-32S", "board module", "specified", "GPIO21 TWAI TX and GPIO22 TWAI RX source mapping; verify physical board revision and header continuity"])
         writer.writerow(["J1", "TBD", "CAN connector", "TBD", "not-selected", "CANH/CANL/ground pins unverified"])
-        writer.writerow(["R-SILENT", "TBD", "Silent-mode pull-up", "TBD", "value-unassigned", "Must hold TJA1051T/3 S HIGH if MCU is reset/unpowered"])
+        writer.writerow(["R-SILENT", "TBD", "Silent-mode pull-up", "TBD", "value-unassigned", "Must hold TJA1051 S HIGH if MCU is reset/unpowered"])
         writer.writerow(["C-VCC", "TBD", "VCC decoupling", "TBD", "value-unassigned", "Determine from final reviewed design"])
-        writer.writerow(["C-VIO", "TBD", "VIO decoupling", "TBD", "value-unassigned", "Determine from final reviewed design"])
+        writer.writerow(["C-LOGIC", "TBD", "Variant-dependent pin-5 logic decoupling", "TBD", "value-unassigned", "Only populate if confirmed by the exact marked component datasheet"])
 
     component_map = {
         "schema_version": 1,
         "design_id": design["design_id"],
-        "source_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+        "source_netlist": "hardware/reference/esp32-tja1051-netlist.yaml",
         "symbols": [
-            {"ref": "U1", "symbol": "TJA1051T/3", "library_symbol_verified": False, "reason": "Installed Proteus symbol identity not verified."},
+            {"ref": "U1", "symbol": "TJA1051", "library_symbol_verified": False, "reason": "Installed Proteus symbol identity not verified."},
             {"ref": "U_MCU", "symbol": "NodeMCU-32S board placeholder", "library_symbol_verified": False, "reason": "Exact board is specified; physical PCB revision and GPIO21/GPIO22 header continuity have not been checked."},
             {"ref": "TX_GATE", "symbol": "Conceptual independent hardware gate", "library_symbol_verified": False, "reason": "Not an electrical implementation; design review required."},
         ],
@@ -145,7 +145,7 @@ This folder contains deterministic source-derived review artifacts; it does not 
 - bill-of-materials.csv: BOM with unresolved design values explicitly unassigned.
 - native-project-status.json: current native-generation/import validation blocker.
 
-The exact hardware baseline is ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with TWAI) and NXP TJA1051T/3 SO8 (SOT96-1); substitutions are not authorized. Owner-reported visible marking is preserved verbatim: NXP TJA1051 25 06 ND312. GPIO21 maps to TWAI TX and GPIO22 to TWAI RX in source. Physical board revision/header continuity, power sequencing, protection, termination and Silent-mode bias must be reviewed before assembly or vehicle connection.
+The exact hardware baseline is ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with TWAI) and NXP TJA1051 SO8 (SOT96-1); substitutions are not authorized. Owner-reported visible marking is preserved verbatim: NXP TJA1051 25 06 ND312. GPIO21 maps to TWAI TX and GPIO22 to TWAI RX in source. Physical board revision/header continuity, power sequencing, protection, termination and Silent-mode bias must be reviewed before assembly or vehicle connection.
 """
     (output / "README.md").write_text(readme, encoding="utf-8")
 
@@ -158,7 +158,7 @@ The exact hardware baseline is ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with 
         "design_id": design["design_id"],
         "generator": "tools/generate_proteus_reference.py",
         "generator_version": "1.0.0",
-        "input": {"path": "hardware/reference/esp32-tja1051t3-netlist.yaml", "sha256": sha256(SOURCE)},
+        "input": {"path": "hardware/reference/esp32-tja1051-netlist.yaml", "sha256": sha256(SOURCE)},
         "deterministic_outputs": {name: hashlib.sha256((output / name).read_bytes()).hexdigest() for name in names},
         "native_project": {"status": "blocked", "import_render_validation": "not-performed"},
     }

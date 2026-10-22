@@ -116,9 +116,9 @@ class FirmwareSourceGuardTests(unittest.TestCase):
         self.assertIn("ESP32S NodeMCU / NodeMCU-32S", notes)
         self.assertIn("GPIO21/TWAI_TX", notes)
         self.assertIn("GPIO22/TWAI_RX", notes)
-        self.assertIn("TJA1051T/3 SO8", notes)
+        self.assertIn("NXP TJA1051 marked NXP TJA1051 25 06 ND312", notes)
         self.assertIn("not a validated schematic or assembled circuit", notes)
-        self.assertIn("do not configure a GPIO or firmware control to pull it LOW", notes)
+        self.assertIn("Pin 5 remains unconnected pending confirmation", notes)
 
 
 if __name__ == "__main__":

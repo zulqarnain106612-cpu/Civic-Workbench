@@ -25,7 +25,7 @@ Implement this independent project according to docs/master-spec.md, project/req
 - A valid TX request is not an authorization to transmit. Host policy and firmware/hardware gates remain independent; simulator state can never authorize physical TX.
 
 ## Non-negotiable technical rules
-- Hardware is the original ESP32 + integrated TWAI + NXP TJA1051T/3 SO8. Do not silently substitute a board, transceiver, OBD-II adapter, ELM device, or PID abstraction.
+- Hardware is the original ESP32 + integrated TWAI + NXP TJA1051 SO8. Do not silently substitute a board, transceiver, OBD-II adapter, ELM device, or PID abstraction.
 - Support direct-CAN frame observation and a properly gated raw-frame transmission path. Do not reduce the product to a receive-only logger.
 - Boot into a passive/listen-only state with hardware-enforced TX inhibit. Active transmission needs explicit software arming, physical interlock, visible state, bounded rate, audit logging, and abort.
 - Never invent vehicle IDs, signals, scales, timings, ECU responses, diagnostic support, or acceptance evidence.

@@ -1,6 +1,6 @@
 # Civic-Workbench
 
-A local-first direct-CAN engineering workbench for researching a Pakistan-market 2013 Honda Civic (9th generation, 1.8 L), based on the specified **ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with integrated TWAI) and NXP TJA1051T/3 SO8 transceiver**; substitutions are not permitted.
+A local-first direct-CAN engineering workbench for researching a Pakistan-market 2013 Honda Civic (9th generation, 1.8 L), based on the specified **ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with integrated TWAI) and NXP TJA1051 SO8 transceiver**; substitutions are not permitted.
 
 This repository is independent of the earlier build-a-web-page-for-ios repository. No source or project structure was copied from that project.
 
@@ -57,7 +57,7 @@ The synthetic benchmark writes measured single-host results to docs/reports/S11-
 ## Firmware and safety boundary
 
 - Target MCU: original Espressif ESP32 with integrated TWAI; no ESP32-S2/S3 substitution.
-- CAN physical layer: NXP TJA1051T/3 in SO8/SOT96-1 package.
+- CAN physical layer: NXP TJA1051 in SO8/SOT96-1 package.
 - Firmware hardware-init, verified-bitrate and hardware-TX build flags remain off by default; GPIOs remain unassigned until the actual board is identified.
 - The host TX scheduler accepts only target=simulation. It never forwards TX requests to a physical adapter.
 - The firmware C API can issue one guarded frame only when built/configured and armed, but CW1 v1 has no host command channel for arming or transmission.

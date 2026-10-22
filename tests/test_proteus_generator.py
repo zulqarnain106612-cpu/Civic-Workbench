@@ -50,7 +50,8 @@ class ProteusGeneratorTests(unittest.TestCase):
             self.assertIn("TWAI_TX_GPIO = 21", svg)
             self.assertIn("TWAI_RX_GPIO = 22", svg)
             self.assertIn("UNASSIGNED", svg)  # TX gate/interlock mapping remains intentionally unspecified.
-            self.assertIn("TJA1051T/3", (first / "reference-design.netlist.json").read_text())
+            self.assertIn("NXP TJA1051 25 06 ND312", (first / "reference-design.netlist.json").read_text())
+            self.assertEqual(netlist["transceiver"]["pins"]["5"]["net"], "UNRESOLVED_PIN5_DO_NOT_CONNECT")
             self.assertEqual(netlist["controller"]["tx_gpio"], 21)
             self.assertEqual(netlist["controller"]["rx_gpio"], 22)
             self.assertEqual(netlist["transceiver"]["reported_top_marking"], "NXP TJA1051 25 06 ND312")

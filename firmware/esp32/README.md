@@ -4,7 +4,7 @@
 
 S03 extends the S02 original-ESP32 foundation into a bounded TWAI receive core, controller diagnostics/recovery surface, schema-v1 JSON record formatting, prefixed serial telemetry and a centrally guarded single-frame TX API.
 
-Fixed hardware baseline: **ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with integrated TWAI) + NXP TJA1051T/3 SO8 (SOT96-1)**. The PlatformIO board target is nodemcu-32s (4 MB profile). TWAI source mapping: GPIO21 TX, GPIO22 RX. The reported transceiver top marking is recorded verbatim as NXP TJA1051 25 06 ND312; no successor, predecessor or substitute part is permitted. Runtime hardware initialization, bitrate authorization, and physical TX remain disabled until the actual board revision/header continuity, exact IC orientation, circuit and bitrate are checked.
+Fixed hardware baseline: **ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with integrated TWAI) + NXP TJA1051 SO8 (SOT96-1)**. The PlatformIO board target is nodemcu-32s (4 MB profile). TWAI source mapping: GPIO21 TX, GPIO22 RX. The reported transceiver top marking is recorded verbatim as NXP TJA1051 25 06 ND312; no successor, predecessor or substitute part is permitted. Runtime hardware initialization, bitrate authorization, and physical TX remain disabled until the actual board revision/header continuity, exact IC orientation, circuit and bitrate are checked.
 
 ## Build
 

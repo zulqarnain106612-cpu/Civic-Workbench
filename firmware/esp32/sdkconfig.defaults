@@ -1,7 +1,7 @@
-# Civic-Workbench: original ESP32 target configuration.
-# No GPIO assignment is assumed until the exact module is identified.
+# Civic-Workbench: the specified ESP32S NodeMCU / NodeMCU-32S (classic ESP32).
+# Board profile is not permission to flash or connect to a vehicle.
 CONFIG_IDF_TARGET="esp32"
-# Generic PlatformIO esp32dev compile profile only; do not flash an unidentified board.
+# Hardware initialization, bitrate evidence and physical transmission remain disabled.
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
 CONFIG_COMPILER_OPTIMIZATION_SIZE=y
 CONFIG_LOG_DEFAULT_LEVEL_WARN=y

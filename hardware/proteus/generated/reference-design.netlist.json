@@ -22,12 +22,13 @@
     }
   },
   "controller": {
-    "gpio_assignment_status": "intentionally unassigned pending exact board/module identification",
-    "package_or_module": "unknown",
-    "rx_gpio": null,
-    "target": "Original Espressif ESP32 with integrated TWAI",
-    "twai_driver": "ESP-IDF legacy TWAI API pending pinned build verification",
-    "tx_gpio": null
+    "board_id": "nodemcu-32s",
+    "gpio_assignment_status": "source-mapped to the specified NodeMCU-32S; physical header continuity/revision remains to be checked on the actual board",
+    "package_or_module": "NodeMCU-32S board",
+    "rx_gpio": 22,
+    "target": "ESP32S NodeMCU / NodeMCU-32S, classic ESP32 with integrated TWAI",
+    "twai_driver": "ESP-IDF TWAI API, pinned PlatformIO build",
+    "tx_gpio": 21
   },
   "design_id": "civic-workbench-original-esp32-tja1051t3",
   "open_items": [
@@ -77,6 +78,7 @@
   "status": "schematic-source-contract; not a generated or validated native schematic",
   "transceiver": {
     "manufacturer": "NXP",
+    "marking_code_interpretation": "Not inferred; literal marking recorded from the owner.",
     "package": "SO8",
     "package_code": "SOT96-1",
     "part": "TJA1051T/3",
@@ -114,7 +116,9 @@
         "net": "TRANSCEIVER_MODE_S"
       }
     },
-    "reference_designator": "U1"
+    "reference_designator": "U1",
+    "reported_top_marking": "NXP TJA1051 25 06 ND312",
+    "substitutions_allowed": false
   },
   "tx_inhibit": {
     "default_state": "silent",
@@ -126,7 +130,8 @@
       "physical_interlock_gpio_feedback": null
     },
     "silent_bias": {
-      "implementation": "external resistor pull-up to MCU_IO_3V3",
+      "baseline_policy": "Permanently receive-only during S13; S is not driven directly by an ESP32 GPIO.",
+      "implementation": "external resistor pull-up from U1 pin 8 S to MCU_IO_3V3",
       "requirement": "value must be assigned and reviewed in schematic stage; default must hold S HIGH with unpowered/reset MCU",
       "value": null
     },

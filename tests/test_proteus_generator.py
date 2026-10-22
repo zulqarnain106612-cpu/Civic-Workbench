@@ -42,9 +42,22 @@ class ProteusGeneratorTests(unittest.TestCase):
                     hashlib.sha256((second / name).read_bytes()).hexdigest(),
                     name,
                 )
-            self.assertIn("UNASSIGNED", (first / "reference-design.svg").read_text())
+            svg = (first / "reference-design.svg").read_text()
+            netlist = json.loads((first / "reference-design.netlist.json").read_text())
+            bom = (first / "bill-of-materials.csv").read_text()
+            mapping = json.loads((first / "component-map.json").read_text())
+            self.assertIn("NodeMCU-32S", svg)
+            self.assertIn("TWAI_TX_GPIO = 21", svg)
+            self.assertIn("TWAI_RX_GPIO = 22", svg)
+            self.assertIn("UNASSIGNED", svg)  # TX gate/interlock mapping remains intentionally unspecified.
             self.assertIn("TJA1051T/3", (first / "reference-design.netlist.json").read_text())
-            self.assertIn("value-unassigned", (first / "bill-of-materials.csv").read_text())
+            self.assertEqual(netlist["controller"]["tx_gpio"], 21)
+            self.assertEqual(netlist["controller"]["rx_gpio"], 22)
+            self.assertEqual(netlist["transceiver"]["reported_top_marking"], "NXP TJA1051 25 06 ND312")
+            self.assertFalse(netlist["transceiver"]["substitutions_allowed"])
+            self.assertIn("NodeMCU-32S", bom)
+            self.assertIn("value-unassigned", bom)
+            self.assertIn("GPIO21/GPIO22 header continuity", mapping["symbols"][1]["reason"])
 
     def test_native_project_is_explicitly_blocked_not_fabricated(self):
         with tempfile.TemporaryDirectory() as temp:

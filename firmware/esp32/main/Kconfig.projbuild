@@ -1,20 +1,22 @@
 menu "Civic-Workbench firmware"
 
     config CIVIC_TWAI_TX_GPIO
-        int "TWAI TX GPIO (confirm exact board first)"
+        int "TWAI TX GPIO (NodeMCU-32S)"
         range -1 39
-        default -1
+        default 21
         help
-            GPIO number for ESP32 TWAI TX. -1 intentionally disables driver
-            initialization until the exact module pin mapping is documented.
+            Board-specific source mapping for the specified NodeMCU-32S:
+            GPIO21 is reserved for TWAI TX. This setting alone does not enable
+            hardware initialization or transmission.
 
     config CIVIC_TWAI_RX_GPIO
-        int "TWAI RX GPIO (confirm exact board first)"
+        int "TWAI RX GPIO (NodeMCU-32S)"
         range -1 39
-        default -1
+        default 22
         help
-            GPIO number for ESP32 TWAI RX. -1 intentionally disables driver
-            initialization until the exact module pin mapping is documented.
+            Board-specific source mapping for the specified NodeMCU-32S:
+            GPIO22 is reserved for TWAI RX. This setting alone does not enable
+            hardware initialization or transmission.
 
     config CIVIC_TX_GATE_REQUEST_GPIO
         int "Hardware TX gate request GPIO (confirm exact board first)"

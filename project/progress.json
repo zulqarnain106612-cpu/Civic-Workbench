@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S04-S08-S10-S12-host-verified; S07-physical-TX-disabled; S09-native-Proteus-blocked",
+  "overall_status": "S00-S13-source-and-host-verified; S13-physical-bench-pending; S07-physical-TX-disabled; S09-native-Proteus-blocked",
   "application_implementation_status": "local-ui-api-storage-analysis-simulation-cad-source-packaging-and-host-integration-verified",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-22",
-  "current_focus": "PHYSICAL-HARDWARE-AND-NATIVE-PROTEUS-REQUIREMENTS",
+  "current_focus": "NODEMCU32S_TJA1051T3_RECEIVE_ONLY_BENCH",
   "stage_status": {
     "S00": "complete",
     "S01": "complete",
@@ -19,7 +19,8 @@
     "S09": "source-generator-tests-passed; native-Proteus-generation-import-blocked",
     "S10": "API-session-export-import-and-security-integration-tests-passed",
     "S11": "integrated-suite-package-schema-synchronization-and-20k-synthetic-benchmark-passed",
-    "S12": "source-and-host-delivery-verified; physical-validation-not-performed"
+    "S12": "source-and-host-delivery-verified; physical-validation-not-performed",
+    "S13": "fixed-part-source-mapping-and-nodemcu32s-build-verified; physical-bench-pending"
   },
   "baseline_evidence": {
     "requirements_file": "project/requirements.yaml",
@@ -83,11 +84,12 @@
     "All simulated frames use capture_source=simulator and virtual monotonic time; they are not physical vehicle evidence."
   ],
   "open_questions": [
-    "Identify the exact physical original-ESP32 module/board, package, flash size and reserved GPIOs before flashing or assigning pins.",
-    "Verify the physical presence/part marking of the NXP TJA1051T/3 transceiver and review its power, decoupling, Silent default and independent hardware TX interlock on an isolated bench.",
-    "Confirm an official Labcenter-supported native Proteus generation API/utility and create/import/render a genuine DSN/PDSPRJ; the tracked SVG/JSON are not native schematics.",
-    "Verify the Civic CAN bitrate, topology and a safe capture point using independent evidence; no Honda identifiers/signals or executable diagnostics are assumed.",
-    "Conduct hardware-bench and physical serial/CAN tests once the target board and reviewed circuit are available."
+    "Verify the physical NodeMCU-32S board silkscreen/revision and GPIO21/GPIO22 header continuity before wiring.",
+    "Verify NXP TJA1051T/3 SO8 pin-1 orientation and the exact assembled footprint before powering the circuit.",
+    "Confirm physical TJA1051T/3 order-code/variant before wiring pin 5; NXP documents NC, EN and VIO pin-5 variants, and the reported extra top-marking text is not interpreted as a suffix.",
+    "Review transceiver VCC/VIO supplies, decoupling, external Silent-mode pull-up, connector protection and termination policy on an isolated bench.",
+    "Confirm the intended CAN bitrate, topology and safe capture point using separate reliable evidence; no Honda IDs/signals or diagnostic capability are assumed.",
+    "Confirm an official Labcenter-supported native Proteus generation route, then create/import/render and review a genuine DSN/PDSPRJ."
   ],
   "stage_reports": {
     "S00": "docs/reports/S00-environment-report.md",
@@ -102,7 +104,8 @@
     "S09": "docs/reports/S09-proteus-generator-report.md",
     "S10": "docs/reports/S10-integration-report.md",
     "S11": "docs/reports/S11-hardening-performance-report.md",
-    "S12": "docs/reports/S12-final-handoff-report.md"
+    "S12": "docs/reports/S12-final-handoff-report.md",
+    "S13": "docs/reports/S13-hardware-baseline-and-pin-map.md"
   },
   "s02_evidence": {
     "report": "docs/reports/S02-firmware-report.md",
@@ -318,5 +321,32 @@
     "host_tx_control": "physical target rejected; read-only CW1 protocol; simulator-only scheduler",
     "native_proteus_status": "blocked; official native writer not confirmed; import/render not performed"
   },
-  "verified_at_utc": "2026-10-22T00:27:19Z"
+  "verified_at_utc": "2026-10-22T01:19:52Z",
+  "s13_evidence": {
+    "report": "docs/reports/S13-hardware-baseline-and-pin-map.md",
+    "board": "ESP32S NodeMCU / NodeMCU-32S (PlatformIO board id nodemcu-32s)",
+    "transceiver": "NXP TJA1051T/3 SO8 (SOT96-1), substitutions_allowed=false",
+    "reported_transceiver_top_marking": "NXP TJA1051 25 06 ND312",
+    "twai_tx_gpio": 21,
+    "twai_rx_gpio": 22,
+    "transceiver_s_pin8": "externally biased HIGH for receive-only baseline; no direct MCU GPIO",
+    "hardware_init_enabled": false,
+    "bitrate_evidence_confirmed": false,
+    "hardware_tx_enabled": false,
+    "physical_board_header_continuity": "not measured",
+    "physical_bench_test": "not performed",
+    "vehicle_test": "not performed",
+    "native_proteus_import_render": "blocked; tracked separately in S09",
+    "platformio_board_profile": "NodeMCU-32S (nodemcu-32s), Espressif32 6.9.0, ESP-IDF 5.3.1",
+    "build_result": "SUCCESS; PlatformIO exit code 0; log /tmp/civic-workbench-s13-firmware.log",
+    "firmware_ram_used_bytes": 10828,
+    "firmware_ram_total_bytes": 327680,
+    "firmware_application_flash_used_bytes": 179252,
+    "firmware_application_flash_region_bytes": 1048576,
+    "host_regression": "95 Python tests passed; make verify exit code 0",
+    "host_safety_test": "7 C assertions passed",
+    "schema_package_yaml_checks": "15 versioned schemas synchronized and validated; project YAML parsed; wheel assets passed",
+    "git_diff_check": "passed before final metadata changes; rerun after all updates",
+    "transceiver_variant_safety_gate": "TJA1051T/3 remains the required baseline; exact suffix is not inferred from extra top-marking text; pin-5 wiring/power-up blocked until the physical item is consistent with baseline"
+  }
 }

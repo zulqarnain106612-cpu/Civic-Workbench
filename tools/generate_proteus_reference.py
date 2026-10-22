@@ -28,19 +28,19 @@ def svg_source(design: dict) -> str:
     out = [
         '<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="830" viewBox="0 0 1240 830">',
         '<rect width="100%" height="100%" fill="#fbfcfe"/>',
-        '<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / Original ESP32 + TJA1051T/3</text>',
-        '<text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - unassigned pins and unresolved values are not fabricated</text>',
+        '<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + TJA1051T/3</text>',
+        '<text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - physical header checks and unresolved values remain open</text>',
         '<rect x="45" y="135" width="345" height="330" rx="10" fill="#edf4fc" stroke="#486c94" stroke-width="2"/>',
-        '<text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">Original ESP32 module</text>',
-        '<text x="217" y="196" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#435c76">Package / board unknown</text>',
-        '<text x="75" y="245" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_TX_GPIO = UNASSIGNED</text>',
-        '<text x="75" y="276" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_RX_GPIO = UNASSIGNED</text>',
-        '<text x="75" y="315" font-family="sans-serif" font-size="12" fill="#435c76">Integrated TWAI controller</text>',
-        '<text x="75" y="341" font-family="sans-serif" font-size="12" fill="#435c76">UART0 telemetry is a separate boundary</text>',
-        '<text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">TX request disabled by firmware default</text>',
-        '<text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">GPIO roles require exact board review</text>',
+        '<text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">ESP32S NodeMCU / NodeMCU-32S</text>',
+        '<text x="217" y="196" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#435c76">Classic ESP32 / integrated TWAI</text>',
+        '<text x="75" y="245" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_TX_GPIO = 21</text>',
+        '<text x="75" y="276" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_RX_GPIO = 22</text>',
+        '<text x="75" y="315" font-family="sans-serif" font-size="12" fill="#435c76">GPIO21/22 source mapping selected</text>',
+        '<text x="75" y="341" font-family="sans-serif" font-size="12" fill="#435c76">Verify physical header continuity/revision</text>',
+        '<text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">Hardware initialization and physical TX disabled</text>',
+        '<text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">TX_GATE_GPIO = UNASSIGNED; physical TX OFF</text>',
         '<rect x="470" y="155" width="300" height="280" rx="10" fill="#f2f8ed" stroke="#658b4a" stroke-width="2"/>',
-        '<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / TJA1051T/3 SO8</text>',
+        '<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / NXP TJA1051T/3 SO8</text>',
     ]
     y = 226
     for pin, info in sorted(pins.items(), key=lambda pair: int(pair[0])):
@@ -94,8 +94,8 @@ def main() -> int:
     with (output / "bill-of-materials.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream, lineterminator="\n")
         writer.writerow(["Reference", "Manufacturer", "Part", "Package", "Status", "Notes"])
-        writer.writerow(["U1", "NXP", "TJA1051T/3", "SO8 / SOT96-1", "required", "Verify actual part marking before assembly"])
-        writer.writerow(["U_MCU", "Espressif", "Original ESP32 module", "unknown", "not-selected", "No GPIO, flash or connector pin assumptions"])
+        writer.writerow(["U1", "NXP", "TJA1051T/3", "SO8 / SOT96-1", "required", "Reported marking: NXP TJA1051 25 06 ND312; no substitutions; verify SO8 pin 1 before assembly"])
+        writer.writerow(["U_MCU", "Espressif / NodeMCU", "ESP32S NodeMCU / NodeMCU-32S", "board module", "specified", "GPIO21 TWAI TX and GPIO22 TWAI RX source mapping; verify physical board revision and header continuity"])
         writer.writerow(["J1", "TBD", "CAN connector", "TBD", "not-selected", "CANH/CANL/ground pins unverified"])
         writer.writerow(["R-SILENT", "TBD", "Silent-mode pull-up", "TBD", "value-unassigned", "Must hold TJA1051T/3 S HIGH if MCU is reset/unpowered"])
         writer.writerow(["C-VCC", "TBD", "VCC decoupling", "TBD", "value-unassigned", "Determine from final reviewed design"])
@@ -107,7 +107,7 @@ def main() -> int:
         "source_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
         "symbols": [
             {"ref": "U1", "symbol": "TJA1051T/3", "library_symbol_verified": False, "reason": "Installed Proteus symbol identity not verified."},
-            {"ref": "U_MCU", "symbol": "Original ESP32 module placeholder", "library_symbol_verified": False, "reason": "Exact module/package not identified."},
+            {"ref": "U_MCU", "symbol": "NodeMCU-32S board placeholder", "library_symbol_verified": False, "reason": "Exact board is specified; physical PCB revision and GPIO21/GPIO22 header continuity have not been checked."},
             {"ref": "TX_GATE", "symbol": "Conceptual independent hardware gate", "library_symbol_verified": False, "reason": "Not an electrical implementation; design review required."},
         ],
         "net_names": sorted({str(pin["net"]) for pin in design["transceiver"]["pins"].values()}),
@@ -145,7 +145,7 @@ This folder contains deterministic source-derived review artifacts; it does not 
 - bill-of-materials.csv: BOM with unresolved design values explicitly unassigned.
 - native-project-status.json: current native-generation/import validation blocker.
 
-The physical design must retain the original ESP32 TWAI baseline and NXP TJA1051T/3 SO8 part. Module pins, power sequencing, protection, termination, Silent-mode bias and independent hardware TX gate must be reviewed before fabrication or vehicle attachment.
+The exact hardware baseline is ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with TWAI) and NXP TJA1051T/3 SO8 (SOT96-1); substitutions are not authorized. Owner-reported visible marking is preserved verbatim: NXP TJA1051 25 06 ND312. GPIO21 maps to TWAI TX and GPIO22 to TWAI RX in source. Physical board revision/header continuity, power sequencing, protection, termination and Silent-mode bias must be reviewed before assembly or vehicle connection.
 """
     (output / "README.md").write_text(readme, encoding="utf-8")
 

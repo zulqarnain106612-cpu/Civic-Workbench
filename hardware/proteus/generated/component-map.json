@@ -22,9 +22,9 @@
     },
     {
       "library_symbol_verified": false,
-      "reason": "Exact module/package not identified.",
+      "reason": "Exact board is specified; physical PCB revision and GPIO21/GPIO22 header continuity have not been checked.",
       "ref": "U_MCU",
-      "symbol": "Original ESP32 module placeholder"
+      "symbol": "NodeMCU-32S board placeholder"
     },
     {
       "library_symbol_verified": false,

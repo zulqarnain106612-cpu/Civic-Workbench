@@ -47,6 +47,7 @@ Then:
 | S10 | End-to-end workflows join all modules without safety bypass | E2E and boundary tests |
 | S11 | Faults, load, regressions and recovery behavior are measured | Test/fault/performance reports |
 | S12 | Setup and final evidence package is reproducible | Traceability audit and final handoff |
+| S13 | Exact NodeMCU-32S and NXP TJA1051T/3 source mapping is pinned; receive-only safe defaults retained | Board-profile build, GPIO21/22 guards, generated design-source artifacts; physical bench remains pending |
 
 ## Token-efficient agent workflow
 

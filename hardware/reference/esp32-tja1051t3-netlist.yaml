@@ -2,15 +2,19 @@ schema_version: 1
 design_id: civic-workbench-original-esp32-tja1051t3
 status: "schematic-source-contract; not a generated or validated native schematic"
 controller:
-  target: "Original Espressif ESP32 with integrated TWAI"
-  package_or_module: unknown
-  twai_driver: "ESP-IDF legacy TWAI API pending pinned build verification"
-  tx_gpio: null
-  rx_gpio: null
-  gpio_assignment_status: "intentionally unassigned pending exact board/module identification"
+  target: "ESP32S NodeMCU / NodeMCU-32S, classic ESP32 with integrated TWAI"
+  board_id: "nodemcu-32s"
+  package_or_module: "NodeMCU-32S board"
+  twai_driver: "ESP-IDF TWAI API, pinned PlatformIO build"
+  tx_gpio: 21
+  rx_gpio: 22
+  gpio_assignment_status: "source-mapped to the specified NodeMCU-32S; physical header continuity/revision remains to be checked on the actual board"
 transceiver:
   manufacturer: NXP
   part: TJA1051T/3
+  reported_top_marking: "NXP TJA1051 25 06 ND312"
+  marking_code_interpretation: "Not inferred; literal marking recorded from the owner."
+  substitutions_allowed: false
   package: SO8
   package_code: SOT96-1
   reference_designator: U1
@@ -57,9 +61,10 @@ tx_inhibit:
   transceiver_mode_pin: "U1 pin 8 S"
   silent_level: high
   silent_bias:
-    implementation: "external resistor pull-up to MCU_IO_3V3"
+    implementation: "external resistor pull-up from U1 pin 8 S to MCU_IO_3V3"
     value: null
     requirement: "value must be assigned and reviewed in schematic stage; default must hold S HIGH with unpowered/reset MCU"
+    baseline_policy: "Permanently receive-only during S13; S is not driven directly by an ESP32 GPIO."
   gate:
     implementation_requirement: "a physical interlock and firmware TX request must both be necessary to pull S LOW"
     mcu_request_gpio: null

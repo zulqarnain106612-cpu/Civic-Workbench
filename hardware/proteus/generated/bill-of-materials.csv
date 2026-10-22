@@ -1,6 +1,6 @@
 Reference,Manufacturer,Part,Package,Status,Notes
-U1,NXP,TJA1051T/3,SO8 / SOT96-1,required,Verify actual part marking before assembly
-U_MCU,Espressif,Original ESP32 module,unknown,not-selected,"No GPIO, flash or connector pin assumptions"
+U1,NXP,TJA1051T/3,SO8 / SOT96-1,required,Reported marking: NXP TJA1051 25 06 ND312; no substitutions; verify SO8 pin 1 before assembly
+U_MCU,Espressif / NodeMCU,ESP32S NodeMCU / NodeMCU-32S,board module,specified,GPIO21 TWAI TX and GPIO22 TWAI RX source mapping; verify physical board revision and header continuity
 J1,TBD,CAN connector,TBD,not-selected,CANH/CANL/ground pins unverified
 R-SILENT,TBD,Silent-mode pull-up,TBD,value-unassigned,Must hold TJA1051T/3 S HIGH if MCU is reset/unpowered
 C-VCC,TBD,VCC decoupling,TBD,value-unassigned,Determine from final reviewed design

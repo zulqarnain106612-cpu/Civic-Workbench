@@ -4,8 +4,10 @@ target_vehicle:
   description: "Pakistan-market 2013 Honda Civic, ninth generation, 1.8 L, full-option trim as supplied by the owner"
   identification_policy: "Confirm vehicle/market/ECU facts from measurements or primary sources; do not infer trim-specific network mappings."
 hardware_baseline:
-  mcu: "Original Espressif ESP32 with integrated TWAI controller"
+  mcu: "ESP32S NodeMCU / NodeMCU-32S (original ESP32 with integrated TWAI controller)"
+  board_id: "nodemcu-32s"
   transceiver: "NXP TJA1051T/3, SO8 (SOT96-1)"
+  reported_transceiver_top_marking: "NXP TJA1051 25 06 ND312"
   substitutions_allowed: false
 
 requirements:

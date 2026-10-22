@@ -8,4 +8,4 @@ This folder contains deterministic source-derived review artifacts; it does not 
 - bill-of-materials.csv: BOM with unresolved design values explicitly unassigned.
 - native-project-status.json: current native-generation/import validation blocker.
 
-The physical design must retain the original ESP32 TWAI baseline and NXP TJA1051T/3 SO8 part. Module pins, power sequencing, protection, termination, Silent-mode bias and independent hardware TX gate must be reviewed before fabrication or vehicle attachment.
+The exact hardware baseline is ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with TWAI) and NXP TJA1051T/3 SO8 (SOT96-1); substitutions are not authorized. Owner-reported visible marking is preserved verbatim: NXP TJA1051 25 06 ND312. GPIO21 maps to TWAI TX and GPIO22 to TWAI RX in source. Physical board revision/header continuity, power sequencing, protection, termination and Silent-mode bias must be reviewed before assembly or vehicle connection.

@@ -1,6 +1,6 @@
 # Civic-Workbench
 
-A local-first direct-CAN engineering workbench for researching a Pakistan-market 2013 Honda Civic (9th generation, 1.8 L), based on the **original ESP32 integrated TWAI controller and NXP TJA1051T/3 SO8 transceiver**.
+A local-first direct-CAN engineering workbench for researching a Pakistan-market 2013 Honda Civic (9th generation, 1.8 L), based on the specified **ESP32S NodeMCU / NodeMCU-32S (classic ESP32 with integrated TWAI) and NXP TJA1051T/3 SO8 transceiver**; substitutions are not permitted.
 
 This repository is independent of the earlier build-a-web-page-for-ios repository. No source or project structure was copied from that project.
 

@@ -32,16 +32,22 @@ class FirmwareSourceGuardTests(unittest.TestCase):
         )[0]
         self.assertIn("default n", block)
 
-    def test_pin_configuration_defaults_to_unassigned(self):
+    def test_nodemcu32s_twai_pins_are_mapped_but_safety_gates_stay_closed(self):
         config = (FW / "main" / "Kconfig.projbuild").read_text()
-        for symbol in (
-            "CIVIC_TWAI_TX_GPIO",
-            "CIVIC_TWAI_RX_GPIO",
-            "CIVIC_TX_GATE_REQUEST_GPIO",
-            "CIVIC_INTERLOCK_SENSE_GPIO",
-        ):
-            block = config.split(f"config {symbol}", 1)[1].split("config ", 1)[0]
-            self.assertIn("default -1", block)
+        tx = config.split("config CIVIC_TWAI_TX_GPIO", 1)[1].split("config ", 1)[0]
+        rx = config.split("config CIVIC_TWAI_RX_GPIO", 1)[1].split("config ", 1)[0]
+        gate = config.split("config CIVIC_TX_GATE_REQUEST_GPIO", 1)[1].split("config ", 1)[0]
+        sense = config.split("config CIVIC_INTERLOCK_SENSE_GPIO", 1)[1].split("config ", 1)[0]
+        self.assertIn("default 21", tx)
+        self.assertIn("default 22", rx)
+        self.assertIn("default -1", gate)
+        self.assertIn("default -1", sense)
+        init = config.split("config CIVIC_ALLOW_HARDWARE_CAN_INIT", 1)[1].split("\n    config ", 1)[0]
+        bitrate = config.split("config CIVIC_BITRATE_EVIDENCE_CONFIRMED", 1)[1].split("\n    config ", 1)[0]
+        tx_option = config.split("config CIVIC_ALLOW_HARDWARE_CAN_TX", 1)[1].split("\n    config ", 1)[0]
+        self.assertIn("default n", init)
+        self.assertIn("default n", bitrate)
+        self.assertIn("default n", tx_option)
 
     def test_default_mode_is_passive_and_tx_uses_one_guarded_api(self):
         source = (FW / "main" / "civic_can.c").read_text()
@@ -105,10 +111,14 @@ class FirmwareSourceGuardTests(unittest.TestCase):
         self.assertIn("gate_gpio == CONFIG_CIVIC_TWAI_RX_GPIO", source)
         self.assertIn("gate_gpio == CONFIG_CIVIC_INTERLOCK_SENSE_GPIO", source)
 
-    def test_hardware_notes_do_not_claim_board_specific_gpio_values(self):
+    def test_hardware_notes_use_fixed_board_and_transceiver_without_enabling_tx(self):
         notes = (ROOT / "hardware" / "reference" / "safety-interlock.md").read_text()
-        self.assertIn("Do not choose GPIOs until exact module and pinout are identified", notes)
+        self.assertIn("ESP32S NodeMCU / NodeMCU-32S", notes)
+        self.assertIn("GPIO21/TWAI_TX", notes)
+        self.assertIn("GPIO22/TWAI_RX", notes)
+        self.assertIn("TJA1051T/3 SO8", notes)
         self.assertIn("not a validated schematic or assembled circuit", notes)
+        self.assertIn("do not configure a GPIO or firmware control to pull it LOW", notes)
 
 
 if __name__ == "__main__":

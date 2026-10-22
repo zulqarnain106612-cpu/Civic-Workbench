@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1240" height="830" viewBox="0 0 1240 830">
 <rect width="100%" height="100%" fill="#fbfcfe"/>
-<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / Original ESP32 + TJA1051T/3</text>
-<text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - unassigned pins and unresolved values are not fabricated</text>
+<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + TJA1051T/3</text>
+<text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - physical header checks and unresolved values remain open</text>
 <rect x="45" y="135" width="345" height="330" rx="10" fill="#edf4fc" stroke="#486c94" stroke-width="2"/>
-<text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">Original ESP32 module</text>
-<text x="217" y="196" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#435c76">Package / board unknown</text>
-<text x="75" y="245" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_TX_GPIO = UNASSIGNED</text>
-<text x="75" y="276" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_RX_GPIO = UNASSIGNED</text>
-<text x="75" y="315" font-family="sans-serif" font-size="12" fill="#435c76">Integrated TWAI controller</text>
-<text x="75" y="341" font-family="sans-serif" font-size="12" fill="#435c76">UART0 telemetry is a separate boundary</text>
-<text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">TX request disabled by firmware default</text>
-<text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">GPIO roles require exact board review</text>
+<text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">ESP32S NodeMCU / NodeMCU-32S</text>
+<text x="217" y="196" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#435c76">Classic ESP32 / integrated TWAI</text>
+<text x="75" y="245" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_TX_GPIO = 21</text>
+<text x="75" y="276" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_RX_GPIO = 22</text>
+<text x="75" y="315" font-family="sans-serif" font-size="12" fill="#435c76">GPIO21/22 source mapping selected</text>
+<text x="75" y="341" font-family="sans-serif" font-size="12" fill="#435c76">Verify physical header continuity/revision</text>
+<text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">Hardware initialization and physical TX disabled</text>
+<text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">TX_GATE_GPIO = UNASSIGNED; physical TX OFF</text>
 <rect x="470" y="155" width="300" height="280" rx="10" fill="#f2f8ed" stroke="#658b4a" stroke-width="2"/>
-<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / TJA1051T/3 SO8</text>
+<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / NXP TJA1051T/3 SO8</text>
 <text x="490" y="226" font-family="monospace" font-size="12" fill="#2e5120">Pin 1: TXD</text>
 <text x="490" y="241" font-family="sans-serif" font-size="10" fill="#4c6840">TWAI_TX_TO_TRANSCEIVER</text>
 <text x="490" y="273" font-family="monospace" font-size="12" fill="#2e5120">Pin 2: GND</text>

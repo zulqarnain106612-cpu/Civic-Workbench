@@ -244,3 +244,20 @@ stages:
     automation is marked with explicit evidence and a concrete next action.
   delivery_state: host-delivery-verified; hardware and native-Proteus acceptance remain
     open
+
+- id: S13
+  title: Fixed hardware baseline and receive-only pin mapping
+  goal: Bind the firmware and schematic source to the owner's exact ESP32S NodeMCU and NXP TJA1051T/3 SO8 without substitutions.
+  deliverables:
+  - exact-board-platformio-target
+  - board-specific-twai-pin-map
+  - exact-transceiver-pin-map
+  - receive-only-safe-defaults
+  - isolated-bench-checklist
+  acceptance:
+  - PlatformIO target is NodeMCU-32S / nodemcu-32s (classic ESP32), not an S2/S3/C3 or replacement board.
+  - GPIO21 is mapped to TWAI_TX/TJA1051T/3 pin 1 TXD; TJA1051T/3 pin 4 RXD is mapped to GPIO22/TWAI_RX.
+  - NXP TJA1051T/3 SO8 and the reported top marking are preserved; pin 5 is VIO and pin 8 S is externally biased HIGH for receive-only.
+  - Hardware initialization, bitrate evidence, and hardware TX authorization remain disabled.
+  - Tests and exact board-profile compilation pass; no physical bench test is claimed without measurement evidence.
+  delivery_state: source-mapped-build-and-guard-tests-pending-physical-bench

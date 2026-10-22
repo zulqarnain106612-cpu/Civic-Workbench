@@ -63,4 +63,4 @@ cd firmware/esp32
 ~/.venvs/civic-workbench-pio/bin/pio run
 ```
 
-Do not flash the generic esp32dev image until the exact module/board, flash size, GPIOs, bitrate, transceiver wiring and independent hardware interlock are identified and reviewed. Build success is not hardware validation.
+The exact source target is ESP32S NodeMCU / NodeMCU-32S with the fixed NXP TJA1051T/3 SO8 transceiver; PlatformIO uses the nodemcu-32s board profile, GPIO21/TWAI_TX and GPIO22/TWAI_RX. Do not flash or attach to a vehicle until physical board revision/header continuity, IC pin-1 orientation, supply/decoupling, Silent-mode bias, controlled bench setup, and independent bitrate evidence are reviewed. Runtime initialization and physical TX remain disabled. Build success is not hardware validation.

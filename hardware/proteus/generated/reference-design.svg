@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1240" height="830" viewBox="0 0 1240 830">
 <rect width="100%" height="100%" fill="#fbfcfe"/>
-<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + exact-marked NXP TJA1051</text>
+<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + TJA1051T/3</text>
 <text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - physical header checks and unresolved values remain open</text>
 <rect x="45" y="135" width="345" height="330" rx="10" fill="#edf4fc" stroke="#486c94" stroke-width="2"/>
 <text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">ESP32S NodeMCU / NodeMCU-32S</text>
@@ -12,7 +12,7 @@
 <text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">Hardware initialization and physical TX disabled</text>
 <text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">TX_GATE_GPIO = UNASSIGNED; physical TX OFF</text>
 <rect x="470" y="155" width="300" height="280" rx="10" fill="#f2f8ed" stroke="#658b4a" stroke-width="2"/>
-<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / exact-marked NXP TJA1051</text>
+<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / NXP TJA1051T/3 SO8</text>
 <text x="490" y="226" font-family="monospace" font-size="12" fill="#2e5120">Pin 1: TXD</text>
 <text x="490" y="241" font-family="sans-serif" font-size="10" fill="#4c6840">TWAI_TX_TO_TRANSCEIVER</text>
 <text x="490" y="273" font-family="monospace" font-size="12" fill="#2e5120">Pin 2: GND</text>
@@ -21,8 +21,8 @@
 <text x="490" y="335" font-family="sans-serif" font-size="10" fill="#4c6840">TRANSCEIVER_5V</text>
 <text x="490" y="367" font-family="monospace" font-size="12" fill="#2e5120">Pin 4: RXD</text>
 <text x="490" y="382" font-family="sans-serif" font-size="10" fill="#4c6840">TRANSCEIVER_RX_TO_TWAI</text>
-<text x="642" y="226" font-family="monospace" font-size="12" fill="#2e5120">Pin 5: VARIANT_DEPENDENT_VIO_OR_EN</text>
-<text x="642" y="241" font-family="sans-serif" font-size="10" fill="#4c6840">UNRESOLVED_PIN5_DO_NOT_CONNECT</text>
+<text x="642" y="226" font-family="monospace" font-size="12" fill="#2e5120">Pin 5: VIO</text>
+<text x="642" y="241" font-family="sans-serif" font-size="10" fill="#4c6840">MCU_IO_3V3</text>
 <text x="642" y="273" font-family="monospace" font-size="12" fill="#2e5120">Pin 6: CANL</text>
 <text x="642" y="288" font-family="sans-serif" font-size="10" fill="#4c6840">CAN_LOW</text>
 <text x="642" y="320" font-family="monospace" font-size="12" fill="#2e5120">Pin 7: CANH</text>
@@ -45,8 +45,8 @@
 <path d="M217 465 V540 H620 V435" stroke="#8f743d" stroke-width="2" stroke-dasharray="7 6" fill="none"/>
 <rect x="45" y="565" width="1140" height="180" rx="9" fill="#fff9e9" stroke="#c29a47" stroke-width="1.5"/>
 <text x="70" y="600" font-family="sans-serif" font-size="17" font-weight="bold" fill="#765718">Open electrical / CAD decisions</text>
-<text x="72" y="630" font-family="sans-serif" font-size="13" fill="#765718">- VCC and logic-supply pins must match the manufacturer-confirmed variant.</text>
+<text x="72" y="630" font-family="sans-serif" font-size="13" fill="#765718">- 5 V VCC and 3.3 V VIO must match datasheet limits and the exact host board.</text>
 <text x="72" y="657" font-family="sans-serif" font-size="13" fill="#765718">- Decoupling, transient protection, connector pinout and bus termination remain unassigned.</text>
-<text x="72" y="684" font-family="sans-serif" font-size="13" fill="#765718">- Confirm the exact-marked variant before finalizing pin-5 or Silent-bias wiring.</text>
+<text x="72" y="684" font-family="sans-serif" font-size="13" fill="#765718">- TJA1051T/3 S must default HIGH (Silent), including MCU reset/unpowered conditions.</text>
 <text x="72" y="711" font-family="sans-serif" font-size="13" fill="#765718">- Native Proteus DSN/PDSPRJ generation/import is blocked pending supported automation.</text>
 </svg>

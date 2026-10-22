@@ -6,10 +6,8 @@ target_vehicle:
 hardware_baseline:
   mcu: "ESP32S NodeMCU / NodeMCU-32S (original ESP32 with integrated TWAI controller)"
   board_id: "nodemcu-32s"
-  transceiver: "NXP TJA1051, physical item identified by the exact visible marking below; no substitute permitted"
-  package: "SO8 as previously recorded in the design; verify physical orientation before wiring"
+  transceiver: "NXP TJA1051T/3, SO8 (SOT96-1)"
   reported_transceiver_top_marking: "NXP TJA1051 25 06 ND312"
-  orderable_suffix: "unconfirmed; do not infer TJA1051T/3 or TJA1051T/E from the visible text"
   substitutions_allowed: false
 
 requirements:
@@ -19,7 +17,7 @@ requirements:
     acceptance: "Interfaces are schema-defined; contract tests cover module boundaries; stage and requirement IDs link to evidence."
   - id: REQ-HW-001
     priority: MUST
-    statement: "Use only the specified ESP32S NodeMCU / NodeMCU-32S and the exact physical NXP TJA1051 marked NXP TJA1051 25 06 ND312; do not substitute the transceiver or infer an unverified orderable suffix."
+    statement: "Use only the specified original ESP32 TWAI controller and NXP TJA1051T/3 SO8 transceiver as the primary hardware baseline."
     acceptance: "Hardware docs, firmware config, pin map, and generated schematic agree with official datasheets."
   - id: REQ-CAN-001
     priority: MUST

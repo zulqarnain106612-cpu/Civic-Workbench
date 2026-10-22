@@ -1,18 +1,18 @@
 {
-  "design_id": "civic-workbench-nodemcu32s-nxp-tja1051-exact-marking",
+  "design_id": "civic-workbench-original-esp32-tja1051t3",
   "deterministic_outputs": {
-    "README.md": "4907d02eff55939e1bb8934624fa8fb1510eb342e21cb9cf94711a09ab5bab84",
-    "bill-of-materials.csv": "25792b53c02bc24c061a3a5be96e5619333c4faacbf7612aa79bc7a2877abdfb",
-    "component-map.json": "54653e78eb18e484e749378d1103eb13214a12c770a8f7e09eede3f3036b2e47",
+    "README.md": "fdda401c5022d63e73f14b2d771323dc36ad2b91ab2be59d8c407634fb7ab287",
+    "bill-of-materials.csv": "f63ab11d6e745750e5ac9856cf30dcd04c108eefed721dc7171911a12befe74b",
+    "component-map.json": "92f9b804813d3458ac69a23f7e19e01877abc79f7d4d4cabfb61383f9805b783",
     "native-project-status.json": "213aadad4ec905c1f974a8fa53e719ac634234f17a06be13a329d73b560b20ab",
-    "reference-design.netlist.json": "f980106e7e55a901e0a215d3422f4934de0f53347cabecd0b1943723c4b40792",
-    "reference-design.svg": "b71fbbed0c4a7a789b0416ce5bc0e14f0a623453f2fc48834ff3dee11f00f32e"
+    "reference-design.netlist.json": "ac2cf6849bd4beea01fd10ba573a10b9cd4b5aa5f266b4f3fadd70aec03df1cc",
+    "reference-design.svg": "68e644c01c6f7027348abf4daa20ecf56447ca2ef178b1f259ff54be5f151eab"
   },
   "generator": "tools/generate_proteus_reference.py",
   "generator_version": "1.0.0",
   "input": {
     "path": "hardware/reference/esp32-tja1051t3-netlist.yaml",
-    "sha256": "7a1df0927c74406c949aaf30ab5b0b3ee97bff39eb97618042b8cb4f8591f772"
+    "sha256": "14d1e71314551738accbe30cf6ced8ed883de0c724f28b1ebf5f3cb803d4cf46"
   },
   "native_project": {
     "import_render_validation": "not-performed",

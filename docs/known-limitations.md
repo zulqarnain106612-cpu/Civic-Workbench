@@ -1,7 +1,7 @@
 # Known Limitations and Unverified Requirements
 
 1. **Native Proteus file:** deterministic JSON connectivity, BOM, component-map and SVG review artifacts exist. A native .DSN/.PDSPRJ file has not been created/imported/rendered because a supported official Python writer/API was not confirmed. The native-project-status artifact is the source of truth.
-2. **Physical bench:** the specified NodeMCU-32S and exact marked NXP TJA1051 (`NXP TJA1051 25 06 ND312`) are reflected in source. The orderable suffix is not inferred; pin 5 is disconnected in the source netlist pending NXP confirmation. Physical PCB/header continuity, IC pin-1 orientation, supply/Silent-bias circuit and bench behavior are not yet measured. No firmware was flashed.
+2. **Physical bench:** the specified NodeMCU-32S and NXP TJA1051T/3 SO8 are now reflected in the board profile, source pin map and generated source artifacts. Physical PCB revision/header continuity, IC pin-1 orientation, supply/Silent-bias circuit and bench behavior are not yet measured. No firmware was flashed.
 3. **CAN bus:** no vehicle bitrate/topology/safe tap point or identifier has been observed. No live capture or transmission on the Civic occurred.
 4. **Host TX:** repeat scheduling, cancellation and audit work end-to-end on the virtual bus. The host has no physical TX control path. The firmware offers a guarded single-frame C API, but the CW1 protocol is read-only and does not expose host commands for it.
 5. **Diagnostic workflows:** capability evidence/gates are implemented as metadata and simulation-only eligibility evaluation. No Honda-specific ECU address/service or executable vehicle diagnostic is shipped.

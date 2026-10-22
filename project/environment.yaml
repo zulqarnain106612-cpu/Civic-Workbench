@@ -43,7 +43,7 @@ toolchain:
     note: "PlatformIO package cache exists, but it is not yet a usable classic-ESP32 build environment from the shell."
 hardware:
   required_mcu: "Original Espressif ESP32 with integrated TWAI controller"
-  required_transceiver: "Exact physical NXP TJA1051 marked NXP TJA1051 25 06 ND312; SO8 as recorded in project, physical package check pending; no suffix inferred"
+  required_transceiver: "NXP TJA1051T/3 SO8 (SOT96-1)"
   exact_board_or_module: {status: not_identified, value: null}
   board_connected_at_inspection: false
   usb_uart_or_esp_usb_detected: false

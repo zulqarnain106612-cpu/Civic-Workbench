@@ -15,7 +15,7 @@ nodes:
   S10: {name: "Integration, end-to-end workflows, and isolation", depends_on: [S04, S05, S06, S07, S08, S09]}
   S11: {name: "Hardening, performance, regression, and fault tests", depends_on: [S10]}
   S12: {name: "Packaging, traceability audit, and handoff", depends_on: [S11]}
-  S13: {name: "Fixed NodeMCU-32S/TJA1051T/3 mapping and receive-only bench readiness", depends_on: [S12]}
+  S13: {name: "Fixed NodeMCU-32S and exact-marked NXP TJA1051 mapping; pin-5 confirmation and receive-only bench readiness", depends_on: [S12]}
 parallelism:
   - "S04 and S05 may proceed independently after their contracts are stable."
   - "S06 can proceed against recorded/synthetic datasets while live capture hardware is unavailable."

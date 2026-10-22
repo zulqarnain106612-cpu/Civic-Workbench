@@ -1,24 +1,24 @@
 {
-  "design_id": "civic-workbench-original-esp32-tja1051t3",
+  "design_id": "civic-workbench-nodemcu32s-nxp-tja1051-exact-marking",
   "native_import_status": "not-performed",
   "net_names": [
     "CAN_HIGH",
     "CAN_LOW",
     "LOGIC_GND",
-    "MCU_IO_3V3",
     "TRANSCEIVER_5V",
     "TRANSCEIVER_MODE_S",
     "TRANSCEIVER_RX_TO_TWAI",
-    "TWAI_TX_TO_TRANSCEIVER"
+    "TWAI_TX_TO_TRANSCEIVER",
+    "UNRESOLVED_PIN5_DO_NOT_CONNECT"
   ],
   "schema_version": 1,
   "source_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
   "symbols": [
     {
       "library_symbol_verified": false,
-      "reason": "Installed Proteus symbol identity not verified.",
+      "reason": "Exact marking is known; orderable suffix/pin-5 variant remains unconfirmed with NXP.",
       "ref": "U1",
-      "symbol": "TJA1051T/3"
+      "symbol": "NXP TJA1051 exact visible marking"
     },
     {
       "library_symbol_verified": false,

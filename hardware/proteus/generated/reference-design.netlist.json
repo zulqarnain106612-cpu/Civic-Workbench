@@ -30,9 +30,10 @@
     "twai_driver": "ESP-IDF TWAI API, pinned PlatformIO build",
     "tx_gpio": 21
   },
-  "design_id": "civic-workbench-original-esp32-tja1051t3",
+  "design_id": "civic-workbench-nodemcu32s-nxp-tja1051-exact-marking",
   "open_items": [
-    "Exact ESP32 module/board and available non-strapping GPIOs",
+    "Confirm physical pin-5 function/orderable variant with NXP using the complete top marking before wiring or powering",
+    "Confirm exact SO8 package and pin-1 orientation on the physical item",
     "Document and review hardware gate topology, component values and failure modes",
     "Confirm intended CAN connector and protection design",
     "Confirm transceiver supply and power sequencing for chosen installation",
@@ -52,6 +53,11 @@
       "net": "MCU_IO_3V3",
       "nominal_v": 3.3
     },
+    "pin5_variant_dependent_function": {
+      "connection": null,
+      "net": "UNRESOLVED_PIN5_DO_NOT_CONNECT",
+      "status": "blocked until NXP confirms exact variant from supplied top marking"
+    },
     "transceiver_supply": {
       "constraints_v": [
         4.5,
@@ -60,14 +66,6 @@
       "evidence": "NXP TJA1051 datasheet limits.",
       "net": "TRANSCEIVER_5V",
       "nominal_v": 5.0
-    },
-    "vio": {
-      "constraints_v": [
-        2.8,
-        5.5
-      ],
-      "evidence": "NXP TJA1051T/3 datasheet.",
-      "net": "MCU_IO_3V3"
     }
   },
   "references": {
@@ -78,10 +76,10 @@
   "status": "schematic-source-contract; not a generated or validated native schematic",
   "transceiver": {
     "manufacturer": "NXP",
-    "marking_code_interpretation": "Not inferred; literal marking recorded from the owner.",
-    "package": "SO8",
-    "package_code": "SOT96-1",
-    "part": "TJA1051T/3",
+    "marking_code_interpretation": "No suffix/date/lot interpretation has been made; obtain manufacturer confirmation.",
+    "orderable_variant": "unconfirmed",
+    "package": "SO8 as recorded; physical package and pin-1 orientation require confirmation",
+    "part": "NXP TJA1051 (exact visible marking; orderable suffix unconfirmed)",
     "pins": {
       "1": {
         "name": "TXD",
@@ -100,8 +98,8 @@
         "net": "TRANSCEIVER_RX_TO_TWAI"
       },
       "5": {
-        "name": "VIO",
-        "net": "MCU_IO_3V3"
+        "name": "VARIANT_DEPENDENT_VIO_OR_EN",
+        "net": "UNRESOLVED_PIN5_DO_NOT_CONNECT"
       },
       "6": {
         "name": "CANL",

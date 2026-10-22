@@ -51,7 +51,7 @@ requirements:
     - docs/reports/S03-can-transport-report.md
     - hardware/reference/safety-interlock.md
     status: source-and-compile-verified;physical-hardware-validation-pending
-    limitation: NodeMCU-32S board profile, GPIO21/GPIO22 source mapping, and exact TJA1051T/3 pin contract are documented and compile-checked; physical board revision, header continuity, transceiver orientation, power circuit, and isolated-bench behavior remain unverified.
+    limitation: NodeMCU-32S profile and GPIO21/GPIO22 source mapping compile and pass source guards. The exact TJA1051 orderable suffix and pin-5 function are unconfirmed; pin 5 remains disconnected pending NXP confirmation; physical board revision, header continuity, transceiver orientation, power circuit, and isolated-bench behavior remain unverified.
   REQ-CAN-001:
     implementation:
     - schemas/v1/can-frame.schema.json

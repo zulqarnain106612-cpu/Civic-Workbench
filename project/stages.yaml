@@ -12,7 +12,7 @@ stages:
   acceptance:
   - Default branch, current files, available build tools, Python, ESP-IDF/Arduino-ESP32
     option, and Proteus availability are recorded.
-  - Original ESP32 and TJA1051T/3 remain the required hardware target.
+  - Original ESP32 NodeMCU-32S and exact marked NXP TJA1051 remain the required hardware target; suffix not inferred.
   - No code is copied from the unrelated build-a-web-page-for-ios repository.
   delivery_state: complete
 - id: S01
@@ -43,7 +43,7 @@ stages:
   acceptance:
   - Firmware compiles for the original ESP32 compile target using documented versions;
     the exact physical module remains unselected until identified.
-  - TJA1051T/3 pin 5 VIO, pin 8 S mode, supply limits, pinout, and reset-safe inhibit
+  - TJA1051 pinout and supply limits from manufacturer-confirmed exact variant; pin 5 stays unresolved until confirmation; pin 8 S mode and reset-safe inhibit
     requirements are recorded against the official NXP datasheet.
   - Firmware TX initialization is disabled by default, bitrate evidence must be explicitly
     confirmed, GPIOs remain unassigned pending board verification, and the S02 firmware
@@ -247,7 +247,7 @@ stages:
 
 - id: S13
   title: Fixed hardware baseline and receive-only pin mapping
-  goal: Bind the firmware and schematic source to the owner's exact ESP32S NodeMCU and NXP TJA1051T/3 SO8 without substitutions.
+  goal: Bind the firmware and schematic source to the owner's exact ESP32S NodeMCU and physical NXP TJA1051 marked NXP TJA1051 25 06 ND312 without substitutions or suffix inference.
   deliverables:
   - exact-board-platformio-target
   - board-specific-twai-pin-map
@@ -256,8 +256,8 @@ stages:
   - isolated-bench-checklist
   acceptance:
   - PlatformIO target is NodeMCU-32S / nodemcu-32s (classic ESP32), not an S2/S3/C3 or replacement board.
-  - GPIO21 is mapped to TWAI_TX/TJA1051T/3 pin 1 TXD; TJA1051T/3 pin 4 RXD is mapped to GPIO22/TWAI_RX.
-  - NXP TJA1051T/3 SO8 and the reported top marking are preserved; pin 5 is VIO and pin 8 S is externally biased HIGH for receive-only.
+  - GPIO21 is source-mapped to transceiver pin 1 TXD; transceiver pin 4 RXD is source-mapped to GPIO22/TWAI_RX, pending physical pin-1 orientation check.
+  - Exact visible marking NXP TJA1051 25 06 ND312 is preserved without suffix inference; pin 5 remains disconnected until NXP confirms its function, and physical TX remains disabled.
   - Hardware initialization, bitrate evidence, and hardware TX authorization remain disabled.
   - Tests and exact board-profile compilation pass; no physical bench test is claimed without measurement evidence.
   delivery_state: source-mapped-build-and-guard-tests-pending-physical-bench

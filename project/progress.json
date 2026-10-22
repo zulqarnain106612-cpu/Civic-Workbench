@@ -85,8 +85,8 @@
   ],
   "open_questions": [
     "Verify the physical NodeMCU-32S board silkscreen/revision and GPIO21/GPIO22 header continuity before wiring.",
-    "Verify NXP TJA1051T/3 SO8 pin-1 orientation and the exact assembled footprint before powering the circuit.",
-    "Confirm physical TJA1051T/3 order-code/variant before wiring pin 5; NXP documents NC, EN and VIO pin-5 variants, and the reported extra top-marking text is not interpreted as a suffix.",
+    "Verify physical SO8 pin-1 orientation and footprint. Keep pin 5 disconnected and obtain NXP confirmation for the exact visible marking before any power-up.",
+    "Obtain written NXP confirmation for the exact visible marking NXP TJA1051 25 06 ND312 and the physical pin-5 function before wiring or powering the transceiver.",
     "Review transceiver VCC/VIO supplies, decoupling, external Silent-mode pull-up, connector protection and termination policy on an isolated bench.",
     "Confirm the intended CAN bitrate, topology and safe capture point using separate reliable evidence; no Honda IDs/signals or diagnostic capability are assumed.",
     "Confirm an official Labcenter-supported native Proteus generation route, then create/import/render and review a genuine DSN/PDSPRJ."
@@ -325,7 +325,7 @@
   "s13_evidence": {
     "report": "docs/reports/S13-hardware-baseline-and-pin-map.md",
     "board": "ESP32S NodeMCU / NodeMCU-32S (PlatformIO board id nodemcu-32s)",
-    "transceiver": "NXP TJA1051T/3 SO8 (SOT96-1), substitutions_allowed=false",
+    "transceiver": "NXP TJA1051 with exact owner-supplied visible marking; no orderable suffix inferred; no substitutions",
     "reported_transceiver_top_marking": "NXP TJA1051 25 06 ND312",
     "twai_tx_gpio": 21,
     "twai_rx_gpio": 22,
@@ -347,6 +347,6 @@
     "host_safety_test": "7 C assertions passed",
     "schema_package_yaml_checks": "15 versioned schemas synchronized and validated; project YAML parsed; wheel assets passed",
     "git_diff_check": "passed before final metadata changes; rerun after all updates",
-    "transceiver_variant_safety_gate": "TJA1051T/3 remains the required baseline; exact suffix is not inferred from extra top-marking text; pin-5 wiring/power-up blocked until the physical item is consistent with baseline"
+    "transceiver_variant_safety_gate": "The previous TJA1051T/3 suffix assumption is withdrawn. Pin 5 is left disconnected in source design until NXP confirms exact physical variant. Do not power assembly before confirmation."
   }
 }

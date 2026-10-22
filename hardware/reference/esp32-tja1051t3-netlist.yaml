@@ -1,5 +1,5 @@
 schema_version: 1
-design_id: civic-workbench-original-esp32-tja1051t3
+design_id: civic-workbench-nodemcu32s-nxp-tja1051-exact-marking
 status: "schematic-source-contract; not a generated or validated native schematic"
 controller:
   target: "ESP32S NodeMCU / NodeMCU-32S, classic ESP32 with integrated TWAI"
@@ -11,19 +11,19 @@ controller:
   gpio_assignment_status: "source-mapped to the specified NodeMCU-32S; physical header continuity/revision remains to be checked on the actual board"
 transceiver:
   manufacturer: NXP
-  part: TJA1051T/3
+  part: "NXP TJA1051 (exact visible marking; orderable suffix unconfirmed)"
   reported_top_marking: "NXP TJA1051 25 06 ND312"
-  marking_code_interpretation: "Not inferred; literal marking recorded from the owner."
+  marking_code_interpretation: "No suffix/date/lot interpretation has been made; obtain manufacturer confirmation."
+  orderable_variant: unconfirmed
   substitutions_allowed: false
-  package: SO8
-  package_code: SOT96-1
+  package: "SO8 as recorded; physical package and pin-1 orientation require confirmation"
   reference_designator: U1
   pins:
     1: {name: TXD, net: TWAI_TX_TO_TRANSCEIVER}
     2: {name: GND, net: LOGIC_GND}
     3: {name: VCC, net: TRANSCEIVER_5V}
     4: {name: RXD, net: TRANSCEIVER_RX_TO_TWAI}
-    5: {name: VIO, net: MCU_IO_3V3}
+    5: {name: "VARIANT_DEPENDENT_VIO_OR_EN", net: "UNRESOLVED_PIN5_DO_NOT_CONNECT"}
     6: {name: CANL, net: CAN_LOW}
     7: {name: CANH, net: CAN_HIGH}
     8: {name: S, net: TRANSCEIVER_MODE_S}
@@ -37,10 +37,10 @@ power_and_decoupling:
     nominal_v: 5.0
     constraints_v: [4.5, 5.5]
     evidence: "NXP TJA1051 datasheet limits."
-  vio:
-    net: MCU_IO_3V3
-    constraints_v: [2.8, 5.5]
-    evidence: "NXP TJA1051T/3 datasheet."
+  pin5_variant_dependent_function:
+    net: UNRESOLVED_PIN5_DO_NOT_CONNECT
+    connection: null
+    status: "blocked until NXP confirms exact variant from supplied top marking"
   decoupling:
     status: "must be defined and reviewed during native schematic generation"
     requirements:
@@ -76,7 +76,8 @@ artifacts:
   python_generator: "planned S09"
   import_render_validation: "not performed"
 open_items:
-  - "Exact ESP32 module/board and available non-strapping GPIOs"
+  - "Confirm physical pin-5 function/orderable variant with NXP using the complete top marking before wiring or powering"
+  - "Confirm exact SO8 package and pin-1 orientation on the physical item"
   - "Document and review hardware gate topology, component values and failure modes"
   - "Confirm intended CAN connector and protection design"
   - "Confirm transceiver supply and power sequencing for chosen installation"

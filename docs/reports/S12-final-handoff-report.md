@@ -27,8 +27,13 @@ Use docs/setup-and-run.md to run locally. Use docs/evidence-index.md for artifac
 
 ## Post-handoff update — S13 exact hardware baseline
 
-The owner has specified the fixed physical items: **ESP32S NodeMCU / NodeMCU-32S (classic ESP32)** and **NXP TJA1051T/3 SO8**. The reported visible IC marking is stored verbatim as NXP TJA1051 25 06 ND312. This does not authorize any substitute or successor component.
+The owner has specified the fixed physical items: **ESP32S NodeMCU / NodeMCU-32S (classic ESP32)** and the exact physical NXP TJA1051 bearing the visible marking `NXP TJA1051 25 06 ND312`. No substitute is permitted. The orderable suffix is not inferred from the visible marking.
 
-The source and PlatformIO target have since been revised to NodeMCU-32S (nodemcu-32s). GPIO21 is mapped as TWAI_TX to TJA1051T/3 pin 1 TXD; TJA1051T/3 pin 4 RXD is mapped as TWAI_RX to GPIO22. The receive-only baseline keeps pin 8 S externally biased HIGH. Hardware initialization, bitrate authorization and physical TX remain disabled.
+The source and PlatformIO target have since been revised to NodeMCU-32S (nodemcu-32s). GPIO21 is source-mapped to transceiver pin 1 TXD and transceiver pin 4 RXD is mapped to GPIO22. Because the exact orderable variant is not confirmed, pin 5 remains unresolved and disconnected. Hardware initialization, bitrate authorization and physical TX remain disabled.
 
 The board-specific source mapping and build are not a substitute for physical continuity checks, pin-1 orientation inspection, circuit review, or isolated bench tests. See docs/reports/S13-hardware-baseline-and-pin-map.md. No hardware was flashed and no vehicle bus was attached during this update.
+
+
+## S13 correction — exact transceiver marking takes precedence
+
+The earlier S13 text describing `25 06 ND312` as “extra marking” and asserting that it was not a different ordering code was unsupported and is withdrawn. The exact physical marking supplied by the owner is `NXP TJA1051 25 06 ND312`. No orderable suffix has been inferred. NXP documents TJA1051 variants with different pin-5 functions; accordingly the schematic-source netlist now leaves pin 5 explicitly unresolved/disconnected and prohibits power-up until NXP confirms the exact marked variant. See `docs/reports/S13-hardware-baseline-and-pin-map.md`. No substitute part is authorized.

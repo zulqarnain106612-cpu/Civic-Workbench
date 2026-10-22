@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/tx-result.schema.json",
+  "title": "Civic-Workbench TX result event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "request_id", "completed_at_utc", "status", "frames_sent"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "tx_result"},
+    "request_id": {"type": "string", "format": "uuid"},
+    "completed_at_utc": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["queued", "sent", "partial", "cancelled", "rejected", "failed"]},
+    "frames_sent": {"type": "integer", "minimum": 0},
+    "error_code": {"type": ["string", "null"], "maxLength": 128},
+    "details": {"type": ["string", "null"], "maxLength": 2000}
+  }
+}

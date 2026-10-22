@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/capture-start.schema.json",
+  "title": "Civic-Workbench capture-start command",
+  "description": "A request to start hardware listen-only or simulated capture; hardware capture must remain passive.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "request_id", "requested_at_utc", "mode", "bitrate_bps", "identifier_filter"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "capture_start"},
+    "request_id": {"type": "string", "format": "uuid"},
+    "requested_at_utc": {"type": "string", "format": "date-time"},
+    "mode": {"enum": ["listen_only", "simulated"]},
+    "bitrate_bps": {"type": ["integer", "null"], "minimum": 1},
+    "identifier_filter": {"type": "array", "items": {"type": "integer", "minimum": 0, "maximum": 536870911}, "uniqueItems": true},
+    "notes": {"type": "string", "maxLength": 2000}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"mode": {"const": "listen_only"}}, "required": ["mode"]},
+      "then": {"properties": {"bitrate_bps": {"type": "integer", "minimum": 1}}}
+    }
+  ]
+}

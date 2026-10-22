@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "civic-workbench"
+version = "0.4.0"
+description = "Local-first direct CAN engineering workbench for the original ESP32 and NXP TJA1051T/3"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+  "jsonschema>=4.19,<5",
+  "PyYAML>=6.0,<7",
+  "pyserial>=3.5,<4",
+]
+
+[project.scripts]
+civic-workbench = "civic_workbench.app:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+civic_workbench = ["web/*.html", "web/*.js", "web/*.css", "schemas/v1/*.schema.json"]

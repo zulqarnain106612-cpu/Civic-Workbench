@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/transport-envelope.schema.json",
+  "title": "Civic-Workbench transport envelope",
+  "description": "Transport-neutral JSON event/request envelope. Type-specific payloads are validated against their versioned contracts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "message_id", "message_type", "issued_at_utc", "sequence", "payload"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "message_id": {"type": "string", "format": "uuid"},
+    "message_type": {"enum": ["hello", "hello_ack", "device_status", "can_frame", "capture_start", "capture_started", "capture_stop", "capture_stopped", "analysis_finding", "tx_request", "tx_cancel", "tx_result", "safety_state", "error"]},
+    "issued_at_utc": {"type": "string", "format": "date-time"},
+    "sequence": {"type": "integer", "minimum": 0},
+    "correlation_id": {"type": "string", "format": "uuid"},
+    "session_id": {"type": "string", "format": "uuid"},
+    "sender": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "id"],
+      "properties": {
+        "role": {"enum": ["browser", "host_service", "firmware", "simulator", "importer"]},
+        "id": {"type": "string", "minLength": 1, "maxLength": 128}
+      }
+    },
+    "payload": {"type": "object"}
+  }
+}

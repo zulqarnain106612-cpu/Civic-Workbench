@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 import unittest
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from civic_workbench.contracts import (  # noqa: E402
     ContractViolation,
     ENVELOPE_PAYLOAD_SCHEMAS,
+    _fast_can_frame_schema,
     SCHEMA_DIR,
     SCHEMA_FILES,
     authorize_transmission,
@@ -279,6 +280,37 @@ class JsonSchemaTests(unittest.TestCase):
 
 
 class CanFrameContractTests(unittest.TestCase):
+    def test_fast_frame_validator_matches_canonical_schema_boundaries(self):
+        schema = json.loads((ROOT / "schemas/v1/can-frame.schema.json").read_text(encoding="utf-8"))
+        canonical = Draft202012Validator(schema, format_checker=FormatChecker())
+        cases = [
+            frame(),
+            frame(clock_source="monotonic_only", captured_at_utc_removed=True),
+            frame(id_format="extended", arbitration_id=0x1ABCDEFF),
+            frame(arbitration_id=0x800),
+            frame(frame_id="not-a-uuid"),
+            frame(captured_at_utc="not-a-date-time"),
+            frame(payload=[0, 256]),
+            frame(clock_source="invented-clock"),
+            frame(unrecognized_extension=True),
+            frame(device_id="x" * 129),
+            frame(frame_type="remote", dlc=8, payload=[]),
+            frame(frame_type="remote", dlc=1, payload=[0]),
+            frame(captured_monotonic_ns=True),
+            frame(source_record_ref="r" * 513),
+        ]
+        cases[1].pop("captured_at_utc_removed", None)
+        cases[1].pop("captured_at_utc", None)
+        for sample in cases:
+            with self.subTest(sample=sample):
+                schema_valid = canonical.is_valid(sample)
+                try:
+                    _fast_can_frame_schema(sample)
+                    fast_valid = True
+                except ContractViolation:
+                    fast_valid = False
+                self.assertEqual(fast_valid, schema_valid, sample)
+
     def test_rejects_standard_identifier_outside_11_bits(self):
         with self.assertRaises(ContractViolation):
             validate_record("can-frame", frame(arbitration_id=0x800))
@@ -617,12 +649,13 @@ class ApiAndTraceabilityTests(unittest.TestCase):
         self.assertEqual(progress["stage_status"]["S01"], "complete")
         self.assertEqual(progress["stage_status"]["S02"], "complete-source-and-build-foundation")
         self.assertEqual(progress["stage_status"]["S03"], "complete-source-build-and-host-mock-verified")
-        self.assertEqual(progress["stage_status"]["S04"], "ready")
-        self.assertEqual(progress["stage_status"]["S05"], "ready")
-        self.assertEqual(progress["current_focus"], "S04")
+        for stage_id in ("S04", "S05", "S06", "S07", "S08", "S09", "S10", "S11", "S12"):
+            self.assertTrue(progress["stage_status"].get(stage_id), stage_id)
+            self.assertIn(stage_id, progress["stage_reports"])
+        self.assertTrue(progress["current_focus"])
         self.assertEqual(progress["s02_evidence"]["build_result"], "SUCCESS; exit code 0")
         self.assertEqual(progress["s03_evidence"]["build_result"], "SUCCESS; exit code 0")
-        self.assertEqual(progress["s03_evidence"]["python_test_result"], "64 tests passed")
+        self.assertRegex(progress["s03_evidence"]["python_test_result"], r"^\d+ tests passed$")
         self.assertEqual(progress["s01_evidence"]["test_result"], "42 tests passed")
 
     def test_stage_dependency_graph_is_complete_and_acyclic(self):

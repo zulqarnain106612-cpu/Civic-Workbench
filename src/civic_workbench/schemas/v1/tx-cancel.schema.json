@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/tx-cancel.schema.json",
+  "title": "Civic-Workbench TX cancellation command",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "request_id", "requested_at_utc", "requested_by"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "tx_cancel"},
+    "request_id": {"type": "string", "format": "uuid"},
+    "requested_at_utc": {"type": "string", "format": "date-time"},
+    "requested_by": {"type": "string", "minLength": 1, "maxLength": 128},
+    "reason": {"type": "string", "maxLength": 1000}
+  }
+}

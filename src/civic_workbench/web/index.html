@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark"><title>Civic-Workbench | Direct CAN Engineering</title>
+  <link rel="stylesheet" href="/styles.css"><script defer src="/app.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">CW</div><div><strong>Civic-Workbench</strong><small>DIRECT CAN ENGINEERING</small></div></div>
+    <div class="side-label">WORKSPACE</div>
+    <a class="nav-link active" href="#overview"><span>▦</span> Overview</a><a class="nav-link" href="#capture"><span>⌁</span> Capture & frames</a><a class="nav-link" href="#analysis"><span>⌗</span> Signal analysis</a><a class="nav-link" href="#diagnostics"><span>⚙</span> Diagnostics / mappings</a><a class="nav-link" href="#simulation"><span>◈</span> Virtual CAN lab</a><a class="nav-link" href="#sessions"><span>▤</span> Sessions & data</a><a class="nav-link" href="#transmit"><span>⇧</span> TX scheduler</a><a class="nav-link" href="#hardware"><span>⌘</span> Device / firmware</a>
+    <div class="sidebar-foot"><span class="led led-neutral" id="sideLed"></span><span id="sideConnection">No hardware stream</span><small>Host TX is permanently disabled in this build.</small></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><div class="eyebrow">ENGINEERING / CONTROL PLANE</div><h1>CAN Workbench</h1><p class="subtitle">Observe raw traffic, investigate signals and rehearse bounded workflows without vehicle assumptions.</p></div><div class="top-actions"><span class="source-chip" id="sourceChip">SIMULATION READY</span><button class="btn btn-quiet" id="refreshBtn">Refresh status ↻</button></div></header>
+    <section id="overview" class="metrics">
+      <article class="metric"><div class="metric-label">DEVICE STATE</div><div class="metric-value" id="deviceState">UNKNOWN</div><div class="metric-foot" id="deviceFoot">Waiting for status</div></article>
+      <article class="metric"><div class="metric-label">ACTIVE SESSION</div><div class="metric-value" id="activeSession">—</div><div class="metric-foot" id="sessionFoot">No active capture</div></article>
+      <article class="metric"><div class="metric-label">RAW FRAMES</div><div class="metric-value" id="frameCount">0</div><div class="metric-foot" id="idCount">0 unique identifiers</div></article>
+      <article class="metric"><div class="metric-label">TX AUTHORIZATION</div><div class="metric-value danger-text">BLOCKED</div><div class="metric-foot">Hardware TX disabled by policy</div></article>
+    </section>
+    <div id="notice" class="notice" role="status">Starting local workbench…</div>
+    <section id="capture" class="panel">
+      <div class="section-head"><div><div class="eyebrow">01 / RAW OBSERVATIONS</div><h2>Capture & frame explorer</h2><p>Raw records stay immutable; annotations are stored separately.</p></div><div class="button-row"><button class="btn btn-primary" id="startSimBtn">Start simulated capture</button><button class="btn btn-secondary" id="stopBtn" disabled>Stop session</button></div></div>
+      <div class="filterbar"><label>Identifier <input id="filterId" placeholder="e.g. 0x100 or 256"></label><label>Frame source <select id="filterSource"><option value="">All sources</option><option value="simulator">Simulation</option><option value="hardware">Hardware</option><option value="import">Imported</option></select></label><label>Frame direction <select id="filterDirection"><option value="">All directions</option><option value="rx">RX</option><option value="tx">TX</option><option value="unknown">Unknown</option></select></label><label class="search-label">Search payload <input id="filterPayload" placeholder="Byte, hex or decimal"></label></div>
+      <div class="table-wrap"><table><thead><tr><th>SEQ</th><th>TIME (MONOTONIC)</th><th>ID</th><th>FMT</th><th>DLC</th><th>PAYLOAD</th><th>DIR</th><th>SOURCE</th></tr></thead><tbody id="frameRows"><tr><td colspan="8" class="empty">No frames in this session. Start a simulation or connect a firmware serial stream.</td></tr></tbody></table></div>
+      <div class="table-footer"><span id="tableInfo">0 frames</span><button class="btn btn-quiet btn-small" id="loadOlderBtn">Load more</button></div>
+      <div class="detail-strip" id="frameDetail"><div><div class="eyebrow">SELECTED OBSERVATION</div><strong>No frame selected</strong><p>Choose a row to inspect provenance and raw values.</p></div></div>
+    </section>
+    <section id="analysis" class="panel"><div class="section-head"><div><div class="eyebrow">02 / EVIDENCE ENGINE</div><h2>Identifier & signal analysis</h2><p>Intervals, byte variability and counter-like sequences are hypotheses, never automatic vehicle mappings.</p></div><button class="btn btn-primary" id="analyzeBtn" disabled>Analyze current session</button></div>
+      <div class="analysis-grid"><div><div class="subhead">Identifier timing</div><div class="chart-wrap"><canvas id="timingChart" width="800" height="220" aria-label="Identifier timing chart"></canvas></div><div id="analysisSummary" class="muted">Capture frames before running analysis.</div></div><div><div class="subhead">Findings <span id="findingCount" class="count-pill">0</span></div><div id="findings" class="finding-list"><div class="empty-card">No findings yet.</div></div></div></div>
+    </section>
+    <section id="diagnostics" class="panel">
+      <div class="section-head"><div><div class="eyebrow">03 / EVIDENCE-DRIVEN MAPPINGS</div><h2>Parameter definitions & diagnostic capabilities</h2><p>Definitions are versioned; candidate output requires independent evidence before promotion. This panel never executes physical diagnostics.</p></div><span class="source-chip chip-danger">NO VEHICLE DIAGNOSTIC EXECUTION</span></div>
+      <div class="sim-grid">
+        <form id="mappingForm" class="control-card">
+          <h3>Explicit parameter decoder</h3>
+          <label>Parameter name<input id="mappingName" value="candidate-byte-0" required maxlength="128"></label>
+          <div class="inline-fields"><label>Start bit<input id="mappingStartBit" type="number" min="0" max="63" value="0" required></label><label>Bit length<input id="mappingBitLength" type="number" min="1" max="64" value="8" required></label></div>
+          <div class="inline-fields"><label>Byte order<select id="mappingByteOrder"><option value="little_endian">Little endian</option><option value="big_endian">Big endian</option></select></label><label>Signed<select id="mappingSigned"><option value="false">Unsigned</option><option value="true">Signed</option></select></label></div>
+          <div class="inline-fields"><label>Scale<input id="mappingScale" type="number" value="1" step="any" required></label><label>Offset<input id="mappingOffset" type="number" value="0" step="any" required></label><label>Unit<input id="mappingUnit" placeholder="unknown" maxlength="64"></label></div>
+          <label>Evidence frame UUIDs (comma-separated)<input id="mappingEvidenceIds" placeholder="Select a frame row, then use selected frame" required></label>
+          <div class="button-row"><button class="btn btn-quiet" type="button" id="useSelectedFrameBtn">Use selected frame</button><button class="btn btn-primary" type="submit" id="decodeParameterBtn" disabled>Decode & version candidate</button></div>
+          <p class="muted tiny">Scale, offset, signedness and byte order are explicit user inputs, not inferred facts.</p>
+        </form>
+        <div class="control-card">
+          <h3>Diagnostic capability evidence</h3>
+          <form id="capabilityForm">
+            <label>Operation description<input id="capOperation" required maxlength="256" placeholder="e.g. read a documented parameter"></label>
+            <div class="inline-fields"><label>Protocol<select id="capProtocol"><option value="unknown">Unknown</option><option value="iso-tp">ISO-TP</option><option value="uds-over-can">UDS over CAN</option><option value="kwp2000-over-can">KWP2000 over CAN</option><option value="custom">Custom / evidence required</option></select></label><label>Status<select id="capStatus"><option value="unknown">Unknown</option><option value="unsupported">Unsupported</option><option value="supported">Supported (evidence required)</option></select></label></div>
+            <label>Evidence type<select id="capEvidenceKind"><option value="official_document">Official document</option><option value="observed_capture">Observed capture</option><option value="isolated_bench_test">Isolated bench test</option><option value="vendor_confirmation">Vendor confirmation</option></select></label>
+            <label>Evidence reference<input id="capEvidenceReference" maxlength="2048" placeholder="URL, frame ID, lab report reference"></label>
+            <label>Evidence notes<textarea id="capEvidenceNotes" rows="2" maxlength="2000" placeholder="What exactly does this evidence prove?"></textarea></label>
+            <div class="button-row"><button class="btn btn-primary" type="submit">Save capability evidence</button></div>
+          </form>
+          <label>Evaluate saved capability<select id="capabilityToEvaluate"><option value="">Select capability</option></select></label>
+          <button class="btn btn-secondary" id="evaluateDiagnosticBtn" disabled>Evaluate simulation-only gate</button>
+          <div id="capabilityList" class="finding-list"></div>
+        </div>
+      </div>
+      <div class="subhead" style="margin-top:20px">Saved parameter mapping versions</div>
+      <div id="mappingList" class="finding-list"><div class="empty-card">No parameter definitions saved.</div></div>
+      <div class="safety-banner"><strong>Promotion rule</strong><p>Only promote a candidate after entering a specific independent validation method and evidence references. An API status of “validated” records an operator assertion; it is not automatic confirmation by Honda or an ECU manufacturer.</p></div>
+    </section>
+    <section id="simulation" class="panel"><div class="section-head"><div><div class="eyebrow">04 / DETERMINISTIC LAB</div><h2>Virtual CAN lab</h2><p>Generated frames are labeled simulator and never count as physical vehicle evidence.</p></div><span class="source-chip">NO VEHICLE REQUIRED</span></div>
+      <div class="sim-grid"><div class="control-card"><h3>Scenario nodes</h3><p class="muted">Starter scenario emits a counter-like byte and a toggle pattern. IDs are synthetic examples only.</p><label>Virtual time step (ms)<input type="number" id="stepMs" value="1000" min="0" max="3600000"></label><div class="button-row"><button class="btn btn-primary" id="stepBtn" disabled>Advance simulation</button><button class="btn btn-secondary" id="resetScenarioBtn">New starter scenario</button></div><div id="simState" class="code-block">No scenario loaded</div></div>
+        <div class="control-card"><h3>Trace tools</h3><label>Source session<select id="replaySession"><option value="">Select source session</option></select></label><label>Replay speed<input type="number" id="replaySpeed" value="1" min="0.01" max="100" step="0.1"></label><button class="btn btn-secondary" id="replayBtn" disabled>Replay into current simulation</button><div class="split-label">Controlled mutation</div><label>Operation<select id="mutationKind"><option value="flip_bit">Flip one bit</option><option value="xor_byte">XOR one byte</option><option value="set_byte">Set one byte</option></select></label><div class="inline-fields"><label>Byte offset<input id="mutByte" type="number" min="0" max="7" value="0"></label><label>Bit / value<input id="mutValue" type="number" min="0" max="255" value="0"></label></div><button class="btn btn-quiet" id="mutateBtn" disabled>Mutate source into new frames</button></div></div>
+    </section>
+    <section id="sessions" class="panel"><div class="section-head"><div><div class="eyebrow">04 / DURABLE DATA</div><h2>Sessions & provenance</h2><p>SQLite-backed persistence; export bundles include manifest, raw frames and annotations.</p></div><div class="button-row"><button class="btn btn-secondary" id="exportBtn" disabled>Export current bundle</button><label class="file-button">Import bundle<input type="file" id="importFile" accept="application/json,.json"></label></div></div><div class="table-wrap"><table><thead><tr><th>SESSION</th><th>CREATED</th><th>SOURCE</th><th>RECORDS</th><th>BITRATE</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="sessionRows"><tr><td colspan="7" class="empty">No persisted sessions.</td></tr></tbody></table></div></section>
+    <section id="transmit" class="panel"><div class="section-head"><div><div class="eyebrow">05 / TRANSMISSION CONTROLS</div><h2>TX scheduler & audit</h2><p>Simulation target only. Host software has no physical transmission route or arm endpoint.</p></div><span class="source-chip chip-danger">HARDWARE TX BLOCKED</span></div>
+      <div class="tx-layout"><form id="txForm" class="tx-form"><div class="inline-fields"><label>Arbitration ID<input id="txId" value="0x321" maxlength="10" required></label><label>ID format<select id="txIdFormat"><option value="standard">Standard 11-bit</option><option value="extended">Extended 29-bit</option></select></label></div><label>Payload bytes (space-separated hex)<input id="txPayload" value="AA 55" placeholder="01 02 03"></label><div class="inline-fields"><label>Period ms<input id="txPeriod" type="number" value="100" min="1" max="60000"></label><label>Repeat count<input id="txRepeats" type="number" value="1" min="1" max="100"></label><label>Timeout ms<input id="txTimeout" type="number" value="1000" min="1" max="60000"></label></div><label>Operator note<input id="txNote" maxlength="2000" placeholder="Why is this synthetic request being tested?"></label><button class="btn btn-primary" type="submit" id="txSubmit" disabled>Queue on virtual bus</button><p class="muted tiny">Requests are bounded and audited; cancelling removes pending simulator events only.</p></form><div><div class="subhead">TX audit trail</div><div id="txAudit" class="finding-list"><div class="empty-card">No TX requests yet.</div></div></div></div>
+    </section>
+    <section id="hardware" class="panel"><div class="section-head"><div><div class="eyebrow">06 / DEVICE BOUNDARY</div><h2>Firmware serial stream</h2><p>Read-only CW1 ingestion. Connecting does not arm or command the transceiver.</p></div><span id="serialState" class="source-chip">DISCONNECTED</span></div>
+      <div class="hardware-grid"><form id="serialForm" class="serial-form"><label>Serial port<input id="serialPort" value="/dev/ttyUSB0" placeholder="/dev/ttyUSB0 or COM3" required></label><label>Baud rate<select id="serialBaud"><option>115200</option><option>230400</option><option>921600</option><option>57600</option></select></label><div class="button-row"><button class="btn btn-secondary" type="submit">Connect read-only stream</button><button class="btn btn-quiet" type="button" id="disconnectSerialBtn">Disconnect</button></div></form><div class="status-box"><div class="status-row"><span>Port</span><strong id="devicePort">—</strong></div><div class="status-row"><span>Firmware</span><strong id="firmwareVersion">—</strong></div><div class="status-row"><span>Bitrate</span><strong id="deviceBitrate">Unknown</strong></div><div class="status-row"><span>Frames received</span><strong id="deviceFrames">0</strong></div><div class="status-row"><span>Faults</span><strong id="deviceFaults">No device status</strong></div></div></div>
+      <div class="safety-banner"><strong>Safety boundary</strong><p>No vehicle identifiers, diagnostic services, ECU addresses, or signal scales are assumed. The exact physical ESP32 board and GPIO assignments remain unverified. Do not flash or connect the generated design to a vehicle until the module, bitrate, wiring and independent hardware interlock are reviewed.</p></div>
+    </section>
+    <footer><span>Civic-Workbench 0.4 · Local-only control plane</span><span>Raw capture is immutable · Observed ≠ Candidate ≠ Validated</span></footer>
+  </main>
+  <dialog id="detailDialog"><div class="dialog-head"><h2>Record detail</h2><button id="closeDialog" class="btn btn-quiet">Close</button></div><pre id="dialogJson"></pre></dialog>
+</body>
+</html>

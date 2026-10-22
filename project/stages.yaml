@@ -1,101 +1,246 @@
 schema_version: 1
 stages:
-  - id: S00
-    title: Repository and environment discovery
-    goal: Establish a reproducible baseline without assuming the local toolchain or available hardware.
-    deliverables: [environment-report, repo-map, toolchain-matrix, risk-register]
-    acceptance:
-      - "Default branch, current files, available build tools, Python, ESP-IDF/Arduino-ESP32 option, and Proteus availability are recorded."
-      - "Original ESP32 and TJA1051T/3 remain the required hardware target."
-      - "No code is copied from the unrelated build-a-web-page-for-ios repository."
-  - id: S01
-    title: Requirements, schemas, interfaces, and contracts
-    goal: Freeze stable payloads and module boundaries before implementing broad features.
-    deliverables: [versioned-frame-schema, API-contracts, storage-schema, event-contracts, traceability]
-    acceptance:
-      - "Schema and contract tests exist for frame, session, analysis finding, diagnostic capability, TX request, and safety state."
-      - "Dependency DAG has no cycle; requirements each have IDs and verification methods."
-  - id: S02
-    title: Hardware design and firmware foundation
-    goal: Create a reproducible original-ESP32 firmware skeleton and datasheet-reviewed transceiver connection contract; native Proteus artifact generation and import validation are owned by S09.
-    deliverables: [firmware-skeleton, pin-config, build-config, schematic-source, hardware-review]
-    acceptance:
-      - "Firmware compiles for the original ESP32 compile target using documented versions; the exact physical module remains unselected until identified."
-      - "TJA1051T/3 pin 5 VIO, pin 8 S mode, supply limits, pinout, and reset-safe inhibit requirements are recorded against the official NXP datasheet."
-      - "Firmware TX initialization is disabled by default, bitrate evidence must be explicitly confirmed, GPIOs remain unassigned pending board verification, and the S02 firmware exposes no transmit call."
-      - "The source-level netlist and safety-interlock requirements document all unverified electrical assumptions; native Proteus generation/import validation remains S09."
-  - id: S03
-    title: CAN receive/transmit core and transport
-    goal: Implement frame acquisition, controller state reporting, buffering, transport, and gated TX APIs.
-    deliverables: [twai-driver, frame-ingress, transport-contract, error-state-model, tx-gate]
-    acceptance:
-      - "The production CAN core is host-mock tested for standard/extended IDs, DLC, monotonic observation timestamps, bounded ingress, queue overflow/drop counters, malformed frames, controller statistics, guarded single-frame TX, interlock-open disarm, and bus-off recovery/restart."
-      - "Handshake, device-status, and raw CAN-frame serial records are validated against the versioned JSON Schemas, including monotonic-only time and loss provenance."
-      - "The default ESP32 build remains Listen Only with hardware-init, bitrate-evidence, and TX-capability gates off; the direct-frame API is centrally guarded and is not exposed as a serial command."
-      - "Host-mock tests do not count as physical bus/bench evidence; loopback, real-controller fault behavior, and electrical interlock validation remain S10/S11 requirements."
-  - id: S04
-    title: Browser engineering UI
-    goal: Deliver the core dashboard for live/recorded frame inspection and analysis.
-    deliverables: [frame-table, filters, detail-pane, live-status, charts, error-states]
-    acceptance:
-      - "A synthetic session can be explored end-to-end without hardware."
-      - "Loading, no-data, disconnected, stale-data, overflow, and error conditions are visible."
-  - id: S05
-    title: Session persistence and export
-    goal: Make raw capture and metadata durable and portable.
-    deliverables: [versioned-store, import-export, session-browser, migration-tests]
-    acceptance:
-      - "Round-trip import/export preserves raw bytes, identifier flags, timing basis, and provenance."
-      - "Analysis annotations do not mutate the raw capture."
-  - id: S06
-    title: Identifier discovery and signal-analysis engine
-    goal: Rank evidence-backed candidates for IDs, periods, counters, checksums, and bit/byte signals.
-    deliverables: [periodicity-analysis, change-analysis, candidate-mapping-schema, confidence-model, analysis-tests]
-    acceptance:
-      - "Synthetic known-answer datasets return correct measurements."
-      - "No inferred mapping is labeled validated without an independent validation method and evidence."
-  - id: S07
-    title: Gated direct-CAN TX and diagnostic framework
-    goal: Support carefully controlled raw frame transmission and extensible capability-based workflows.
-    deliverables: [tx-scheduler, rate-limits, audit-log, cancellation, diagnostic-capability-model, workflow-tests]
-    acceptance:
-      - "TX can be tested in simulation, has explicit arming and hardware interlock state, rate/repeat limits, cancellation, and audit log."
-      - "Protocol operations and parameter decoders remain unavailable unless supported; no guessed vehicle IDs are embedded."
-  - id: S08
-    title: Interactive virtual CAN simulation lab
-    goal: Make the main workflows demonstrable and testable with virtual nodes and deterministic traces.
-    deliverables: [virtual-bus, virtual-nodes, trace-replay, mutation-tools, scenario-editor, simulator-tests]
-    acceptance:
-      - "Scenarios support scheduled frames, filtering, replay, controlled transmission, and repeatable outcomes."
-      - "Simulation is clearly distinguished from physical CAN and vehicle evidence."
-  - id: S09
-    title: Python Proteus generator and native project
-    goal: Generate a maintainable, native schematic/project from Python source.
-    deliverables: [generator, component-map, schematic-project, generated-artifact-manifest, design-review]
-    acceptance:
-      - "Generator output is deterministic and versioned; native project/schematic files are generated, not only raster/vector pictures."
-      - "The exact ESP32/TJA1051T/3 signal and supply relationship is documented; unknown library symbols/footprints are visibly marked."
-      - "Import/render validation is recorded using the available official Proteus toolchain; unavailable tooling is reported as an open verification gap."
-  - id: S10
-    title: Integration, end-to-end workflows, and isolation
-    goal: Join firmware/simulation, storage, analysis, UI, and TX safety controls.
-    deliverables: [e2e-scenarios, integration-report, protocol-boundary-tests, safety-state-tests]
-    acceptance:
-      - "A capture-to-analysis-to-export workflow and a simulation-to-TX-audit workflow pass end-to-end."
-      - "Browser/client input cannot bypass firmware safety state or TX policy."
-  - id: S11
-    title: Hardening, performance, regression, and fault tests
-    goal: Validate responsiveness, bounded memory, recovery, correctness, and operational failure behavior.
-    deliverables: [performance-report, fault-matrix, regression-suite, security-review, known-limitations]
-    acceptance:
-      - "Capture queue behavior under defined load is measured and losses are reported."
-      - "Reconnect, malformed data, queue exhaustion, timeouts, bus-off, disarm, and application restart are covered."
-      - "No performance claim appears without a reproducible measurement."
-  - id: S12
-    title: Packaging, traceability audit, and handoff
-    goal: Deliver reproducible setup/run steps, artifacts, and an evidence-based acceptance matrix.
-    deliverables: [setup-guide, build-artifacts, evidence-index, final-traceability-matrix, final-report]
-    acceptance:
-      - "All MUST requirements are implemented and verified or explicitly marked blocked with evidence and owner."
-      - "Final report distinguishes unit tests, simulation, tool validation, and physical vehicle validation."
-      - "Only actual completed work is claimed."
+- id: S00
+  title: Repository and environment discovery
+  goal: Establish a reproducible baseline without assuming the local toolchain or
+    available hardware.
+  deliverables:
+  - environment-report
+  - repo-map
+  - toolchain-matrix
+  - risk-register
+  acceptance:
+  - Default branch, current files, available build tools, Python, ESP-IDF/Arduino-ESP32
+    option, and Proteus availability are recorded.
+  - Original ESP32 and TJA1051T/3 remain the required hardware target.
+  - No code is copied from the unrelated build-a-web-page-for-ios repository.
+  delivery_state: complete
+- id: S01
+  title: Requirements, schemas, interfaces, and contracts
+  goal: Freeze stable payloads and module boundaries before implementing broad features.
+  deliverables:
+  - versioned-frame-schema
+  - API-contracts
+  - storage-schema
+  - event-contracts
+  - traceability
+  acceptance:
+  - Schema and contract tests exist for frame, session, analysis finding, diagnostic
+    capability, TX request, and safety state.
+  - Dependency DAG has no cycle; requirements each have IDs and verification methods.
+  delivery_state: complete
+- id: S02
+  title: Hardware design and firmware foundation
+  goal: Create a reproducible original-ESP32 firmware skeleton and datasheet-reviewed
+    transceiver connection contract; native Proteus artifact generation and import
+    validation are owned by S09.
+  deliverables:
+  - firmware-skeleton
+  - pin-config
+  - build-config
+  - schematic-source
+  - hardware-review
+  acceptance:
+  - Firmware compiles for the original ESP32 compile target using documented versions;
+    the exact physical module remains unselected until identified.
+  - TJA1051T/3 pin 5 VIO, pin 8 S mode, supply limits, pinout, and reset-safe inhibit
+    requirements are recorded against the official NXP datasheet.
+  - Firmware TX initialization is disabled by default, bitrate evidence must be explicitly
+    confirmed, GPIOs remain unassigned pending board verification, and the S02 firmware
+    exposes no transmit call.
+  - The source-level netlist and safety-interlock requirements document all unverified
+    electrical assumptions; native Proteus generation/import validation remains S09.
+  delivery_state: complete-source-and-build-foundation
+- id: S03
+  title: CAN receive/transmit core and transport
+  goal: Implement frame acquisition, controller state reporting, buffering, transport,
+    and gated TX APIs.
+  deliverables:
+  - twai-driver
+  - frame-ingress
+  - transport-contract
+  - error-state-model
+  - tx-gate
+  acceptance:
+  - The production CAN core is host-mock tested for standard/extended IDs, DLC, monotonic
+    observation timestamps, bounded ingress, queue overflow/drop counters, malformed
+    frames, controller statistics, guarded single-frame TX, interlock-open disarm,
+    and bus-off recovery/restart.
+  - Handshake, device-status, and raw CAN-frame serial records are validated against
+    the versioned JSON Schemas, including monotonic-only time and loss provenance.
+  - The default ESP32 build remains Listen Only with hardware-init, bitrate-evidence,
+    and TX-capability gates off; the direct-frame API is centrally guarded and is
+    not exposed as a serial command.
+  - Host-mock tests do not count as physical bus/bench evidence; loopback, real-controller
+    fault behavior, and electrical interlock validation remain S10/S11 requirements.
+  delivery_state: complete-source-build-and-host-mock-verified
+- id: S04
+  title: Browser engineering UI
+  goal: Deliver the core dashboard for live/recorded frame inspection and analysis.
+  deliverables:
+  - frame-table
+  - filters
+  - detail-pane
+  - live-status
+  - charts
+  - error-states
+  acceptance:
+  - Packaged browser assets render the dashboard, raw-frame explorer, data provenance,
+    charts, findings, simulator, sessions, TX audit, serial status, mappings and diagnostic
+    evidence forms.
+  - All UI actions use the loopback API; Host/Origin checks, no-store/nosniff headers
+    and a restrictive CSP are enforced by the server.
+  - Source/browser/API behavior is covered by the end-to-end and security integration
+    tests; full cross-browser visual/accessibility certification remains a separate,
+    unperformed task.
+  delivery_state: host-integration-tests-passed
+- id: S05
+  title: Session persistence and export
+  goal: Make raw capture and metadata durable and portable.
+  deliverables:
+  - versioned-store
+  - import-export
+  - session-browser
+  - migration-tests
+  acceptance:
+  - SQLite sessions/frame records and findings persist across store reopen; batched
+    inserts preserve ordering and records are not mutated by analysis.
+  - Finalized sessions generate ordered JSONL plus SHA-256/byte count; import validates
+    before transaction and reconstructs local paths; JSON bundle round-trip preserves
+    payload and per-frame provenance.
+  - Pagination, duplicate/collision behavior and malformed bundle rollback are tested.
+  delivery_state: storage-import-export-tests-passed
+- id: S06
+  title: Identifier discovery and signal-analysis engine
+  goal: Rank evidence-backed candidates for IDs, periods, counters, checksums, and
+    bit/byte signals.
+  deliverables:
+  - periodicity-analysis
+  - change-analysis
+  - candidate-mapping-schema
+  - confidence-model
+  - analysis-tests
+  acceptance:
+  - Summary metrics and observed/candidate findings reference existing source frame
+    UUIDs and record method/confidence without rewriting raw frames.
+  - Parameter decoders require explicit user-provided bit range, byte order, signedness,
+    scale and offset; candidate mappings are versioned per session/name.
+  - Promotion to validated requires a separately supplied method and evidence list;
+    no Honda-specific ID, unit, scale, byte order or ECU behavior is guessed.
+  delivery_state: analysis-and-versioned-mapping-tests-passed
+- id: S07
+  title: Gated direct-CAN TX and diagnostic framework
+  goal: Support carefully controlled raw frame transmission and extensible capability-based
+    workflows.
+  deliverables:
+  - tx-scheduler
+  - rate-limits
+  - audit-log
+  - cancellation
+  - diagnostic-capability-model
+  - workflow-tests
+  acceptance:
+  - Bounded TX request validation, repeat scheduling, simulated target execution,
+    cancellation and persistent audit are implemented and tested.
+  - Every host-side physical/hardware target is rejected and audited; physical transmission
+    is not callable through the host API and CW1 v1 remains read-only.
+  - Diagnostic capability workflow eligibility can be evaluated only for evidence-backed
+    simulation targets; no vehicle-specific diagnostic operation is executed. Physical
+    host-to-firmware TX control remains blocked pending board/interlock validation
+    and an independently reviewed command protocol.
+  delivery_state: simulation-TX-and-audit-tests-passed; physical-host-TX-disabled
+- id: S08
+  title: Interactive virtual CAN simulation lab
+  goal: Make the main workflows demonstrable and testable with virtual nodes and deterministic
+    traces.
+  deliverables:
+  - virtual-bus
+  - virtual-nodes
+  - trace-replay
+  - mutation-tools
+  - scenario-editor
+  - simulator-tests
+  acceptance:
+  - Virtual-time nodes support scheduled synthetic frames, filtering, replay, source-linked
+    mutation and bounded TX repeats/cancellation.
+  - Simulation event and per-step emission limits prevent uncontrolled pending-record
+    growth; emitted records are source-labelled simulator and batch-persisted.
+  - Tests prove deterministic node timing, source separation, replay/mutation provenance
+    and no path to physical TX.
+  delivery_state: deterministic-simulator-tests-passed
+- id: S09
+  title: Python Proteus generator and native project
+  goal: Generate a maintainable, native schematic/project from Python source.
+  deliverables:
+  - generator
+  - component-map
+  - schematic-project
+  - generated-artifact-manifest
+  - design-review
+  acceptance:
+  - Python generator creates deterministic canonical JSON netlist, component map,
+    BOM, SVG review artifact and content-hash manifest from the tracked hardware YAML;
+    unresolved pin/value/symbol decisions remain explicit.
+  - Native Proteus project generation/import/render must be completed only after an
+    official supported generation route is confirmed. This currently remains blocked
+    and is recorded in native-project-status.json; an SVG is not accepted as a native
+    artifact.
+  delivery_state: source-generator-tests-passed; native-Proteus-generation-import-blocked
+- id: S10
+  title: Integration, end-to-end workflows, and isolation
+  goal: Join firmware/simulation, storage, analysis, UI, and TX safety controls.
+  deliverables:
+  - e2e-scenarios
+  - integration-report
+  - protocol-boundary-tests
+  - safety-state-tests
+  acceptance:
+  - End-to-end HTTP flow covers scenario creation, virtual time advancement, persistent
+    raw frames, analysis, candidate mapping, capability gate, simulator TX/audit,
+    safety state, finalization and bundle import/export.
+  - Security integration tests confirm external Host/cross-Origin mutation rejection,
+    body-size rejection, static-path allowlisting, safe response headers and permanent
+    host TX denial.
+  - Tests/simulator/mock results do not count as real UART, physical CAN, hardware
+    gate or vehicle validation.
+  delivery_state: API-session-export-import-and-security-integration-tests-passed
+- id: S11
+  title: Hardening, performance, regression, and fault tests
+  goal: Validate responsiveness, bounded memory, recovery, correctness, and operational
+    failure behavior.
+  deliverables:
+  - performance-report
+  - fault-matrix
+  - regression-suite
+  - security-review
+  - known-limitations
+  acceptance:
+  - Fault matrix and security review cover malformed/oversized data, bad Host/Origin,
+    bundle collision/rollback, serial staleness, queue overflow, bus-off and TX inhibit
+    boundaries.
+  - Benchmark tool records actual host/Python/CPU settings and measured synthetic
+    batch-insert/analysis rates; the report includes limitations and makes no real-time/vehicle
+    throughput claim.
+  - Complete unit/contract/integration/native-C tests, schema/YAML checks, package
+    build and original-ESP32 compile are run as one integrated verification sweep
+    before committing.
+  delivery_state: make-verify-passed; 20k synthetic benchmark and ESP32 compile passed
+- id: S12
+  title: Packaging, traceability audit, and handoff
+  goal: Deliver reproducible setup/run steps, artifacts, and an evidence-based acceptance
+    matrix.
+  deliverables:
+  - setup-guide
+  - build-artifacts
+  - evidence-index
+  - final-traceability-matrix
+  - final-report
+  acceptance:
+  - Setup/run, stage reports, evidence index, known limitations, ADRs and requirement
+    traceability are versioned with the code.
+  - Final handoff distinguishes host unit/contract/integration, simulated CAN, source-generated
+    CAD, ESP32 compile, and unperformed physical board/bench/vehicle validation.
+  - Any requirement blocked by absent physical hardware or unsupported native Proteus
+    automation is marked with explicit evidence and a concrete next action.
+  delivery_state: host-delivery-verified; hardware and native-Proteus acceptance remain
+    open

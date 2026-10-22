@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/device-status.schema.json",
+  "title": "Civic-Workbench device status",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "connected",
+    "controller_state",
+    "bitrate_bps",
+    "dropped_frames_total",
+    "faults"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "record_type": {
+      "const": "device_status"
+    },
+    "observed_at_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observed_monotonic_ns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "clock_source": {
+      "enum": [
+        "monotonic_only",
+        "monotonic_and_wall_clock"
+      ]
+    },
+    "connected": {
+      "type": "boolean"
+    },
+    "controller_state": {
+      "enum": [
+        "running",
+        "stopped",
+        "bus_off",
+        "recovering",
+        "error",
+        "unknown"
+      ]
+    },
+    "firmware_version": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "bitrate_bps": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "dropped_frames_total": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "faults": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "transmit_capable": {
+      "type": "boolean"
+    },
+    "software_armed": {
+      "type": "boolean"
+    },
+    "software_dropped_frames": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "malformed_frames": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "driver_rx_queue_depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "app_rx_queue_depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tx_error_counter": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rx_error_counter": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "tx_failed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rx_missed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rx_overrun_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "arbitration_lost_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "bus_error_count": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "observed_at_utc"
+      ]
+    },
+    {
+      "required": [
+        "observed_monotonic_ns",
+        "clock_source"
+      ],
+      "properties": {
+        "clock_source": {
+          "const": "monotonic_only"
+        }
+      }
+    }
+  ]
+}

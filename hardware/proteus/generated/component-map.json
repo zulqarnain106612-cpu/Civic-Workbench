@@ -1,0 +1,36 @@
+{
+  "design_id": "civic-workbench-original-esp32-tja1051t3",
+  "native_import_status": "not-performed",
+  "net_names": [
+    "CAN_HIGH",
+    "CAN_LOW",
+    "LOGIC_GND",
+    "MCU_IO_3V3",
+    "TRANSCEIVER_5V",
+    "TRANSCEIVER_MODE_S",
+    "TRANSCEIVER_RX_TO_TWAI",
+    "TWAI_TX_TO_TRANSCEIVER"
+  ],
+  "schema_version": 1,
+  "source_netlist": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+  "symbols": [
+    {
+      "library_symbol_verified": false,
+      "reason": "Installed Proteus symbol identity not verified.",
+      "ref": "U1",
+      "symbol": "TJA1051T/3"
+    },
+    {
+      "library_symbol_verified": false,
+      "reason": "Exact module/package not identified.",
+      "ref": "U_MCU",
+      "symbol": "Original ESP32 module placeholder"
+    },
+    {
+      "library_symbol_verified": false,
+      "reason": "Not an electrical implementation; design review required.",
+      "ref": "TX_GATE",
+      "symbol": "Conceptual independent hardware gate"
+    }
+  ]
+}

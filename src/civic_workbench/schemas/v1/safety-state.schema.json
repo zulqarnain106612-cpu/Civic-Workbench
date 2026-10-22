@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/safety-state.schema.json",
+  "title": "Civic-Workbench transmission safety state",
+  "description": "A state snapshot for reporting/control-plane contracts. Firmware remains the final authority for the hardware interlock and TX decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "observed_at_utc", "mode", "software_armed", "hardware_interlock_active", "tx_permitted", "controller_state", "faults", "state_age_ms", "source"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "safety_state"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "mode": {"enum": ["listen_only", "normal", "unknown"]},
+    "software_armed": {"type": "boolean"},
+    "hardware_interlock_active": {"type": "boolean"},
+    "tx_permitted": {"type": "boolean"},
+    "controller_state": {"enum": ["running", "stopped", "bus_off", "error", "unknown"]},
+    "faults": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 128}, "uniqueItems": true},
+    "state_age_ms": {"type": "integer", "minimum": 0},
+    "source": {"enum": ["firmware", "simulator", "import"]},
+    "inhibit_reasons": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 256}, "uniqueItems": true},
+    "arm_expires_at_utc": {"type": ["string", "null"], "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"tx_permitted": {"const": true}}, "required": ["tx_permitted"]},
+      "then": {
+        "properties": {
+          "mode": {"const": "normal"},
+          "software_armed": {"const": true},
+          "hardware_interlock_active": {"const": true},
+          "controller_state": {"const": "running"},
+          "faults": {"maxItems": 0},
+          "state_age_ms": {"maximum": 500},
+          "source": {"const": "firmware"}
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+name: Civic-Workbench CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: civic-workbench-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-contracts-integration-package:
+    name: Host contracts, integration, hardening and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package
+        run: python -m pip install --upgrade pip && python -m pip install -e .
+      - name: Full verification sweep
+        run: make verify
+      - name: Synthetic performance evidence
+        run: make benchmark BENCH_FRAMES=20000
+      - name: Upload benchmark and native-design status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: civic-workbench-verification-evidence
+          path: |
+            docs/reports/S11-benchmark-results.json
+            hardware/proteus/generated/native-project-status.json
+          if-no-files-found: warn
+
+  original-esp32-compile:
+    name: Original ESP32 TWAI firmware compile
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned PlatformIO Core
+        run: python -m pip install platformio==6.2.0
+      - name: Compile generic original ESP32 profile
+        run: pio run -d firmware/esp32

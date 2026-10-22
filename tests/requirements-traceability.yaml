@@ -30,10 +30,9 @@ requirements:
     - S01 contract-test run
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
-    status: partial
-    limitation: S03 adds a compile-verified firmware receive/core and schema-v1 serial
-      telemetry; browser UI, durable persistence, signal discovery and simulator remain
-      unimplemented.
+    status: host-implementation-verified;physical-integration-pending
+    limitation: S04-S12 host modules, package and API are integrated and tested. Physical
+      board integration, live serial/CAN, and native Proteus import are not verified.
   REQ-HW-001:
     implementation:
     - project/hardware.yaml
@@ -51,9 +50,9 @@ requirements:
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
     - hardware/reference/safety-interlock.md
-    status: partial
-    limitation: GPIO and TX gates are guarded at source level; physical board pinout,
-      assembled interlock and native Proteus artifact are not validated.
+    status: source-and-compile-verified;physical-hardware-validation-pending
+    limitation: Original-ESP32 compile and safety mocks pass; exact board, pins, transceiver
+      assembly and independent interlock remain unverified.
   REQ-CAN-001:
     implementation:
     - schemas/v1/can-frame.schema.json
@@ -72,10 +71,9 @@ requirements:
     - S01 contract-test run
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
-    status: partial
-    limitation: The production receive core is mock-tested for valid/invalid frames,
-      bounded queues, drop counters, diagnostics and bus-off recovery; no physical
-      CAN bus or real ESP32 controller has been exercised.
+    status: firmware-build-and-host-mock-verified;physical-bus-validation-pending
+    limitation: Production CAN core is mock tested and the original-ESP32 profile
+      builds. No live controller/bus has been exercised.
   REQ-CAN-002:
     implementation:
     - schemas/v1/capture-session.schema.json
@@ -90,10 +88,9 @@ requirements:
     - docs/contracts-v1.md
     - docs/reports/S03-can-transport-report.md
     - docs/protocol/firmware-serial-v1.md
-    status: partial
-    limitation: Raw frame/status serialization and serial record shapes are schema-tested.
-      Durable raw-session storage, import/export, reconnect handling and production
-      host bridge are not implemented.
+    status: schema-and-host-bridge-verified;physical-serial-validation-pending
+    limitation: CW1 record contracts, read-only host ingestion, persistence and bundles
+      are tested. No physical UART device was connected.
   REQ-CAN-003:
     implementation:
     - schemas/v1/tx-request.schema.json
@@ -113,61 +110,112 @@ requirements:
     - docs/contracts-v1.md
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
-    status: partial
-    limitation: A guarded single-frame C API exists and is mock-tested, with TX disabled
-      by default and no serial command endpoint. Physical transmission, scheduling/repeats,
-      persistent TX audit and vehicle safety remain unverified.
+    status: simulation-TX-audit-verified;physical-TX-disabled
+    limitation: Repeats/cancel/audit and denial of hardware-target requests are tested.
+      Physical host-to-firmware TX and vehicle safety operation remain disabled/unverified.
   REQ-REV-001:
     implementation:
     - schemas/v1/analysis-finding.schema.json
+    - src/civic_workbench/analysis.py
+    - src/civic_workbench/diagnostics.py
+    - schemas/v1/parameter-mapping.schema.json
+    - src/civic_workbench/storage.py
     tests:
     - tests/test_contracts.py::SessionAndFindingContractTests
+    - tests/test_analysis.py
+    - tests/test_storage_and_import_export.py
+    - tests/test_api_integration.py
     evidence:
     - docs/contracts-v1.md
-    status: partial
-    limitation: Finding/evidence shape is defined; discovery algorithms are not implemented.
+    - docs/reports/S06-analysis-report.md
+    status: host-analysis-verified;vehicle-mapping-validation-pending
+    limitation: Evidence-linked analysis and versioned explicit decoders pass tests.
+      Honda-specific mappings/scales remain unknown until independently verified.
   REQ-DATA-001:
     implementation:
     - schemas/v1/capture-session.schema.json
     - schemas/v1/can-frame.schema.json
+    - src/civic_workbench/storage.py
+    - src/civic_workbench/service.py
+    - src/civic_workbench/app.py
     tests:
     - tests/test_contracts.py::JsonSchemaTests
+    - tests/test_storage_and_import_export.py
+    - tests/test_api_integration.py
     evidence:
     - docs/contracts-v1.md
-    status: partial
-    limitation: Versioned storage contract is defined; durable persistence, migration
-      and import/export implementation remain open.
+    - docs/reports/S05-storage-report.md
+    status: host-persistence-and-round-trip-verified
+    limitation: SQLite/raw JSONL durability, hashes, pagination, bundle import/export
+      and rollback tests pass. Imported data authenticity and storage hardware fault
+      certification are not claimed.
   REQ-UI-001:
-    implementation: []
-    tests: []
-    evidence: []
-    status: open
-    limitation: Browser UI not started.
+    implementation:
+    - src/civic_workbench/web/index.html
+    - src/civic_workbench/web/app.js
+    - src/civic_workbench/web/styles.css
+    - src/civic_workbench/app.py
+    tests:
+    - tests/test_api_integration.py
+    - tests/test_api_security.py
+    - tests/test_packaging.py
+    evidence:
+    - docs/reports/S04-browser-ui-report.md
+    status: host-UI-and-API-integration-verified;visual-certification-pending
+    limitation: Local static UI/API behavior is covered by integration and security
+      tests. Cross-browser visual/accessibility certification and connected-hardware
+      UI testing were not performed.
   REQ-SIM-001:
-    implementation: []
-    tests: []
-    evidence: []
-    status: open
-    limitation: Virtual CAN bus and scenario runner not started.
+    implementation:
+    - src/civic_workbench/simulator.py
+    - src/civic_workbench/service.py
+    - src/civic_workbench/web/index.html
+    - src/civic_workbench/web/app.js
+    tests:
+    - tests/test_simulator_tx.py
+    - tests/test_api_integration.py
+    evidence:
+    - docs/reports/S08-simulator-report.md
+    status: simulation-integration-tests-passed
+    limitation: Deterministic simulator scheduling, replay, mutation, source labelling,
+      queue limits and simulator-only TX pass tests. This does not model electrical
+      bus/ECU behavior.
   REQ-DIAG-001:
     implementation:
     - schemas/v1/diagnostic-capability.schema.json
     - src/civic_workbench/contracts.py
+    - src/civic_workbench/diagnostics.py
+    - src/civic_workbench/service.py
+    - src/civic_workbench/storage.py
+    - src/civic_workbench/web/app.js
     tests:
     - tests/test_contracts.py::DiagnosticAndSafetyContractTests
+    - tests/test_analysis.py
+    - tests/test_storage_and_import_export.py
+    - tests/test_api_integration.py
     evidence:
     - docs/contracts-v1.md
-    status: partial
-    limitation: Capability/evidence model is implemented; no target-specific diagnostic
-      capability is asserted or enabled.
+    - docs/reports/S07-tx-diagnostics-report.md
+    status: capability-gating-and-explicit-decoder-tested;physical-execution-disabled
+    limitation: Evidence-backed capability annotations and mapping gates work; no
+      Honda service/ECU address is guessed and no physical diagnostic executor is
+      enabled.
   REQ-PROT-001:
-    implementation: []
-    tests: []
+    implementation:
+    - tools/generate_proteus_reference.py
+    - hardware/proteus/generated/
+    - hardware/reference/esp32-tja1051t3-netlist.yaml
+    tests:
+    - tests/test_proteus_generator.py
+    - tests/test_packaging.py
     evidence:
     - docs/reports/S00-environment-report.md
-    status: open
-    limitation: Python generator and native Proteus project remain for S09; native
-      generation route is not yet verified.
+    - docs/reports/S09-proteus-generator-report.md
+    - hardware/proteus/generated/native-project-status.json
+    status: source-artifacts-generated;native-proteus-blocked
+    limitation: Deterministic JSON, component map, BOM, SVG and manifest are tested.
+      Genuine native DSN/PDSPRJ and import/render are blocked pending an official
+      supported writer/API.
   REQ-SAFE-001:
     implementation:
     - schemas/v1/safety-state.schema.json
@@ -186,28 +234,40 @@ requirements:
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
     - hardware/reference/safety-interlock.md
-    status: partial
-    limitation: Software policy, fail-closed defaults, and host-mock disarm paths
-      pass tests. The independent physical interlock, transceiver Silent bias, and
-      failure modes have not been bench-tested.
+    status: host-safety-tests-passed;physical-interlock-validation-pending
+    limitation: Fail-closed safety snapshots, 7 native-C assertions, 71 CAN-core mock
+      assertions and TX denial are covered. Independent hardware gate/interlock and
+      vehicle operation remain untested.
   REQ-EVID-001:
     implementation:
     - tests/requirements-traceability.yaml
     - project/progress.json
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
+    - project/stages.yaml
+    - docs/evidence-index.md
+    - docs/reports/S04-browser-ui-report.md
+    - docs/reports/S05-storage-report.md
+    - docs/reports/S06-analysis-report.md
+    - docs/reports/S07-tx-diagnostics-report.md
+    - docs/reports/S08-simulator-report.md
+    - docs/reports/S09-proteus-generator-report.md
+    - docs/reports/S10-integration-report.md
+    - docs/reports/S11-hardening-performance-report.md
+    - docs/reports/S12-final-handoff-report.md
     tests:
     - tests/test_contracts.py::ApiAndTraceabilityTests::test_requirement_traceability_covers_all_declared_requirements
     - tests/test_contracts.py::ApiAndTraceabilityTests.test_requirement_traceability_covers_all_declared_requirements
     - tests/test_contracts.py::ApiAndTraceabilityTests.test_progress_ledger_records_verified_stage_state
+    - tests/test_packaging.py
     evidence:
     - docs/contracts-v1.md
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
-    status: partial
-    limitation: S00-S03 source/build/host-mock evidence is recorded. UI, persistence,
-      analysis, simulator, Proteus, real-bus, and vehicle evidence remains open until
-      corresponding stages.
+    - docs/reports/S12-final-handoff-report.md
+    status: repository-evidence-index-and-stage-ledger-verified;physical-evidence-pending
+    limitation: The stage ledger, reports and traceability link the host/test/build
+      evidence. Physical bench/vehicle and native Proteus evidence are absent by design.
   REQ-QUAL-001:
     implementation:
     - requirements.txt
@@ -223,33 +283,59 @@ requirements:
     - tests/test_firmware_can_core.py
     - tests/test_firmware_serial_transport.py
     - tests/test_firmware_transport.py
+    - pyproject.toml
+    - scripts/run-local.sh
+    - .github/workflows/ci.yml
+    - tools/benchmark.py
+    - docs/fault-matrix.md
+    - docs/security-review.md
+    - tools/check_schema_sync.py
+    - tools/check_built_wheel.py
     tests:
     - PYTHONPATH=src python3 -m unittest discover -s tests -v
     - git diff --check
     - make test
     - python3 -m compileall -q src tests
     - cd firmware/esp32 && ~/.venvs/civic-workbench-pio/bin/pio run
+    - make verify
+    - make firmware-build
+    - tests/test_api_security.py
+    - tests/test_storage_and_import_export.py
+    - tests/test_simulator_tx.py
+    - tests/test_proteus_generator.py
+    - tests/test_api_integration.py
+    - tests/test_packaging.py
     evidence:
     - docs/reports/S01-contract-report.md
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
-    status: partial
-    limitation: Host contracts, mock integration, serializer/schema checks and target
-      compilation pass. CI gate integration, throughput/latency qualification, real
-      serial-link testing and physical bench/vehicle validation remain outstanding.
+    - docs/reports/S11-hardening-performance-report.md
+    - docs/reports/S11-benchmark-results.json
+    - docs/reports/S12-final-handoff-report.md
+    status: make-verify-passed;synthetic-benchmark-and-ESP32-compile-passed
+    limitation: 95 Python tests, native C safety, schemas, YAML, package contents,
+      deterministic design sources, synthetic benchmark and firmware compile pass.
+      No external penetration test or real-bus performance guarantee is claimed.
   REQ-TOK-001:
     implementation:
     - CLAUDE.md
     - docs/staged-delivery.md
     - project/dependencies.yaml
+    - project/stages.yaml
+    - project/progress.json
+    - docs/evidence-index.md
     tests:
     - tests/test_contracts.py::ApiAndTraceabilityTests
+    - tests/test_packaging.py
+    - tests/test_contracts.py::ApiAndTraceabilityTests.test_stage_dependency_graph_is_complete_and_acyclic
     evidence:
     - docs/contracts-v1.md
     - docs/reports/S01-contract-report.md
-    status: partial
-    limitation: Stage IDs, on-demand contracts and persistent evidence reduce repeated
-      context; no token-cost benchmark is claimed.
+    - docs/reports/S12-final-handoff-report.md
+    status: agent-contract-delivered;token-savings-not-measured
+    limitation: The concise stage/dependency/evidence map is in place. Agent token/cost
+      savings are not quantified because no controlled before/after measurement was
+      performed.
 rules:
 - Use repository-relative paths and stable test identifiers for every implementation/evidence
   reference.

@@ -1,52 +1,89 @@
 # Civic-Workbench
 
-A direct-CAN engineering workbench for investigating a Pakistan-market 2013 Honda Civic (9th generation, 1.8 L), built around the **original ESP32 with its integrated TWAI controller and the NXP TJA1051T/3 SO8 transceiver**.
+A local-first direct-CAN engineering workbench for researching a Pakistan-market 2013 Honda Civic (9th generation, 1.8 L), based on the **original ESP32 integrated TWAI controller and NXP TJA1051T/3 SO8 transceiver**.
 
-## Project boundary
+This repository is independent of the earlier build-a-web-page-for-ios repository. No source or project structure was copied from that project.
 
-This repository is independent of the older build-a-web-page-for-ios project. It does not import or reuse source code or repository structure from that project.
+## Current delivery state
 
-The intended product includes live CAN frame capture, identifier and signal discovery, controlled direct-CAN transmission, capability-driven diagnostics/parameter workflows where evidenced, a browser engineering UI, local persistence, a virtual CAN lab, and a Python-generated native Proteus schematic/project.
+S00–S03 are the prior committed baseline. The remaining S04–S12 host/software delivery is now implemented and verified together: 95 Python tests passed, `make verify` exited 0, the 20,000-frame synthetic benchmark completed, and the generic original-ESP32 firmware profile compiled successfully. S07 deliberately remains simulation-only at the host boundary: hardware TX/arm commands are not carried over the read-only CW1 protocol. S09 produces deterministic reference-design source artifacts, but a native Proteus DSN/PDSPRJ has not been generated/imported because an official supported writer/API was not confirmed. The exact physical ESP32 module, GPIO map, transceiver installation, vehicle bitrate and safe capture point remain unverified. No firmware was flashed and no Civic bus operation was performed.
 
-**Current status:** S00 environment discovery, S01 contracts, S02 firmware foundation, and S03 CAN receive/guarded-TX core plus schema-v1 serial telemetry are source/build/host-mock verified. The generic original-ESP32 firmware profile compiles successfully but has not been flashed or physically validated. Hardware TX remains disabled by default; the C API for one guarded frame is not exposed as a serial command yet. Browser UI, durable persistence, signal/identifier discovery, diagnostic workflows, virtual CAN, generated native Proteus CAD, and physical operation remain outstanding. No Honda-specific CAN identifier, bit layout, scale, diagnostic service, or ECU behavior may be presented as fact without traceable evidence.
+The complete test/build evidence and open issues are tracked in project/progress.json and docs/reports/S12-final-handoff-report.md.
 
-## Start here
+## What is delivered
 
-1. Agent execution contract: CLAUDE.md
-2. Master specification: docs/master-spec.md
-3. Staged delivery plan: docs/staged-delivery.md
-4. Requirements: project/requirements.yaml
-5. Dependency DAG: project/dependencies.yaml
-6. Stage definitions: project/stages.yaml
-7. Hardware baseline: project/hardware.yaml
-8. Safety and engineering constraints: project/constraints.yaml
-9. Versioned contracts: docs/contracts-v1.md and schemas/v1/
-10. Logical API contract: contracts/openapi.yaml
-11. Contract tests: tests/test_contracts.py (run with `make test-contracts` or `PYTHONPATH=src python3 -m unittest discover -s tests -v`)
-12. Requirements traceability: tests/requirements-traceability.yaml
-13. Progress ledger: project/progress.json
-14. S01 contract implementation and verification report: docs/reports/S01-contract-report.md
-15. S02 firmware foundation and build report: docs/reports/S02-firmware-report.md
-16. S02 hardware safety/netlist sources: hardware/reference/
-17. S03 CAN core/transport implementation report: docs/reports/S03-can-transport-report.md
-18. Firmware serial protocol: docs/protocol/firmware-serial-v1.md
-19. Host-mocked CAN integration tests: tests/firmware/test_can_core_mock.c and tests/test_firmware_can_core.py
-20. Schema-validated serial output tests: tests/firmware/test_serial_transport.c and tests/test_firmware_serial_transport.py
+- Responsive local browser UI for raw frames, status, sessions, filters, charts, findings, simulator, TX audit and read-only serial ingestion.
+- Loopback-only local HTTP API with Origin/Host checks and response security headers.
+- SQLite session/store service, atomic batched frame writes, content-hashed ordered JSONL finalization, portable bundle export/import and audit/event records.
+- Deterministic identifier/timing/byte-variability analysis with evidence-linked findings; explicit decoder definitions are versioned and start as candidate.
+- Evidence-gated diagnostic capability metadata and a simulation-only workflow gate. No Honda ECU services or IDs are assumed.
+- Virtual CAN nodes, virtual time, trace replay/mutation, resource-bounded events and simulator-only TX repeats/cancellation/audit.
+- CW1-prefixed firmware serial frame/status protocol; host bridge ingests serial only and does not send bytes to firmware.
+- Deterministic hardware netlist/component map/BOM/SVG source generator, with native Proteus generation status explicitly recorded.
+- Fault matrix, threat/safety notes, stage reports, requirement traceability and a performance benchmark tool.
 
-## Required hardware baseline
+## Install and run
 
-- MCU: original Espressif ESP32 variant with TWAI support; no S2/S3 substitution.
-- CAN physical layer: NXP TJA1051T/3 in SO8 package.
-- ESP32 TWAI is the CAN protocol controller; the external transceiver provides the physical CAN interface.
-- TJA1051T/3 pin 5 (VIO) is the logic-supply input and must be connected to the MCU I/O supply, subject to the datasheet.
-- Default operation is passive/listen-only with transmitter inhibited. Active transmission requires separate software arming and a hardware-enforced interlock.
+Python 3.10+, SQLite and the standard library are required. From the repository root:
 
-Official references:
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
+civic-workbench --host 127.0.0.1 --port 8765
+```
+
+Open http://127.0.0.1:8765/. Or run directly from source with:
+
+```sh
+make run
+```
+
+Persistent data is stored under ~/.local/share/civic-workbench by default. Use CIVIC_WORKBENCH_DATA_DIR to choose another private local directory. Do not expose this unauthenticated service to a network.
+
+## Development and verification
+
+```sh
+make test
+make verify
+make firmware-build PIO="$HOME/.venvs/civic-workbench-pio/bin/pio"
+python3 tools/generate_proteus_reference.py
+make benchmark BENCH_FRAMES=20000
+```
+
+The synthetic benchmark writes measured single-host results to docs/reports/S11-benchmark-results.json. It does not characterize real UART/CAN throughput or guarantee real-time latency.
+
+## Firmware and safety boundary
+
+- Target MCU: original Espressif ESP32 with integrated TWAI; no ESP32-S2/S3 substitution.
+- CAN physical layer: NXP TJA1051T/3 in SO8/SOT96-1 package.
+- Firmware hardware-init, verified-bitrate and hardware-TX build flags remain off by default; GPIOs remain unassigned until the actual board is identified.
+- The host TX scheduler accepts only target=simulation. It never forwards TX requests to a physical adapter.
+- The firmware C API can issue one guarded frame only when built/configured and armed, but CW1 v1 has no host command channel for arming or transmission.
+- The transceiver must default Silent and the independent physical interlock must be a verified electrical barrier; software checks do not substitute for hardware.
+- No vehicle identifier, bit layout, scale, unit, ECU address, diagnostic service or behavior is a fact until supported by traceable independent evidence.
+- Hardware flash, physical interlock, live UART/CAN, bench and vehicle tests have not been performed.
+
+## Main project map
+
+| Area | Entry point |
+|---|---|
+| Agent/stage contract | CLAUDE.md, project/stages.yaml, project/dependencies.yaml |
+| Requirements and traceability | project/requirements.yaml, tests/requirements-traceability.yaml |
+| JSON Schemas and semantic checks | schemas/v1/, src/civic_workbench/contracts.py |
+| Local service / API | src/civic_workbench/app.py, src/civic_workbench/service.py |
+| Browser assets | src/civic_workbench/web/ |
+| Persistence | src/civic_workbench/storage.py |
+| Analysis / parameter versions | src/civic_workbench/analysis.py, src/civic_workbench/diagnostics.py |
+| Virtual bus / TX audit | src/civic_workbench/simulator.py, src/civic_workbench/tx.py |
+| Read-only serial ingestion | src/civic_workbench/serial_bridge.py |
+| Proteus reference artifact generation | tools/generate_proteus_reference.py, hardware/proteus/generated/ |
+| Reports / evidence status | docs/reports/, docs/evidence-index.md, project/progress.json |
+
+## Official hardware references
+
 - [Espressif ESP32 TWAI documentation](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html)
 - [NXP TJA1051 product datasheet](https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf)
-- [Labcenter CAN simulation](https://www.labcenter.com/can-sim/)
-- [Labcenter schematic capture](https://www.labcenter.com/schematic/)
-
-## Engineering rule
-
-Observed facts, candidate interpretations, and validated mappings are separate data states. Every implementation stage must provide its tests and evidence, record what remains unknown, and update the progress ledger. A stage is not complete merely because code was written.
+- [Labcenter Proteus schematic capture](https://www.labcenter.com/schematic/)
+- [Labcenter downloads](https://www.labcenter.com/downloads/)

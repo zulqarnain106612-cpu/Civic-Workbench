@@ -17,12 +17,16 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 
 
-SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas" / "v1"
+_SOURCE_SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas" / "v1"
+_PACKAGED_SCHEMA_DIR = Path(__file__).resolve().parent / "schemas" / "v1"
+SCHEMA_DIR = _SOURCE_SCHEMA_DIR if _SOURCE_SCHEMA_DIR.is_dir() else _PACKAGED_SCHEMA_DIR
 MAX_SAFETY_STATE_AGE_MS = 500
+_FORMAT_CHECKER = FormatChecker()
 SCHEMA_FILES = {
     "can-frame": "can-frame.schema.json",
     "capture-session": "capture-session.schema.json",
     "analysis-finding": "analysis-finding.schema.json",
+    "parameter-mapping": "parameter-mapping.schema.json",
     "diagnostic-capability": "diagnostic-capability.schema.json",
     "tx-request": "tx-request.schema.json",
     "safety-state": "safety-state.schema.json",
@@ -72,6 +76,8 @@ def _load_schema(schema_name: str) -> dict[str, Any]:
     if schema_name not in SCHEMA_FILES:
         raise ContractViolation(f"unknown schema name: {schema_name}")
     path = SCHEMA_DIR / SCHEMA_FILES[schema_name]
+    if not path.is_file():
+        path = _PACKAGED_SCHEMA_DIR / SCHEMA_FILES[schema_name]
     try:
         schema = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -83,10 +89,15 @@ def _load_schema(schema_name: str) -> dict[str, Any]:
     return schema
 
 
+@lru_cache(maxsize=len(SCHEMA_FILES))
+def _get_validator(schema_name: str) -> Draft202012Validator:
+    # Validator/schema/format checkers are immutable during a run; reuse them for raw
+    # frame streams instead of rebuilding regex/format-check machinery per frame.
+    return Draft202012Validator(_load_schema(schema_name), format_checker=FormatChecker())
+
+
 def _validate_schema(schema_name: str, instance: Any) -> None:
-    validator = Draft202012Validator(
-        _load_schema(schema_name), format_checker=FormatChecker()
-    )
+    validator = _get_validator(schema_name)
     errors = sorted(
         validator.iter_errors(instance),
         key=lambda error: (list(map(str, error.absolute_path)), error.message),
@@ -99,6 +110,115 @@ def _validate_schema(schema_name: str, instance: Any) -> None:
         raise ContractViolation(
             f"{schema_name} invalid at {location}: {error.message}"
         )
+
+
+def _is_json_integer(value: Any) -> bool:
+    # JSON Schema treats integral JSON numbers as integers; Python bools are not integers here.
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, int):
+        return True
+    return isinstance(value, float) and value.is_integer()
+
+
+def _fast_can_frame_schema(record: Any) -> None:
+    """Strict low-allocation equivalent for the hot-path CAN frame JSON Schema.
+
+    Keep this in lockstep with schemas/v1/can-frame.schema.json. The normal JSON
+    Schema validator remains authoritative for every other record type. The
+    public validate_record function uses this path only for frames and still
+    applies the semantic invariants afterwards.
+    """
+    schema_name = "can-frame"
+    if not isinstance(record, dict):
+        raise ContractViolation("can-frame invalid at (root): expected object")
+
+    allowed = {
+        "schema_version", "record_type", "frame_id", "session_id",
+        "captured_monotonic_ns", "captured_at_utc", "clock_source",
+        "arbitration_id", "id_format", "frame_type", "dlc", "payload",
+        "direction", "capture_source", "device_id", "controller_state",
+        "dropped_frames_before", "dropped_frames_after", "source_record_ref",
+    }
+    extra = set(record) - allowed
+    if extra:
+        raise ContractViolation(f"{schema_name} invalid at (root): additional properties {sorted(extra)!r}")
+    required = {
+        "schema_version", "record_type", "frame_id", "session_id",
+        "captured_monotonic_ns", "arbitration_id", "id_format", "frame_type",
+        "dlc", "payload", "direction", "capture_source", "controller_state",
+    }
+    missing = required - set(record)
+    if missing:
+        raise ContractViolation(f"{schema_name} invalid at (root): missing required properties {sorted(missing)!r}")
+
+    if isinstance(record["schema_version"], bool) or record["schema_version"] != 1:
+        raise ContractViolation("can-frame invalid at /schema_version: must equal 1")
+    if record["record_type"] != "can_frame":
+        raise ContractViolation("can-frame invalid at /record_type: must equal 'can_frame'")
+
+    for field in ("frame_id", "session_id"):
+        value = record[field]
+        if not isinstance(value, str):
+            raise ContractViolation(f"can-frame invalid at /{field}: expected string UUID")
+        try:
+            _FORMAT_CHECKER.check(value, "uuid")
+        except Exception as exc:
+            raise ContractViolation(f"can-frame invalid at /{field}: expected string UUID") from exc
+
+    captured = record["captured_monotonic_ns"]
+    if not _is_json_integer(captured) or captured < 0:
+        raise ContractViolation("can-frame invalid at /captured_monotonic_ns: expected non-negative integer")
+
+    if "captured_at_utc" in record:
+        if not isinstance(record["captured_at_utc"], str):
+            raise ContractViolation("can-frame invalid at /captured_at_utc: expected date-time string")
+        try:
+            _FORMAT_CHECKER.check(record["captured_at_utc"], "date-time")
+        except Exception as exc:
+            raise ContractViolation("can-frame invalid at /captured_at_utc: expected date-time string") from exc
+
+    enum_fields = {
+        "clock_source": {"monotonic_and_wall_clock", "monotonic_only", "imported"},
+        "id_format": {"standard", "extended"},
+        "frame_type": {"data", "remote"},
+        "direction": {"rx", "tx", "unknown"},
+        "capture_source": {"hardware", "simulator", "import"},
+        "controller_state": {"unknown", "running", "stopped", "bus_off", "recovering", "error"},
+    }
+    for field, allowed_values in enum_fields.items():
+        if field in record and (not isinstance(record[field], str) or record[field] not in allowed_values):
+            raise ContractViolation(f"can-frame invalid at /{field}: value is not an allowed enum member")
+
+    identifier = record["arbitration_id"]
+    if not _is_json_integer(identifier) or identifier < 0 or identifier > 536870911:
+        raise ContractViolation("can-frame invalid at /arbitration_id: expected integer in range 0..536870911")
+    if record["id_format"] == "standard" and identifier > 2047:
+        raise ContractViolation("can-frame invalid at /arbitration_id: standard ID exceeds 11 bits")
+
+    dlc = record["dlc"]
+    if not _is_json_integer(dlc) or dlc < 0 or dlc > 8:
+        raise ContractViolation("can-frame invalid at /dlc: expected integer in range 0..8")
+
+    payload = record["payload"]
+    if not isinstance(payload, list) or len(payload) > 8:
+        raise ContractViolation("can-frame invalid at /payload: expected array of at most 8 bytes")
+    for index, byte in enumerate(payload):
+        if not _is_json_integer(byte) or byte < 0 or byte > 255:
+            raise ContractViolation(f"can-frame invalid at /payload/{index}: expected byte in range 0..255")
+    if record["frame_type"] == "remote" and payload:
+        raise ContractViolation("can-frame invalid at /payload: remote frames must not contain payload bytes")
+
+    optional_strings = {"device_id": (1, 128), "source_record_ref": (1, 512)}
+    for field, (minimum, maximum) in optional_strings.items():
+        if field in record:
+            value = record[field]
+            if not isinstance(value, str) or not minimum <= len(value) <= maximum:
+                raise ContractViolation(f"can-frame invalid at /{field}: expected string length {minimum}..{maximum}")
+
+    for field in ("dropped_frames_before", "dropped_frames_after"):
+        if field in record and (not _is_json_integer(record[field]) or record[field] < 0):
+            raise ContractViolation(f"can-frame invalid at /{field}: expected non-negative integer")
 
 
 def _validate_semantics(schema_name: str, record: dict[str, Any]) -> None:
@@ -149,6 +269,12 @@ def _validate_semantics(schema_name: str, record: dict[str, Any]) -> None:
                 "validated findings require independent validation evidence"
             )
 
+    elif schema_name == "parameter-mapping":
+        if record["definition"]["start_bit"] + record["definition"]["bit_length"] > 64:
+            raise ContractViolation("parameter mapping bit range must fit within 64 bits")
+        if record["status"] == "validated" and not record.get("validation"):
+            raise ContractViolation("validated parameter mappings require independent validation evidence")
+
     elif schema_name == "diagnostic-capability":
         status = record["status"]
         enabled = record["enabled"]
@@ -189,13 +315,23 @@ def _validate_semantics(schema_name: str, record: dict[str, Any]) -> None:
     elif schema_name == "transport-envelope":
         payload_schema = ENVELOPE_PAYLOAD_SCHEMAS.get(record["message_type"])
         if payload_schema is not None:
-            _validate_schema(payload_schema, record["payload"])
+            if payload_schema == "can-frame":
+                _fast_can_frame_schema(record["payload"])
+            else:
+                _validate_schema(payload_schema, record["payload"])
             _validate_semantics(payload_schema, record["payload"])
 
 
 def validate_record(schema_name: str, record: Any) -> dict[str, Any]:
-    """Validate a v1 contract record and return the same object unchanged."""
-    _validate_schema(schema_name, record)
+    """Validate a v1 contract record and return the same object unchanged.
+
+    Raw CAN frames use a low-allocation field validator kept in parity with the
+    canonical v1 JSON Schema; every other record uses the Draft 2020-12 validator.
+    """
+    if schema_name == "can-frame":
+        _fast_can_frame_schema(record)
+    else:
+        _validate_schema(schema_name, record)
     if not isinstance(record, dict):
         raise ContractViolation("contract records must be JSON objects")
     _validate_semantics(schema_name, record)

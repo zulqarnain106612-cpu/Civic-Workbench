@@ -1,0 +1,22 @@
+{
+  "design_id": "civic-workbench-original-esp32-tja1051t3",
+  "deterministic_outputs": {
+    "README.md": "66d55501b1db11a45cdda7cf73546db583591fba73fef5f2fd51d466783dace3",
+    "bill-of-materials.csv": "29a0f679c2d080fd7515b3afa226b286661a3577410fd5907c15e945dbdcecc7",
+    "component-map.json": "9f99cfc0fd27ff18f89cf059df3549ab88e1531216ae39d4464bddfbda2286f4",
+    "native-project-status.json": "213aadad4ec905c1f974a8fa53e719ac634234f17a06be13a329d73b560b20ab",
+    "reference-design.netlist.json": "94e672c4b0d2c481fd35993aaf80ada7d4676005f94f8c6bfc11ee0d5d220221",
+    "reference-design.svg": "d46c98f365c7aeb69fec9a1c93e3b4429dd9648a9b83cb560aa870b46cba4d90"
+  },
+  "generator": "tools/generate_proteus_reference.py",
+  "generator_version": "1.0.0",
+  "input": {
+    "path": "hardware/reference/esp32-tja1051t3-netlist.yaml",
+    "sha256": "486c225fa2c282e971d310f81682c5903a73752103e8c751bb6e2c3b2d41cbc1"
+  },
+  "native_project": {
+    "import_render_validation": "not-performed",
+    "status": "blocked"
+  },
+  "schema_version": 1
+}

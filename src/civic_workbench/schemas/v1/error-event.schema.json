@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/error-event.schema.json",
+  "title": "Civic-Workbench structured error event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "code", "message", "retryable"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "error"},
+    "code": {"type": "string", "minLength": 1, "maxLength": 128},
+    "message": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "retryable": {"type": "boolean"},
+    "correlation_id": {"type": ["string", "null"], "format": "uuid"},
+    "details": {"type": "object"}
+  }
+}

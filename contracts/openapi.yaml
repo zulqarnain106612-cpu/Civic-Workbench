@@ -2,70 +2,89 @@ openapi: 3.1.0
 info:
   title: Civic-Workbench Local Engineering API
   version: 1.0.0
-  description: |
-    Transport/API contract only; server implementation is not part of S01.
+  description: 'Transport/API contract only; server implementation is not part of
+    S01.
+
     Transmission endpoints must be fail-closed. The host service and firmware
+
     must independently enforce the safety gates; a valid TX request is not
+
     authorization to transmit.
+
+    '
 servers:
-  - url: http://127.0.0.1:8765
-    description: Local host service default (port is configurable at implementation time)
+- url: http://127.0.0.1:8765
+  description: Local host service default (port is configurable at implementation
+    time)
 paths:
   /api/v1/health:
     get:
       operationId: getHealth
       summary: Host service health
       responses:
-        "200":
+        '200':
           description: Service is responding
           content:
             application/json:
               schema:
                 type: object
-                required: [schema_version, status]
+                required:
+                - schema_version
+                - status
                 properties:
-                  schema_version: {const: 1}
-                  status: {enum: [ok, degraded]}
+                  schema_version:
+                    const: 1
+                  status:
+                    enum:
+                    - ok
+                    - degraded
                   details:
                     type: array
-                    items: {type: string}
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
+                    items:
+                      type: string
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
   /api/v1/capabilities:
     get:
       operationId: getCapabilities
       summary: Report discovered implementation capabilities
       responses:
-        "200":
+        '200':
           description: Capability inventory
           content:
             application/json:
               schema:
                 type: object
                 additionalProperties: false
-                required: [schema_version, features, diagnostic_capabilities]
+                required:
+                - schema_version
+                - features
+                - diagnostic_capabilities
                 properties:
-                  schema_version: {const: 1}
+                  schema_version:
+                    const: 1
                   features:
                     type: array
-                    items: {type: string, minLength: 1}
+                    items:
+                      type: string
+                      minLength: 1
                   diagnostic_capabilities:
                     type: array
                     items:
-                      $ref: "../schemas/v1/diagnostic-capability.schema.json"
+                      $ref: ../schemas/v1/diagnostic-capability.schema.json
   /api/v1/safety/state:
     get:
       operationId: getSafetyState
       summary: Report the latest safety state; not an authorization lease by itself
       responses:
-        "200":
+        '200':
           description: Current safety snapshot
           content:
             application/json:
               schema:
-                $ref: "../schemas/v1/safety-state.schema.json"
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
+                $ref: ../schemas/v1/safety-state.schema.json
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
   /api/v1/capture/start:
     post:
       operationId: startCapture
@@ -75,26 +94,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "../schemas/v1/capture-start.schema.json"
+              $ref: ../schemas/v1/capture-start.schema.json
       responses:
-        "202":
+        '202':
           description: Capture request accepted
           content:
             application/json:
               schema:
-                $ref: "../schemas/v1/capture-session.schema.json"
-        "409":
+                $ref: ../schemas/v1/capture-session.schema.json
+        '409':
           description: Capture could not start in the current state
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiError"
-        "422":
+                $ref: '#/components/schemas/ApiError'
+        '422':
           description: Contract validation failed
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiError"
+                $ref: '#/components/schemas/ApiError'
   /api/v1/capture/stop:
     post:
       operationId: stopCapture
@@ -104,159 +123,228 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "../schemas/v1/capture-stop.schema.json"
+              $ref: ../schemas/v1/capture-stop.schema.json
       responses:
-        "200":
+        '200':
           description: Final session manifest
           content:
             application/json:
               schema:
-                $ref: "../schemas/v1/capture-session.schema.json"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: ../schemas/v1/capture-session.schema.json
+        '404':
+          $ref: '#/components/responses/NotFound'
   /api/v1/sessions:
     get:
       operationId: listSessions
       summary: List persisted capture session manifests
       parameters:
-        - in: query
-          name: limit
-          schema: {type: integer, minimum: 1, maximum: 500}
-        - in: query
-          name: cursor
-          schema: {type: string, minLength: 1}
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+      - in: query
+        name: cursor
+        schema:
+          type: string
+          minLength: 1
       responses:
-        "200":
+        '200':
           description: Page of sessions
           content:
             application/json:
               schema:
                 type: object
                 additionalProperties: false
-                required: [schema_version, items, next_cursor]
+                required:
+                - schema_version
+                - items
+                - next_cursor
                 properties:
-                  schema_version: {const: 1}
+                  schema_version:
+                    const: 1
                   items:
                     type: array
                     items:
-                      $ref: "../schemas/v1/capture-session.schema.json"
-                  next_cursor: {type: [string, "null"]}
+                      $ref: ../schemas/v1/capture-session.schema.json
+                  next_cursor:
+                    type:
+                    - string
+                    - 'null'
   /api/v1/sessions/{session_id}:
     get:
       operationId: getSession
       summary: Retrieve a session manifest
       parameters:
-        - $ref: "#/components/parameters/SessionId"
+      - $ref: '#/components/parameters/SessionId'
       responses:
-        "200":
+        '200':
           description: Session manifest
           content:
             application/json:
               schema:
-                $ref: "../schemas/v1/capture-session.schema.json"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: ../schemas/v1/capture-session.schema.json
+        '404':
+          $ref: '#/components/responses/NotFound'
   /api/v1/sessions/{session_id}/frames:
     get:
       operationId: listSessionFrames
-      summary: Read raw frame records without decoded-value mutation
+      summary: List immutable raw CAN frames in sequence order
       parameters:
-        - $ref: "#/components/parameters/SessionId"
-        - in: query
-          name: limit
-          schema: {type: integer, minimum: 1, maximum: 5000}
-        - in: query
-          name: after_sequence
-          schema: {type: integer, minimum: 0}
+      - $ref: '#/components/parameters/SessionId'
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 5000
+      - in: query
+        name: after_sequence
+        required: false
+        schema:
+          type: integer
+          minimum: -1
       responses:
-        "200":
-          description: Page of immutable raw observations
+        '200':
+          description: One bounded frame page
           content:
             application/json:
               schema:
                 type: object
-                additionalProperties: false
-                required: [schema_version, items, next_sequence]
+                required:
+                - schema_version
+                - items
+                - next_sequence
                 properties:
-                  schema_version: {const: 1}
+                  schema_version:
+                    const: 1
                   items:
                     type: array
                     items:
-                      $ref: "../schemas/v1/can-frame.schema.json"
-                  next_sequence: {type: ["integer", "null"], minimum: 0}
-        "404":
-          $ref: "#/components/responses/NotFound"
+                      type: object
+                      required:
+                      - sequence
+                      - frame
+                      properties:
+                        sequence:
+                          type: integer
+                          minimum: 0
+                        frame:
+                          $ref: ../schemas/v1/can-frame.schema.json
+                  next_sequence:
+                    type:
+                    - integer
+                    - 'null'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /api/v1/analysis/findings:
     get:
       operationId: listAnalysisFindings
       summary: List evidence-linked analysis annotations
       parameters:
-        - in: query
-          name: session_id
-          schema: {type: string, format: uuid}
-        - in: query
-          name: status
-          schema: {enum: [observed, candidate, validated]}
+      - in: query
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: status
+        schema:
+          enum:
+          - observed
+          - candidate
+          - validated
       responses:
-        "200":
+        '200':
           description: Analysis annotations; the raw capture is never rewritten
           content:
             application/json:
               schema:
                 type: object
                 additionalProperties: false
-                required: [schema_version, items]
+                required:
+                - schema_version
+                - items
                 properties:
-                  schema_version: {const: 1}
+                  schema_version:
+                    const: 1
                   items:
                     type: array
                     items:
-                      $ref: "../schemas/v1/analysis-finding.schema.json"
+                      $ref: ../schemas/v1/analysis-finding.schema.json
   /api/v1/tx/requests:
     post:
       operationId: submitTxRequest
       summary: Submit a bounded raw-frame TX request to the central safety policy
-      description: |
-        The server must reject requests unless fresh device safety state,
+      description: 'The server must reject requests unless fresh device safety state,
+
         software arming, and physical hardware interlock all pass. The firmware
+
         must independently recheck permission at send time. Validation/acceptance
+
         of the request body alone never authorizes a physical transmission.
+
+        '
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "../schemas/v1/tx-request.schema.json"
+              $ref: ../schemas/v1/tx-request.schema.json
       responses:
-        "202":
+        '202':
           description: Request accepted for guarded scheduling; not necessarily sent
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TxAcceptance"
-        "409":
+                $ref: '#/components/schemas/TxAcceptance'
+        '409':
           description: Safety policy or device state denied the request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiError"
-        "422":
+                $ref: '#/components/schemas/ApiError'
+        '422':
           description: Contract/schema validation failed
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiError"
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+    get:
+      operationId: listTxRequests
+      summary: List in-process simulation TX scheduler requests
+      responses:
+        '200':
+          description: Scheduler request state
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - items
+                properties:
+                  schema_version:
+                    const: 1
+                  items:
+                    type: array
+                    items:
+                      type: object
   /api/v1/tx/requests/{request_id}/cancel:
     post:
       operationId: cancelTxRequest
       summary: Cancel a queued or repeating transmission request
       parameters:
-        - in: path
-          name: request_id
-          required: true
-          schema: {type: string, format: uuid}
+      - in: path
+        name: request_id
+        required: true
+        schema:
+          type: string
+          format: uuid
       requestBody:
         required: false
         content:
@@ -265,60 +353,649 @@ paths:
               type: object
               additionalProperties: false
               properties:
-                reason: {type: string, maxLength: 1000}
+                reason:
+                  type: string
+                  maxLength: 1000
       responses:
-        "200":
+        '200':
           description: Cancellation recorded
           content:
             application/json:
               schema:
                 type: object
                 additionalProperties: false
-                required: [schema_version, request_id, status]
+                required:
+                - schema_version
+                - request_id
+                - status
                 properties:
-                  schema_version: {const: 1}
-                  request_id: {type: string, format: uuid}
-                  status: {enum: [cancelled, already_complete, not_found]}
-        "503":
-          $ref: "#/components/responses/ServiceUnavailable"
+                  schema_version:
+                    const: 1
+                  request_id:
+                    type: string
+                    format: uuid
+                  status:
+                    enum:
+                    - cancelled
+                    - already_complete
+                    - not_found
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+  /api/v1/analysis/mappings:
+    get:
+      operationId: listParameterMappings
+      summary: List versioned candidate/validated mappings
+      parameters:
+      - in: query
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Parameter mapping versions
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - items
+                properties:
+                  schema_version:
+                    const: 1
+                  items:
+                    type: array
+                    items:
+                      $ref: ../schemas/v1/parameter-mapping.schema.json
+  /api/v1/analysis/decode-parameter:
+    post:
+      operationId: decodeExplicitParameterCandidate
+      summary: Decode an explicitly configured bit field and persist a candidate mapping
+      description: No byte order, scale, unit, ECU address, or Honda signal is inferred.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - session_id
+              - definition
+              - evidence_frame_ids
+              properties:
+                session_id:
+                  type: string
+                  format: uuid
+                definition:
+                  type: object
+                  required:
+                  - name
+                  - start_bit
+                  - bit_length
+                  - byte_order
+                  - signed
+                  - scale
+                  - offset
+                  - unit
+                  properties:
+                    name:
+                      type: string
+                    start_bit:
+                      type: integer
+                      minimum: 0
+                      maximum: 63
+                    bit_length:
+                      type: integer
+                      minimum: 1
+                      maximum: 64
+                    byte_order:
+                      enum:
+                      - little_endian
+                      - big_endian
+                      - unknown
+                    signed:
+                      type: boolean
+                    scale:
+                      type: number
+                    offset:
+                      type: number
+                    unit:
+                      type:
+                      - string
+                      - 'null'
+                evidence_frame_ids:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Decoded values and persisted candidate mapping
+        '422':
+          description: Definition or evidence invalid
+  /api/v1/analysis/mappings/{mapping_id}/validate:
+    post:
+      operationId: validateParameterMapping
+      summary: Promote only after independent method and evidence are supplied
+      parameters:
+      - in: path
+        name: mapping_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - validation_method
+              - evidence_refs
+              properties:
+                validation_method:
+                  type: string
+                  minLength: 1
+                evidence_refs:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    minLength: 1
+                reviewer:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '200':
+          description: Independently validated mapping record
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/diagnostic-capabilities:
+    get:
+      operationId: listDiagnosticCapabilities
+      summary: List capability evidence and enabled/disabled status
+      responses:
+        '200':
+          description: Capability records
+    post:
+      operationId: saveDiagnosticCapability
+      summary: Save a capability record without sending diagnostic traffic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/v1/diagnostic-capability.schema.json
+      responses:
+        '201':
+          description: Capability record saved
+  /api/v1/diagnostics/workflow:
+    post:
+      operationId: evaluateDiagnosticWorkflowGate
+      summary: Evaluate a supported/evidence-backed simulation-only workflow gate
+      description: Gate evaluation only. This release never executes vehicle-specific
+        diagnostic traffic.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - capability_id
+              properties:
+                capability_id:
+                  type: string
+                  format: uuid
+                target:
+                  enum:
+                  - simulation
+                  - hardware
+      responses:
+        '200':
+          description: Gate result with executed=false
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/simulator/state:
+    get:
+      operationId: getVirtualBusState
+      summary: Inspect virtual time and synthetic node state
+      responses:
+        '200':
+          description: Virtual bus state
+  /api/v1/simulator/scenarios:
+    post:
+      operationId: createVirtualScenario
+      summary: Start a simulation session with synthetic nodes
+      description: All generated traffic is labeled simulator and is not vehicle evidence.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - nodes
+              properties:
+                name:
+                  type: string
+                bitrate_bps:
+                  type:
+                  - integer
+                  - 'null'
+                  minimum: 1
+                identifier_filter:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 536870911
+                notes:
+                  type: string
+                nodes:
+                  type: array
+                  maxItems: 32
+                  items:
+                    type: object
+      responses:
+        '201':
+          description: Scenario created
+        '409':
+          description: Existing simulation session must first be closed
+  /api/v1/simulator/step:
+    post:
+      operationId: advanceVirtualTime
+      summary: Advance bounded deterministic simulation time
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - delta_ms
+              properties:
+                delta_ms:
+                  type: integer
+                  minimum: 0
+                  maximum: 3600000
+      responses:
+        '200':
+          description: Emitted synthetic frames
+        '422':
+          description: Queue bound exceeded
+  /api/v1/simulator/replay:
+    post:
+      operationId: replayStoredTrace
+      summary: Schedule an existing trace into the virtual bus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - source_session_id
+              properties:
+                source_session_id:
+                  type: string
+                  format: uuid
+                speed:
+                  type: number
+                  minimum: 0.01
+                  maximum: 100
+      responses:
+        '202':
+          description: Replay scheduled
+  /api/v1/simulator/mutate:
+    post:
+      operationId: mutateStoredTrace
+      summary: Create separate synthetic mutations linked to source frames
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - source_session_id
+              - operations
+              properties:
+                source_session_id:
+                  type: string
+                  format: uuid
+                operations:
+                  type: array
+                  maxItems: 16
+                  items:
+                    type: object
+      responses:
+        '201':
+          description: Mutations recorded separately
+  /api/v1/sessions/import:
+    post:
+      operationId: importSessionBundle
+      summary: Schema-check and atomically import a versioned session bundle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - format
+              - schema_version
+              - manifest
+              - frames
+              properties:
+                format:
+                  const: civic-workbench-export-v1
+                schema_version:
+                  const: 1
+                manifest:
+                  $ref: ../schemas/v1/capture-session.schema.json
+                frames:
+                  type: array
+                  maxItems: 2000000
+                  items:
+                    $ref: ../schemas/v1/can-frame.schema.json
+                findings:
+                  type: array
+                  items:
+                    $ref: ../schemas/v1/analysis-finding.schema.json
+      responses:
+        '201':
+          description: Imported bundle
+        '409':
+          description: Session identifier already exists
+  /api/v1/sessions/{session_id}/export:
+    get:
+      operationId: exportSessionBundle
+      summary: Export manifest, raw frames and analysis annotations
+      parameters:
+      - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Versioned portable JSON bundle
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/device/status:
+    get:
+      operationId: getDeviceStreamStatus
+      summary: Read-only firmware CW1 status
+      responses:
+        '200':
+          description: Serial bridge state
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/serial/status:
+    get:
+      operationId: getSerialBridgeStatus
+      summary: Inspect serial link and latest firmware records
+      responses:
+        '200':
+          description: Read-only CW1 bridge state
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/serial/connect:
+    post:
+      operationId: connectReadOnlySerial
+      summary: Open a read-only CW1 serial stream; does not send firmware commands
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - port
+              properties:
+                port:
+                  type: string
+                  minLength: 1
+                  maxLength: 256
+                baudrate:
+                  type: integer
+                  minimum: 1200
+                  maximum: 2000000
+      responses:
+        '200':
+          description: Serial bridge opened
+          content:
+            application/json:
+              schema:
+                type: object
+        '422':
+          description: Invalid port or baudrate
+          content:
+            application/json:
+              schema: &id001
+                $ref: '#/components/schemas/ApiError'
+  /api/v1/serial/disconnect:
+    post:
+      operationId: disconnectReadOnlySerial
+      summary: Stop read-only serial ingestion; does not send firmware commands
+      responses:
+        '200':
+          description: Serial bridge stopped
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/analysis/summary:
+    get:
+      operationId: summarizeSession
+      summary: Summarize observed frame periods, jitter and byte variability
+      parameters:
+      - in: query
+        name: session_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Observed identifier/timing summary
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - total_frames
+                - unique_identifiers
+                - identifiers
+                properties:
+                  schema_version:
+                    const: 1
+                  total_frames:
+                    type: integer
+                    minimum: 0
+                  unique_identifiers:
+                    type: integer
+                    minimum: 0
+                  frames_per_second_estimate:
+                    type: number
+                    minimum: 0
+                  identifiers:
+                    type: array
+                    items:
+                      type: object
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/tx/audit:
+    get:
+      operationId: listTxAudit
+      summary: List persisted simulator TX and hardware-target-rejection audit events
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: TX audit records
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - items
+                properties:
+                  schema_version:
+                    const: 1
+                  items:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/logs:
+    get:
+      operationId: listWorkbenchEvents
+      summary: List structured application events
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Structured events
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - items
+                properties:
+                  schema_version:
+                    const: 1
+                  items:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/simulator/filter:
+    post:
+      operationId: filterVirtualBus
+      summary: Set a frame identifier filter for the virtual bus only
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - identifier_filter
+              properties:
+                identifier_filter:
+                  type: array
+                  items:
+                    type: integer
+                    minimum: 0
+                    maximum: 536870911
+      responses:
+        '200':
+          description: Virtual filter applied
+          content:
+            application/json:
+              schema:
+                type: object
+        '422':
+          description: Invalid filter
+          content:
+            application/json:
+              schema: *id001
 components:
   parameters:
     SessionId:
       in: path
       name: session_id
       required: true
-      schema: {type: string, format: uuid}
+      schema:
+        type: string
+        format: uuid
   schemas:
     ApiError:
       type: object
       additionalProperties: false
-      required: [schema_version, code, message, retryable]
+      required:
+      - schema_version
+      - code
+      - message
+      - retryable
       properties:
-        schema_version: {const: 1}
-        code: {type: string, minLength: 1, maxLength: 128}
-        message: {type: string, minLength: 1, maxLength: 2000}
-        retryable: {type: boolean}
-        correlation_id: {type: [string, "null"], format: uuid}
-        details: {type: object}
+        schema_version:
+          const: 1
+        code:
+          type: string
+          minLength: 1
+          maxLength: 128
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        retryable:
+          type: boolean
+        correlation_id:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        details:
+          type: object
     TxAcceptance:
       type: object
       additionalProperties: false
-      required: [schema_version, request_id, status]
+      required:
+      - schema_version
+      - request_id
+      - status
       properties:
-        schema_version: {const: 1}
-        request_id: {type: string, format: uuid}
-        status: {enum: [queued, rejected]}
-        policy_code: {type: [string, "null"]}
+        schema_version:
+          const: 1
+        request_id:
+          type: string
+          format: uuid
+        status:
+          enum:
+          - queued
+          - rejected
+        policy_code:
+          type:
+          - string
+          - 'null'
   responses:
     NotFound:
       description: Requested resource does not exist
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ApiError"
+            $ref: '#/components/schemas/ApiError'
     ServiceUnavailable:
       description: Required hardware/device/safety service is unavailable
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ApiError"
+            $ref: '#/components/schemas/ApiError'

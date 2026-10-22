@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://civic-workbench.invalid/schemas/v1/analysis-finding.schema.json",
+  "title": "Civic-Workbench analysis finding",
+  "description": "A separate annotation linked to immutable source observations. A candidate interpretation is not a validated vehicle mapping.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "record_type", "finding_id", "created_at_utc", "finding_kind", "status", "summary", "evidence_frame_ids", "method", "confidence"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "record_type": {"const": "analysis_finding"},
+    "finding_id": {"type": "string", "format": "uuid"},
+    "created_at_utc": {"type": "string", "format": "date-time"},
+    "finding_kind": {"enum": ["identifier_periodicity", "payload_change", "bit_change", "signal_candidate", "counter_candidate", "checksum_candidate", "correlation", "other"]},
+    "status": {"enum": ["observed", "candidate", "validated"]},
+    "summary": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "evidence_frame_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "format": "uuid"}, "uniqueItems": true},
+    "method": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "arbitration_id": {"type": "integer", "minimum": 0, "maximum": 536870911},
+    "id_format": {"enum": ["standard", "extended"]},
+    "candidate_signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_bit", "bit_length", "byte_order"],
+      "properties": {
+        "start_bit": {"type": "integer", "minimum": 0, "maximum": 63},
+        "bit_length": {"type": "integer", "minimum": 1, "maximum": 64},
+        "byte_order": {"enum": ["little_endian", "big_endian", "unknown"]},
+        "signed": {"type": ["boolean", "null"]},
+        "scale": {"type": ["number", "null"]},
+        "offset": {"type": ["number", "null"]},
+        "unit": {"type": ["string", "null"], "maxLength": 64}
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["validation_method", "validated_at_utc", "evidence_refs"],
+      "properties": {
+        "validation_method": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "validated_at_utc": {"type": "string", "format": "date-time"},
+        "reviewer": {"type": ["string", "null"], "maxLength": 128},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      }
+    },
+    "annotations": {"type": "object", "additionalProperties": {"type": ["string", "number", "boolean", "null", "array"], "items": {"type": ["string", "number", "boolean", "null"]}}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "validated"}}, "required": ["status"]},
+      "then": {"required": ["validation"]}
+    }
+  ]
+}

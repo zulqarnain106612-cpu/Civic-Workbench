@@ -1,7 +1,6 @@
 """CW1 input handling, packaging assets and source provenance integration tests."""
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
 import uuid

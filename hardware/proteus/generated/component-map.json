@@ -1,6 +1,6 @@
 {
   "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
-  "native_import_status": "not-performed",
+  "native_import_status": "edif-generated-import-not-performed",
   "net_names": [
     "+5V_CAN",
     "CANH",

@@ -3,7 +3,9 @@ PIO ?= pio
 BENCH_FRAMES ?= 20000
 WHEEL_DIR ?= /tmp/civic-workbench-wheels
 
-.PHONY: run test test-contracts test-firmware-safety test-firmware-source test-firmware-can-mock test-firmware-serial test-storage test-api test-analysis test-simulator test-proteus compile-check schema-check yaml-check diff-check package-check design-source benchmark verify firmware-build clean-local
+PYFLAKES ?= $(PYTHON) -m pyflakes
+
+.PHONY: lint run test test-contracts test-firmware-safety test-firmware-source test-firmware-can-mock test-firmware-serial test-storage test-api test-analysis test-simulator test-proteus compile-check schema-check yaml-check diff-check package-check design-source benchmark verify firmware-build clean-local
 
 run:
 	PYTHONPATH=src $(PYTHON) -m civic_workbench --host 127.0.0.1 --port 8765
@@ -41,6 +43,9 @@ test-simulator:
 test-proteus:
 	PYTHONPATH=src $(PYTHON) -m unittest discover -s tests -p 'test_proteus_generator.py' -v
 
+lint:
+	$(PYFLAKES) src tests tools
+
 compile-check:
 	PYTHONPATH=src $(PYTHON) -m compileall -q src tests tools
 
@@ -49,7 +54,7 @@ schema-check:
 	$(PYTHON) tools/check_schema_sync.py
 
 yaml-check:
-	$(PYTHON) -c "import yaml; from pathlib import Path; [yaml.safe_load(p.read_text()) for p in Path('.').rglob('*.yaml') if '.git' not in p.parts and '.pio' not in p.parts and '.venv' not in p.parts]; print('All project YAML files parse.')"
+	$(PYTHON) -c "import yaml; from pathlib import Path; [yaml.safe_load(p.read_text()) for p in Path('.').rglob('*.yaml') if not any(part.startswith('.') for part in p.parts)]; print('All project YAML files parse.')"
 
 diff-check:
 	git diff --check

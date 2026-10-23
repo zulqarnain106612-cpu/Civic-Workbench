@@ -1,8 +1,8 @@
 {
   "blockers": [
-    "Native ROOT.DSN inside .pdsprj is a proprietary binary format with no official Python writer.",
-    "The installed registry profile is labelled 'Demonstration'; demonstration editions are not expected to save designs - verify on the machine.",
-    "The generating session had no shell access to the Proteus host, so no import/render could be attempted."
+    "The installed Proteus reports 'Licensing error. Bad or missing Customer Key' (Unlicensed Version); in that state the Schematic Editor does not open and File > Import ECAD Files produced no project, so import, save and simulation could not be executed.",
+    "Native ROOT.DSN inside .pdsprj is a proprietary binary format with no published writer; it is produced by Proteus itself when the imported design is saved.",
+    "The simulation bench binds the TJA1051 symbol to Labcenter's generic CAN_TRANSCEIVER behavioural model (CANBUS.LIB has no TJA1051 model); the Silent pin S is not modelled."
   ],
   "completed_artifacts": [
     "reference-design.netlist.json",
@@ -11,13 +11,21 @@
     "component-map.json",
     "bill-of-materials.csv",
     "PROTEUS-CAPTURE.md",
+    "civic-workbench-rev-b.edf",
+    "civic-workbench-rev-b-sim.edf",
     "artifact-manifest.json"
   ],
+  "import_artifacts": [
+    "civic-workbench-rev-b.edf",
+    "civic-workbench-rev-b-sim.edf"
+  ],
+  "import_route": "Proteus 9.2 SP1: File > Import ECAD Files > ORCAD EDIF 2 (*.edf) - documented in Help/IMPORTER.chm",
   "native_artifact_created": false,
-  "note": "SVG is a review schematic, not a native Proteus file.",
+  "note": "SVG is a review drawing. The .edf files are the Proteus import sources; no .pdsprj is claimed.",
   "official_python_schematic_generation_api_confirmed": false,
-  "proteus_version_inspected": "8.3.19906.0 under Wine (registry label: Proteus 8 Demonstration)",
-  "required_next_action": "In a licensed Proteus 8 install, capture the schematic manually from PROTEUS-CAPTURE.md, save as hardware/proteus/native/civic-workbench-rev-b.pdsprj, and record the import/render evidence.",
-  "schema_version": 2,
-  "status": "blocked"
+  "proteus_version_inspected": "Proteus 9 Professional 9.2 SP1 build 45801 under Wine 10.0",
+  "required_next_action": "With a working licence: File > Import ECAD Files, select civic-workbench-rev-b-sim.edf, confirm the importer log reports no netlist differences, save as hardware/proteus/native/civic-workbench-rev-b-sim.pdsprj, press Run and record the CAN Bus Analyser capture as evidence; repeat import for civic-workbench-rev-b.edf.",
+  "schema_version": 3,
+  "status": "import-pending",
+  "verified_offline": "EDIF stored netlists and drawn wire connectivity are reproduced by an independent reader in tests/test_proteus_generator.py"
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S00-S14-source-and-host-verified; S13/S14-physical-bench-pending; S07-physical-TX-disabled; S09-native-Proteus-blocked",
+  "overall_status": "S00-S15-source-and-host-verified; S13/S14-physical-bench-pending; S07-physical-TX-disabled; S09/S15-Proteus-import-pending-licence",
   "application_implementation_status": "local-ui-api-storage-analysis-simulation-cad-source-packaging-and-host-integration-verified",
   "physical_hardware_validation_status": "not_performed",
   "last_updated": "2026-10-23",
@@ -16,12 +16,13 @@
     "S06": "analysis-and-versioned-mapping-tests-passed",
     "S07": "simulation-TX-and-audit-tests-passed; physical-host-TX-disabled",
     "S08": "deterministic-simulator-tests-passed",
-    "S09": "source-generator-tests-passed; native-Proteus-generation-import-blocked",
+    "S09": "source-generator-tests-passed; EDIF-import-sources-generated; Proteus-import-pending-licence",
     "S10": "API-session-export-import-and-security-integration-tests-passed",
     "S11": "integrated-suite-package-schema-synchronization-and-20k-synthetic-benchmark-passed",
     "S12": "source-and-host-delivery-verified; physical-validation-not-performed",
     "S13": "fixed-part-source-mapping-and-nodemcu32s-build-verified; physical-bench-pending",
-    "S14": "rev-b-design-firmware-and-host-fixes-tested; physical-bench-and-native-Proteus-pending"
+    "S14": "rev-b-design-firmware-and-host-fixes-tested; physical-bench-and-native-Proteus-pending",
+    "S15": "edif-proteus-import-sources-and-simulation-bench-generated-and-offline-verified; Proteus-import-and-run-blocked-by-licence"
   },
   "baseline_evidence": {
     "requirements_file": "project/requirements.yaml",
@@ -81,7 +82,7 @@
     "Firmware host transport CW1 v1 is read-only; no host arm/transmit command exists.",
     "Raw frame payload/provenance remains separate from versioned annotations and candidate parameter mappings.",
     "Parameter mappings are user-specified hypotheses and stay candidate until a distinct independent validation method/evidence is supplied.",
-    "Native Proteus format is not fabricated; source netlist/BOM/component map/SVG are generated and native writer/import is marked blocked.",
+    "Native Proteus DSN is not fabricated; Python generates OrCAD EDIF2 import sources (the route documented by Proteus 9.2 SP1) and Proteus itself must write the .pdsprj.",
     "All simulated frames use capture_source=simulator and virtual monotonic time; they are not physical vehicle evidence."
   ],
   "open_questions": [
@@ -90,7 +91,7 @@
     "Confirm the pin-5 function for the exact physical NXP TJA1051 marked NXP TJA1051 25 06 ND312 before wiring; no orderable suffix is inferred.",
     "Review transceiver VCC supply, confirmed pin-5 function, decoupling, external Silent-mode pull-up, connector protection and termination policy on an isolated bench.",
     "Confirm the intended CAN bitrate, topology and safe capture point using separate reliable evidence; no Honda IDs/signals or diagnostic capability are assumed.",
-    "Confirm an official Labcenter-supported native Proteus generation route, then create/import/render and review a genuine DSN/PDSPRJ."
+    "With a working Proteus licence, import hardware/proteus/generated/civic-workbench-rev-b-sim.edf, save the .pdsprj, run the CAN Bus Analyser bench and commit the evidence."
   ],
   "stage_reports": {
     "S00": "docs/reports/S00-environment-report.md",
@@ -107,7 +108,8 @@
     "S11": "docs/reports/S11-hardening-performance-report.md",
     "S12": "docs/reports/S12-final-handoff-report.md",
     "S13": "docs/reports/S13-hardware-baseline-and-pin-map.md",
-    "S14": "docs/reports/S14-rev-b-receive-only-and-audit-remediation.md"
+    "S14": "docs/reports/S14-rev-b-receive-only-and-audit-remediation.md",
+    "S15": "docs/reports/S15-proteus-edif-and-repository-audit.md"
   },
   "s02_evidence": {
     "report": "docs/reports/S02-firmware-report.md",

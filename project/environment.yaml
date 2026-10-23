@@ -51,19 +51,17 @@ hardware:
   transceiver_physical_presence: not_verified
 proteus:
   installed: true
-  host_integration: "Windows application under Wine prefix /home/s752/.wine-proteus"
-  product: "Proteus 8"
-  build: "8.3.19906.0 (inferred from installed user registry path install_8.3.19906.0)"
-  executable: "Program Files (x86)/Labcenter Electronics/Proteus 8 Professional/BIN/PDS.EXE"
-  registry_profile_label: "Proteus 8 Demonstration"
-  active_license_entitlement: not_verified
+  host_integration: "Windows application under Wine 10.0, prefix /home/s752/.wine-proteus"
+  product: "Proteus 9 Professional"
+  build: "9.2 SP1, build 45801 (Home page About panel; swidtag 9.2.45801.1)"
+  executable: "Program Files/Labcenter Electronics/Proteus 9 Professional/Bin/PDS.exe"
+  licence_state_observed_2026_10_23: "Unlicensed Version - 'Licensing error. Bad or missing Customer Key'; Schematic Editor does not open"
   local_help_present: true
-  local_generator_scripts_examples:
-    count: 8
-    format: ".pdsprj simulation sample projects"
-    python_schematic_generation_utility_found: false
-  official_python_native_schematic_api: "not confirmed in installed file inspection or public official documentation reviewed"
-  native_project_import_validation: not_performed
+  schematic_import_routes_documented: "IMPORTER.chm: File > Import ECAD Files, OrCAD v9.2/17.2 EDIF2"
+  can_simulation_library: "CANBUS.LIB: CAN_ANALYZER, CAN_TERMINAL, behavioural ECUs, transceivers TJA1050/MCP2551/SN65HVD23x (generic CAN_TRANSCEIVER primitive); no TJA1051 model"
+  python_in_product: "MicroPython VSM targets and Python VSM device models (Tools/VSMPY); no Python schematic-authoring API"
+  official_python_native_schematic_api: "none found in installed files or Labcenter 9.0 release notes"
+  native_project_import_validation: "not performed - blocked by licence state"
 vehicle_network:
   verified_bitrate: null
   topology: null

@@ -1,24 +1,30 @@
 {
   "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
   "deterministic_outputs": {
-    "PROTEUS-CAPTURE.md": "4bbf665a17f04c76a1ed08ce1b8655970f5bc43e8773310c5986f170a5fc09f7",
-    "README.md": "7d45b21828b76357b22e7663209359d79f60d8d8f9914c04bbba3a7b0ed2f0b9",
+    "PROTEUS-CAPTURE.md": "bfab5b17397bff47b77122e6b6a9d84b449ae9cb1e3ab579c8e085fd3891af12",
+    "README.md": "7175084ddeb284188d185f6de78981eddbfe1c0b99a0c29726d4ea7b76104457",
     "bill-of-materials.csv": "33e3131d11c73ee98546a53f9da7cda8a39552bd977ac07f03cfce233a849c70",
-    "component-map.json": "406a97f407767682f78bc41f4a3f20a6b0fcf6d350fb3bf5f2f5cd40bd7b2731",
+    "civic-workbench-rev-b-sim.edf": "d4e70b6f1ae4c5dfe2f81cae5fe3881403bce82f8c9489eb567599a935068a4b",
+    "civic-workbench-rev-b.edf": "9981ed3f49b40e6e2366def4a65ef28c1b0dbdd2eaf81f761017cd36c506acd4",
+    "component-map.json": "3920ee04175232f5b47c1391ca374508770cd47c84be3b35c6f36ca59cff5760",
     "design-checks.json": "da4ab21c238adabf541d35bb1de3dc2622149dc8c546a5527c9cb7a849764b45",
-    "native-project-status.json": "df6ef3a6519c48dfea4a1edec33de823248dba82866e06ad52f3863781c043f2",
-    "reference-design.netlist.json": "964d66f2d7105698db509c9fc6e8e5ea7caf20d15f186151ee0016cb782c44c0",
+    "native-project-status.json": "b23f019649798499c48dc03742ab85792ab2171e699dbef5d04eecb657397b63",
+    "reference-design.netlist.json": "ddea7fef735090e96f3437b889d2894d824528d144e541a061185fdb2c63f38c",
     "reference-design.svg": "9d274107487ab449c4c75d4e1f5392ceb8744489c67c45d6c72e8553b954bff9"
   },
   "generator": "tools/generate_proteus_reference.py",
-  "generator_version": "2.0.0",
+  "generator_version": "3.0.0",
   "input": {
     "path": "hardware/reference/esp32-tja1051-netlist.yaml",
-    "sha256": "848f26a6c69f7c10bbfc66d137e90841f97b7d0804b78aba8179307192d6743c"
+    "sha256": "80a155e8f4671ea06619b1915137e3e674c88d372b28ff72b790f21979e3a1d4"
   },
   "native_project": {
     "import_render_validation": "not-performed",
-    "status": "blocked"
+    "import_sources": [
+      "civic-workbench-rev-b.edf",
+      "civic-workbench-rev-b-sim.edf"
+    ],
+    "status": "import-pending"
   },
   "revision": "B",
   "schema_version": 2

@@ -253,7 +253,6 @@ class VirtualCanBus:
         allowed_ops = {"flip_bit", "xor_byte", "set_byte", "delay_ms"}
         mutated = []
         for source in frames:
-            result = dict(source)
             payload = list(source["payload"])
             for op in operations:
                 kind = op.get("kind")

@@ -279,3 +279,18 @@ stages:
   - Firmware guarded TX enforces a minimum interval and per-arm frame budget and logs every attempt.
   - No bench, vehicle or native-Proteus acceptance is claimed without evidence.
   delivery_state: source-design-and-tests-complete; native-Proteus-and-physical-bench-pending
+
+- id: S15
+  title: Proteus EDIF import sources, CAN simulation bench and repository audit
+  goal: Generate Proteus-importable schematics from Python through the import route Proteus 9.2 SP1 documents, and close repository audit findings.
+  deliverables:
+  - orcad-edif2-hardware-schematic
+  - orcad-edif2-simulation-bench-with-can-bus-analyser
+  - offline-edif-reader-and-netlist-equality-tests
+  - audit-remediation
+  acceptance:
+  - Both EDIF files carry the importer probe header (EDIF, EDIFVersion 2 0 0, EDIFLevel 0) and a page size.
+  - The stored joined netlists and the netlists rebuilt from drawn wire geometry both equal the reviewed netlist; no wire end lands on another wire interior and no collinear overlap joins two nets.
+  - The simulation bench binds Labcenter primitives read from the installed libraries and does not substitute the TJA1051 symbol.
+  - Proteus import, save and run are claimed only with recorded evidence.
+  delivery_state: edif-sources-generated-and-verified-offline; Proteus-import-pending-licence

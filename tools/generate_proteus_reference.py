@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Generate deterministic hardware artifacts from Civic-Workbench's reviewed netlist.
 
-Outputs a canonical netlist, BOM, electrical design checks and a net-label SVG schematic.
-It does not fabricate Proteus DSN/PDSPRJ binaries: the native format is proprietary and
-no official Python writer is available to this generator. See native-project-status.json.
+Outputs a canonical netlist, BOM, electrical design checks, a net-label SVG review schematic and two
+OrCAD-dialect EDIF 2 0 0 schematics for Proteus 9.2 SP1 "File > Import ECAD Files" (the only schematic
+import route documented in the installed IMPORTER.chm): the Rev B hardware sheet and a simulation bench that
+adds Labcenter's CAN Bus Analyser and a behavioural Engine ECU. Proteus' own DSN/PDSPRJ binaries are not
+fabricated: that format is proprietary and Labcenter publishes no Python writer for it.
 """
 from __future__ import annotations
 
@@ -15,10 +17,12 @@ from pathlib import Path
 import xml.sax.saxutils as xml
 import yaml
 
+import proteus_edif
+
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "hardware/reference/esp32-tja1051-netlist.yaml"
 DEFAULT_OUTPUT = ROOT / "hardware/proteus/generated"
-GENERATOR_VERSION = "2.0.0"
+GENERATOR_VERSION = "3.0.0"
 
 ESP32_VDD = 3.3
 ESP32_VIH_MIN = 0.75 * ESP32_VDD
@@ -128,7 +132,7 @@ def _cap(x, y, ref, value, net_top, net_bot, fitted=True):
 
 def svg_source(design: dict, checks: dict) -> str:
     comps = {c["ref"]: c for c in design["components"]}
-    o = [f'<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="940" viewBox="0 0 1400 940">',
+    o = ['<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="940" viewBox="0 0 1400 940">',
          f'<rect width="100%" height="100%" fill="{BG}"/>',
          f'<rect x="10" y="10" width="1380" height="920" fill="none" stroke="{INK}" stroke-width="2"/>',
          _t(30, 44, "Civic-Workbench - NodeMCU-32S + NXP TJA1051 receive-only CAN interface", 22, weight="bold"),
@@ -196,7 +200,7 @@ def svg_source(design: dict, checks: dict) -> str:
     o += _cap(1250, 500, "C4", "100pF", "CANL", "GND", False)
 
     # notes
-    o += [f'<rect x="30" y="660" width="1340" height="255" fill="#fbfbf6" stroke="#c9b98a"/>',
+    o += ['<rect x="30" y="660" width="1340" height="255" fill="#fbfbf6" stroke="#c9b98a"/>',
           _t(50, 688, "Design notes", 15, weight="bold")]
     notes = [
         "1. U1 is the plain TJA1051 (pin 5 n.c.): VIO = VCC, so TXD/S need >= 0.7 x VCC = 3.5 V. A 3.3 V ESP32 cannot drive them directly.",
@@ -211,6 +215,97 @@ def svg_source(design: dict, checks: dict) -> str:
         o.append(_t(50, 716 + i * 27, n, 12))
     o.append("</svg>")
     return "\n".join(x for x in o if x) + "\n"
+
+
+# ---------------------------------------------------------------- EDIF (Proteus ECAD import)
+EDIF_TIMESTAMP = (2026, 10, 23, 0, 0, 0)   # fixed so output stays byte-deterministic
+TJA1051_LEFT = ("1", "2", "3", "4")
+TJA1051_RIGHT = ("8", "7", "6", "5")
+
+# Labcenter library facts read from the installed Proteus 9.2 SP1 CANBUS.LIB / DEVICE.LIB / CAPACITORS.LIB.
+# There is no TJA1051 model in the library; Labcenter's own transceivers (TJA1050, MCP2551, SN65HVD23x)
+# all bind the same behavioural primitive, so the TJA1051 symbol is bound to it for simulation only.
+SIM_TRANSCEIVER_PROPS = {"PRIMITIVE": "DIGITAL,CAN_TRANSCEIVER", "MODDLL": "CANBUS.DLL", "ITFMOD": "AVR",
+                         "FD_CAPABLE": "FALSE", "MAX_BAUD": "1000000",
+                         "SIM_NOTE": "Behavioural CAN_TRANSCEIVER model; Silent pin S not modelled"}
+SIM_RES_PROPS = {"PRIMITIVE": "ANALOG", "PRIMTYPE": "RESISTOR"}
+SIM_CAP_PROPS = {"PRIMITIVE": "ANALOGUE,CAPACITOR"}
+
+
+def _edif_parts(design: dict, simulation: bool) -> list[proteus_edif.Part]:
+    P = proteus_edif.Pin
+    pins = design["transceiver"]["pins"]
+    parts = []
+    for comp in design["components"]:
+        if simulation and not comp["fitted"]:
+            continue
+        props = {"PACKAGE": comp["package"], "FITTED": "yes" if comp["fitted"] else "DNP"}
+        ref = comp["ref"]
+        if ref == "U1":
+            pin_list = [P(n, pins[int(n)]["name"], "L") for n in TJA1051_LEFT] + \
+                       [P(n, pins[int(n)]["name"], "R") for n in TJA1051_RIGHT]
+            props["MARKING"] = design["transceiver"]["reported_top_marking"]
+            if simulation:
+                props.update(SIM_TRANSCEIVER_PROPS)
+            parts.append(proteus_edif.Part(ref, "TJA1051T_SO8", comp["value"], pin_list, props))
+        elif ref.startswith(("R", "C")):
+            if simulation:
+                props.update(SIM_RES_PROPS if ref.startswith("R") else SIM_CAP_PROPS)
+            cell = "RES_2P" if ref.startswith("R") else "CAP_2P"
+            parts.append(proteus_edif.Part(ref, cell, comp["value"], [P("1", "1", "L"), P("2", "2", "R")], props))
+        elif ref == "J2":
+            parts.append(proteus_edif.Part(ref, "CONN_CAN_3P", comp["value"],
+                                           [P("1", "CANH", "L"), P("2", "CANL", "L"), P("3", "GND", "L")], props))
+        elif ref == "J3":
+            parts.append(proteus_edif.Part(ref, "CONN_PWR_2P", comp["value"],
+                                           [P("1", "+5V", "L"), P("2", "GND", "L")], props))
+        else:
+            raise ValueError(f"no EDIF symbol for {ref}")
+    ctrl = design["controller"]
+    parts.insert(0, proteus_edif.Part(ctrl["ref"], "NODEMCU32S_HDR", "NodeMCU-32S",
+                                      [P(str(c["header_pin"]), c["pin"], "R") for c in ctrl["connections"]],
+                                      {"BOARD": ctrl["board_id"], "SIM_NOTE": "Header only; ESP32 is not simulated"}))
+    if simulation:
+        parts += [
+            proteus_edif.Part("BAT1", "DC_SOURCE_2P", "5V", [P("1", "+", "L"), P("2", "-", "R")],
+                              {"PRIMITIVE": "ANALOGUE", "SIM_NOTE": "Stands in for the J3 bench supply"}),
+            proteus_edif.Part("U2", "CAN_ANALYZER", "CAN_ANALYZER",
+                              [P("1", "GND", "L"), P("2", "VCC", "L"), P("3", "CANH", "R"), P("4", "CANL", "R")],
+                              {"PRIMITIVE": "DIGITAL,CAN_ANALYZER", "MODDLL": "CANBUS.DLL", "ITFMOD": "AVR",
+                               "DATABASE": "vehicle.dbc"}),
+            proteus_edif.Part("U3", "ENGINE_ECU", "ENGINE_ECU", [P("1", "CANH", "L"), P("2", "CANL", "L")],
+                              {"PRIMITIVE": "DIGITAL,ENGINE_ECU", "MODDLL": "CANAUTO.DLL", "SHOW_POPUP": "1",
+                               "SIM_NOTE": "Labcenter behavioural ECU: synthetic traffic source, not vehicle data"}),
+        ]
+    return parts
+
+
+def edif_nets(design: dict, simulation: bool) -> dict[str, list[str]]:
+    header = {c["pin"]: str(c["header_pin"]) for c in design["controller"]["connections"]}
+    nets: dict[str, list[str]] = {}
+    for comp in design["components"]:
+        if simulation and not comp["fitted"]:
+            continue
+        for pin, net in comp["nets"].items():
+            if not str(net).startswith("NC_"):
+                nets.setdefault(str(net), []).append(f"{comp['ref']}.{pin}")
+    for conn in design["controller"]["connections"]:
+        if not conn["net"].startswith("NC_"):
+            nets.setdefault(conn["net"], []).append(f"{design['controller']['ref']}.{header[conn['pin']]}")
+    if simulation:
+        nets["+5V_CAN"] += ["BAT1.1", "U2.2"]
+        nets["GND"] += ["BAT1.2", "U2.1"]
+        nets["CANH"] += ["U2.3", "U3.1"]
+        nets["CANL"] += ["U2.4", "U3.2"]
+    return {name: sorted(members) for name, members in sorted(nets.items())}
+
+
+def edif_source(design: dict, simulation: bool) -> str:
+    title = ("Rev %s simulation bench (CAN analyser + behavioural ECU)" if simulation
+             else "Rev %s hardware schematic") % design["revision"]
+    name = "CIVIC_WORKBENCH_REV_" + design["revision"] + ("_SIM" if simulation else "")
+    return proteus_edif.write_edif(name, _edif_parts(design, simulation), edif_nets(design, simulation),
+                                   title, EDIF_TIMESTAMP)
 
 
 # ---------------------------------------------------------------- main
@@ -248,28 +343,38 @@ def main() -> int:
         "symbols": [{"ref": c["ref"], "value": c["value"], "fitted": c["fitted"], "library_symbol_verified": False}
                     for c in design["components"]]
         + [{"ref": "J1", "value": "NodeMCU-32S", "fitted": True, "library_symbol_verified": False}],
-        "net_names": sorted(nets), "native_import_status": "not-performed",
+        "net_names": sorted(nets), "native_import_status": "edif-generated-import-not-performed",
     }
     (output / "component-map.json").write_text(json.dumps(component_map, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
+    (output / "civic-workbench-rev-b.edf").write_text(edif_source(design, simulation=False), encoding="utf-8")
+    (output / "civic-workbench-rev-b-sim.edf").write_text(edif_source(design, simulation=True), encoding="utf-8")
+
     native_status = {
-        "schema_version": 2, "status": "blocked", "native_artifact_created": False,
-        "proteus_version_inspected": "8.3.19906.0 under Wine (registry label: Proteus 8 Demonstration)",
+        "schema_version": 3, "status": "import-pending",
+        "native_artifact_created": False,
+        "import_artifacts": ["civic-workbench-rev-b.edf", "civic-workbench-rev-b-sim.edf"],
+        "import_route": "Proteus 9.2 SP1: File > Import ECAD Files > ORCAD EDIF 2 (*.edf) - documented in Help/IMPORTER.chm",
+        "proteus_version_inspected": "Proteus 9 Professional 9.2 SP1 build 45801 under Wine 10.0",
         "official_python_schematic_generation_api_confirmed": False,
         "blockers": [
-            "Native ROOT.DSN inside .pdsprj is a proprietary binary format with no official Python writer.",
-            "The installed registry profile is labelled 'Demonstration'; demonstration editions are not expected to save designs - verify on the machine.",
-            "The generating session had no shell access to the Proteus host, so no import/render could be attempted.",
+            "The installed Proteus reports 'Licensing error. Bad or missing Customer Key' (Unlicensed Version); in that state the Schematic Editor does not open and File > Import ECAD Files produced no project, so import, save and simulation could not be executed.",
+            "Native ROOT.DSN inside .pdsprj is a proprietary binary format with no published writer; it is produced by Proteus itself when the imported design is saved.",
+            "The simulation bench binds the TJA1051 symbol to Labcenter's generic CAN_TRANSCEIVER behavioural model (CANBUS.LIB has no TJA1051 model); the Silent pin S is not modelled.",
         ],
         "completed_artifacts": ["reference-design.netlist.json", "design-checks.json", "reference-design.svg",
-                                "component-map.json", "bill-of-materials.csv", "PROTEUS-CAPTURE.md", "artifact-manifest.json"],
-        "required_next_action": "In a licensed Proteus 8 install, capture the schematic manually from PROTEUS-CAPTURE.md, save as hardware/proteus/native/civic-workbench-rev-b.pdsprj, and record the import/render evidence.",
-        "note": "SVG is a review schematic, not a native Proteus file.",
+                                "component-map.json", "bill-of-materials.csv", "PROTEUS-CAPTURE.md",
+                                "civic-workbench-rev-b.edf", "civic-workbench-rev-b-sim.edf", "artifact-manifest.json"],
+        "verified_offline": "EDIF stored netlists and drawn wire connectivity are reproduced by an independent reader in tests/test_proteus_generator.py",
+        "required_next_action": "With a working licence: File > Import ECAD Files, select civic-workbench-rev-b-sim.edf, confirm the importer log reports no netlist differences, save as hardware/proteus/native/civic-workbench-rev-b-sim.pdsprj, press Run and record the CAN Bus Analyser capture as evidence; repeat import for civic-workbench-rev-b.edf.",
+        "note": "SVG is a review drawing. The .edf files are the Proteus import sources; no .pdsprj is claimed.",
     }
     (output / "native-project-status.json").write_text(json.dumps(native_status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     capture = ["# Proteus capture sheet - Rev " + design["revision"], "",
-               "Place these parts in Proteus ISIS and connect pins by net name (use terminals/net labels with exactly these names).",
+               "Import `civic-workbench-rev-b.edf` (hardware) or `civic-workbench-rev-b-sim.edf` (simulation bench) with "
+               "Proteus File > Import ECAD Files. Use this sheet to check the imported connectivity, or to capture by hand "
+               "(terminals/net labels with exactly these names).",
                "Generated from the reviewed netlist; regenerate with `make design-source` after any netlist change.", "",
                "## Parts", "", "| Ref | Value | Package | Fit |", "|---|---|---|---|"]
     for comp in design["components"]:
@@ -290,25 +395,30 @@ from `hardware/reference/esp32-tja1051-netlist.yaml`. Do not edit these files by
 - reference-design.netlist.json: canonical netlist with resolved nets.
 - design-checks.json: computed electrical checks (logic levels, Silent bias, pin 5, termination).
 - bill-of-materials.csv: fitted and DNP parts.
-- PROTEUS-CAPTURE.md: part and net list for capturing the native schematic in Proteus.
-- native-project-status.json: why no native .pdsprj exists yet.
+- civic-workbench-rev-b.edf: Rev B hardware schematic, OrCAD EDIF2 for Proteus File > Import ECAD Files.
+- civic-workbench-rev-b-sim.edf: Rev B fitted parts plus Proteus CAN Bus Analyser (U2) and behavioural Engine ECU (U3)
+  on CANH/CANL, with Labcenter simulation primitives on each part. Import, save as .pdsprj, then Run.
+- PROTEUS-CAPTURE.md: part and net list for checking the imported schematic.
+- native-project-status.json: import status and what still blocks a saved native project.
 
 Status: design checks pass on paper; nothing here is bench-validated.
 """
     (output / "README.md").write_text(readme, encoding="utf-8")
 
     names = ["reference-design.netlist.json", "design-checks.json", "reference-design.svg", "component-map.json",
-             "bill-of-materials.csv", "native-project-status.json", "PROTEUS-CAPTURE.md", "README.md"]
+             "bill-of-materials.csv", "native-project-status.json", "PROTEUS-CAPTURE.md", "README.md",
+             "civic-workbench-rev-b.edf", "civic-workbench-rev-b-sim.edf"]
     manifest = {
         "schema_version": 2, "design_id": design["design_id"], "revision": design["revision"],
         "generator": "tools/generate_proteus_reference.py", "generator_version": GENERATOR_VERSION,
         "input": {"path": "hardware/reference/esp32-tja1051-netlist.yaml", "sha256": sha256(SOURCE)},
         "deterministic_outputs": {name: sha256(output / name) for name in names},
-        "native_project": {"status": "blocked", "import_render_validation": "not-performed"},
+        "native_project": {"status": "import-pending", "import_render_validation": "not-performed",
+                           "import_sources": ["civic-workbench-rev-b.edf", "civic-workbench-rev-b-sim.edf"]},
     }
     (output / "artifact-manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({"output": str(output), "files": names + ["artifact-manifest.json"],
-                      "design_checks_pass": checks["all_pass"], "native_project": "BLOCKED"}, indent=2))
+                      "design_checks_pass": checks["all_pass"], "native_project": "IMPORT-PENDING"}, indent=2))
     return 0 if checks["all_pass"] else 1
 
 

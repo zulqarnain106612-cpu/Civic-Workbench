@@ -5,7 +5,7 @@ import hashlib
 import json
 from contextlib import contextmanager
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 import sqlite3
 import threading
 from datetime import datetime, timezone
@@ -483,7 +483,7 @@ class SessionStore:
         notes = str(source_manifest.get("user_notes", "Imported version-1 bundle"))[:2000]
         # Do not reuse an external database path or checksum. A new local session and raw
         # JSONL artifact are generated; each frame's raw fields/source label otherwise stays intact.
-        manifest = self.create_session(
+        self.create_session(
             capture_source="import",
             bitrate_bps=bitrate,
             session_id=source_id,

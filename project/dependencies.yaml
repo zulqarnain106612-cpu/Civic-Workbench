@@ -17,6 +17,7 @@ nodes:
   S12: {name: "Packaging, traceability audit, and handoff", depends_on: [S11]}
   S13: {name: "Fixed NodeMCU-32S/TJA1051 mapping and receive-only bench readiness", depends_on: [S12]}
   S14: {name: "Receive-only interface Rev B, audit remediation and bench enablement", depends_on: [S13]}
+  S15: {name: "Proteus EDIF import sources, CAN simulation bench and repository audit", depends_on: [S14, S09]}
 parallelism:
   - "S04 and S05 may proceed independently after their contracts are stable."
   - "S06 can proceed against recorded/synthetic datasets while live capture hardware is unavailable."

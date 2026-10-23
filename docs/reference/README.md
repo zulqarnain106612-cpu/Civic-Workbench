@@ -1,8 +1,9 @@
 # Owner-supplied reference material
 
 Screenshots supplied by the project owner on 2026-10-23. They are the evidence cited by
-`hardware/reference/esp32-tja1051-netlist.yaml` (facts F1-F8). Copyright NXP B.V.; kept for
-internal design traceability only.
+`hardware/reference/esp32-tja1051-netlist.yaml` (facts F1-F8). Copyright NXP B.V. and the board vendor; kept for
+design traceability. Public sources: NXP AH1014 Application Hints (Rev. 01.40) and
+https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf.
 
 | File | Source | Used for |
 |---|---|---|

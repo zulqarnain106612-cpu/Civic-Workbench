@@ -6,7 +6,7 @@ This repository is independent of the earlier build-a-web-page-for-ios repositor
 
 ## Current delivery state
 
-S00–S03 are the prior committed baseline. The remaining S04–S12 host/software delivery is now implemented and verified together: 95 Python tests passed, `make verify` exited 0, the 20,000-frame synthetic benchmark completed, and the generic original-ESP32 firmware profile compiled successfully. S07 deliberately remains simulation-only at the host boundary: hardware TX/arm commands are not carried over the read-only CW1 protocol. S09 produces deterministic reference-design source artifacts, but a native Proteus DSN/PDSPRJ has not been generated/imported because an official supported writer/API was not confirmed. The exact physical ESP32 module, GPIO map, transceiver installation, vehicle bitrate and safe capture point remain unverified. No firmware was flashed and no Civic bus operation was performed.
+S00–S15 host/software delivery is implemented and verified on the host (`make verify`, the 20,000-frame synthetic benchmark and the NodeMCU-32S firmware build). S07 deliberately remains simulation-only at the host boundary: hardware TX/arm commands are not carried over the read-only CW1 protocol. Hardware Rev B is a receive-only interface. The Python generator writes OrCAD EDIF2 schematics for Proteus 9.2 File > Import ECAD Files, including a simulation bench with the Proteus CAN Bus Analyser; importing and running them is pending a working Proteus licence (see docs/reports/S15-proteus-edif-and-repository-audit.md). The exact physical ESP32 module, GPIO map, transceiver installation, vehicle bitrate and safe capture point remain unverified. No firmware was flashed and no Civic bus operation was performed.
 
 The complete test/build evidence and open issues are tracked in project/progress.json and docs/reports/S12-final-handoff-report.md.
 
@@ -19,7 +19,7 @@ The complete test/build evidence and open issues are tracked in project/progress
 - Evidence-gated diagnostic capability metadata and a simulation-only workflow gate. No Honda ECU services or IDs are assumed.
 - Virtual CAN nodes, virtual time, trace replay/mutation, resource-bounded events and simulator-only TX repeats/cancellation/audit.
 - CW1-prefixed firmware serial frame/status protocol; host bridge ingests serial only and does not send bytes to firmware.
-- Deterministic hardware netlist/component map/BOM/SVG source generator, with native Proteus generation status explicitly recorded.
+- Deterministic hardware generator: netlist, BOM, design checks, review SVG and OrCAD EDIF2 Proteus import files (hardware sheet and CAN Bus Analyser simulation bench), with import status recorded.
 - Fault matrix, threat/safety notes, stage reports, requirement traceability and a performance benchmark tool.
 
 ## Install and run

@@ -1,6 +1,6 @@
 # Proteus capture sheet - Rev B
 
-Place these parts in Proteus ISIS and connect pins by net name (use terminals/net labels with exactly these names).
+Import `civic-workbench-rev-b.edf` (hardware) or `civic-workbench-rev-b-sim.edf` (simulation bench) with Proteus File > Import ECAD Files. Use this sheet to check the imported connectivity, or to capture by hand (terminals/net labels with exactly these names).
 Generated from the reviewed netlist; regenerate with `make design-source` after any netlist change.
 
 ## Parts

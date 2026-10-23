@@ -15,8 +15,12 @@ GENERATOR = ROOT / "tools/generate_proteus_reference.py"
 NAMES = [
     "reference-design.netlist.json", "design-checks.json", "reference-design.svg",
     "component-map.json", "bill-of-materials.csv", "native-project-status.json",
-    "PROTEUS-CAPTURE.md", "README.md", "artifact-manifest.json",
+    "PROTEUS-CAPTURE.md", "README.md", "civic-workbench-rev-b.edf", "civic-workbench-rev-b-sim.edf",
+    "artifact-manifest.json",
 ]
+sys.path.insert(0, str(ROOT / "tools"))
+import generate_proteus_reference  # noqa: E402
+import proteus_edif  # noqa: E402
 
 
 class ProteusGeneratorTests(unittest.TestCase):
@@ -84,10 +88,61 @@ class ProteusGeneratorTests(unittest.TestCase):
         for token in ("NodeMCU-32S", "TJA1051T", "S_SILENT", "RXD_3V3", "ALL PASS"):
             self.assertIn(token, svg)
 
-    def test_native_project_is_explicitly_blocked_not_fabricated(self):
+    def _edif(self, simulation: bool):
+        name = "civic-workbench-rev-b-sim.edf" if simulation else "civic-workbench-rev-b.edf"
+        return proteus_edif.read_edif((self.out / name).read_text())
+
+    def _expected(self, simulation: bool):
+        import yaml
+        design = yaml.safe_load((ROOT / "hardware/reference/esp32-tja1051-netlist.yaml").read_text())
+        return generate_proteus_reference.edif_nets(design, simulation)
+
+    def test_edif_header_matches_proteus_importer_probe(self):
+        # IMPORTER.dll probe: first tag EDIF, EDIFVersion '2 0 0', EDIFLevel '0'
+        for simulation in (False, True):
+            text = (self.out / ("civic-workbench-rev-b-sim.edf" if simulation else "civic-workbench-rev-b.edf")).read_text()
+            tree = proteus_edif.parse_sexpr(text)
+            self.assertEqual(tree[0], "edif")
+            self.assertIn(["edifVersion", "2", "0", "0"], tree)
+            self.assertIn(["edifLevel", "0"], tree)
+            self.assertIn("(pageSize", text)
+            self.assertIn('(program "CAPTURE.EXE"', text)
+
+    def test_edif_stored_and_drawn_netlists_match_reviewed_netlist(self):
+        for simulation in (False, True):
+            parsed, expected = self._edif(simulation), self._expected(simulation)
+            self.assertEqual(parsed["stored"], expected)
+            self.assertEqual(parsed["drawn"], sorted(sorted(m) for m in expected.values()))
+            self.assertEqual(parsed["interior_hits"], [])
+            self.assertEqual(parsed["overlaps"], [])
+
+    def test_edif_hardware_sheet_keeps_receive_only_topology(self):
+        nets = self._expected(False)
+        self.assertIn("U1.8", nets["S_SILENT"])
+        self.assertIn("J1.36", nets["RXD_3V3"])                       # GPIO22 = header pin 36
+        self.assertFalse(any("J1.33" in m for m in nets.values()))   # GPIO21 (header 33) unconnected
+        self.assertFalse(any("U1.5" in m for m in nets.values()))    # pin 5 open
+        self.assertIn("SPLIT", nets)                                  # DNP parts drawn on the hardware sheet
+        text = (self.out / "civic-workbench-rev-b.edf").read_text()
+        self.assertIn('"DNP"', text)
+        self.assertNotIn("CAN_ANALYZER", text)
+
+    def test_edif_simulation_bench_binds_labcenter_models(self):
+        text = (self.out / "civic-workbench-rev-b-sim.edf").read_text()
+        for token in ('"DIGITAL,CAN_TRANSCEIVER"', '"DIGITAL,CAN_ANALYZER"', '"DIGITAL,ENGINE_ECU"',
+                      '"CANBUS.DLL"', '"CANAUTO.DLL"', '"vehicle.dbc"', '"ANALOGUE,CAPACITOR"', '"RESISTOR"'):
+            self.assertIn(token, text)
+        nets = self._expected(True)
+        self.assertTrue({"U1.7", "U2.3", "U3.1"} <= set(nets["CANH"]))
+        self.assertTrue({"U1.6", "U2.4", "U3.2"} <= set(nets["CANL"]))
+        self.assertNotIn("SPLIT", nets)                               # DNP excluded from the bench
+        self.assertIn("TJA1051T", text)                               # no silent part substitution
+
+    def test_native_project_status_is_honest(self):
         status = json.loads((self.out / "native-project-status.json").read_text())
-        self.assertEqual(status["status"], "blocked")
+        self.assertEqual(status["status"], "import-pending")
         self.assertFalse(status["native_artifact_created"])
+        self.assertEqual(status["import_artifacts"], ["civic-workbench-rev-b.edf", "civic-workbench-rev-b-sim.edf"])
         self.assertFalse(status["official_python_schematic_generation_api_confirmed"])
         self.assertIn("required_next_action", status)
         self.assertFalse(list(self.out.glob("*.pdsprj")))

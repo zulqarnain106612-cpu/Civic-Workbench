@@ -7,7 +7,10 @@ from `hardware/reference/esp32-tja1051-netlist.yaml`. Do not edit these files by
 - reference-design.netlist.json: canonical netlist with resolved nets.
 - design-checks.json: computed electrical checks (logic levels, Silent bias, pin 5, termination).
 - bill-of-materials.csv: fitted and DNP parts.
-- PROTEUS-CAPTURE.md: part and net list for capturing the native schematic in Proteus.
-- native-project-status.json: why no native .pdsprj exists yet.
+- civic-workbench-rev-b.edf: Rev B hardware schematic, OrCAD EDIF2 for Proteus File > Import ECAD Files.
+- civic-workbench-rev-b-sim.edf: Rev B fitted parts plus Proteus CAN Bus Analyser (U2) and behavioural Engine ECU (U3)
+  on CANH/CANL, with Labcenter simulation primitives on each part. Import, save as .pdsprj, then Run.
+- PROTEUS-CAPTURE.md: part and net list for checking the imported schematic.
+- native-project-status.json: import status and what still blocks a saved native project.
 
 Status: design checks pass on paper; nothing here is bench-validated.

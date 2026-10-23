@@ -40,6 +40,8 @@ int main(void)
 
     /* Arming and transmission are unavailable in this build. */
     CHECK(civic_can_set_software_armed(true) != ESP_OK);
+    /* Abort/disarm must succeed even though no TX gate GPIO exists in this build. */
+    CHECK(civic_can_set_software_armed(false) == ESP_OK);
     civic_can_tx_request_t request = {.arbitration_id = 0x123U, .dlc = 1U, .data = {0xAAU}};
     CHECK(civic_can_transmit_guarded(&request, 10U) == ESP_ERR_NOT_SUPPORTED);
     CHECK(mock_twai_tx_count() == 0U);

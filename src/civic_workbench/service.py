@@ -1,7 +1,6 @@
 """Application service coordinating persistence, analysis, simulator and safety boundaries."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Any
 from uuid import uuid4

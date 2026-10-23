@@ -46,5 +46,5 @@ The PlatformIO board target is **NodeMCU-32S (nodemcu-32s), classic ESP32 only**
 - [x] Supply decoupling, Silent-mode bias, RXD level shifting and connectors defined in Rev B (design-checks.json passes).
 - [ ] Power U1 alone; measure +5V_CAN, S >= 3.5 V and RXD_3V3 <= 3.6 V before connecting GPIO22.
 - [ ] Bench-verify Silent-mode behavior and reset/power-loss state with the exact parts.
-- [ ] Native Proteus project captured from hardware/proteus/generated/PROTEUS-CAPTURE.md in a licensed Proteus and import/render recorded.
+- [ ] hardware/proteus/generated/civic-workbench-rev-b-sim.edf imported in a licensed Proteus (File > Import ECAD Files), saved as .pdsprj, simulated, and the evidence recorded.
 - [ ] Vehicle topology/bitrate/capture-point evidence (separate vehicle discovery task).

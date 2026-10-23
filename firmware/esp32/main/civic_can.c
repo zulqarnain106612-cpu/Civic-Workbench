@@ -507,7 +507,12 @@ esp_err_t civic_can_set_software_armed(bool armed)
 {
     if (!armed) {
         set_software_armed_state(false);
+#if CIVIC_RECEIVE_ONLY
+        /* Receive-only bench build has no TX gate GPIO; disarm is already the only state. */
+        return ESP_OK;
+#else
         return civic_safety_drive_tx_request(false);
+#endif
     }
 
 #if !defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX) || !CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX

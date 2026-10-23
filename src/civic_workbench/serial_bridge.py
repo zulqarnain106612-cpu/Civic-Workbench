@@ -7,7 +7,7 @@ import time
 from typing import Any
 
 from .contracts import ContractViolation, validate_record
-from .storage import SessionStore, NotFound, Conflict, utc_now
+from .storage import SessionStore, Conflict, utc_now
 
 
 class SerialBridge:

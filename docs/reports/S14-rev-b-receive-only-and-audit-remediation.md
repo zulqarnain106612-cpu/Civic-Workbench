@@ -34,7 +34,7 @@ The design source is `hardware/reference/esp32-tja1051-netlist.yaml`; `make desi
 
 ## Native Proteus
 
-Not created. The installed Proteus 8.3 is registry-labelled "Demonstration", the native DSN is a proprietary binary with no official Python writer, and this session had no shell on the Proteus host. Next action: capture from `PROTEUS-CAPTURE.md` in a licensed Proteus and commit the `.pdsprj` with import/render evidence.
+Superseded by S15: the generator now writes OrCAD EDIF2 import sources for Proteus 9.2 SP1. See docs/reports/S15-proteus-edif-and-repository-audit.md.
 
 ## Bench checklist (receive-only, Rev B)
 
@@ -47,6 +47,6 @@ Not created. The installed Proteus 8.3 is registry-labelled "Demonstration", the
 
 ## EAGLE schematic export (added 2026-10-23)
 
-`tools/generate_eagle_schematic.py` writes `hardware/proteus/generated/civic-workbench-rev-b.sch`, a self-contained EAGLE XML schematic (embedded library, 15 parts, net labels), from the same netlist. It is for Proteus "Import EAGLE" (newer Proteus 8 releases; not present in the installed 8.3) and any EAGLE-compatible tool.
+`tools/generate_eagle_schematic.py` writes `hardware/proteus/generated/civic-workbench-rev-b.sch`, a self-contained EAGLE XML schematic (embedded library, 15 parts, net labels), from the same netlist. It targets EAGLE-compatible tools. The installed Proteus 9.2 SP1 contains EAGLE parsing code but its Import ECAD dialog lists only PDIF, OrCAD EDIF2 and KiCad projects and its help documents only EDIF, so the EDIF files from S15 are the Proteus import route.
 
 Import evidence: KiCad 7.0.11's EAGLE importer loaded the file; its exported netlist matches the reviewed netlist exactly (9 nets, U1 pin 5 and J1 GPIO21 unconnected, part values intact). `tests/test_eagle_schematic.py` checks structure, reference resolution, connectivity and determinism on every run.

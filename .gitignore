@@ -242,3 +242,7 @@ dist/
 # Build output from PlatformIO
 firmware/esp32/.pio/
 firmware/esp32/.cache/
+
+# Local agent worktrees and editor state (never part of the product)
+.claude/
+.vscode/

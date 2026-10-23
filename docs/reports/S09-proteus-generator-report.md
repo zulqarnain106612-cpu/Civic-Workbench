@@ -31,3 +31,7 @@ The generator output is deterministic from the tracked netlist; tests compare ha
 ## 2026-10-23 update (S14)
 
 The generator now emits the Rev B receive-only design: net-label schematic SVG, resolved netlist, BOM with DNP parts, `design-checks.json` and `PROTEUS-CAPTURE.md`. Native project remains blocked; see docs/reports/S14-rev-b-receive-only-and-audit-remediation.md.
+
+## 2026-10-23 update (S15)
+
+The generator also writes `civic-workbench-rev-b.edf` and `civic-workbench-rev-b-sim.edf` (OrCAD EDIF2) for Proteus 9.2 SP1 File > Import ECAD Files. Import and simulation are pending a working Proteus licence; see docs/reports/S15-proteus-edif-and-repository-audit.md.

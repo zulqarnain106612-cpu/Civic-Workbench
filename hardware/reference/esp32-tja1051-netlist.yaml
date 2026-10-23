@@ -1,7 +1,7 @@
 schema_version: 2
 design_id: civic-workbench-nodemcu32s-tja1051-receive-only
 revision: B
-status: "reviewed-source netlist for the receive-only bench baseline; not bench-validated; native Proteus import not performed"
+status: "reviewed-source netlist for the receive-only bench baseline; not bench-validated; EDIF import sources generated; Proteus import not performed"
 scope: >-
   Receive-only (Silent) bench interface. The transmitter is hardware-disabled by
   pin 8 S pulled to the transceiver VCC rail, and ESP32 GPIO21 is NOT connected to
@@ -110,16 +110,17 @@ can_bus:
   termination: {fitted_by_default: false, policy: "bus-topology decision; never terminate onto a vehicle network blindly"}
 
 artifacts:
-  native_proteus_project: "not generated - see hardware/proteus/generated/native-project-status.json"
+  native_proteus_project: "not saved - Proteus writes it on import; see hardware/proteus/generated/native-project-status.json"
+  proteus_import_sources: ["hardware/proteus/generated/civic-workbench-rev-b.edf", "hardware/proteus/generated/civic-workbench-rev-b-sim.edf"]
   python_generator: "tools/generate_proteus_reference.py"
-  import_render_validation: "not performed"
+  import_render_validation: "not performed (Proteus licence error on the host)"
 
 open_items:
   - "Continuity-check NodeMCU-32S header pins 33 (GPIO21), 36 (GPIO22), 38 (GND) against the physical board."
   - "Confirm SO8 pin-1 orientation of the marked U1 before soldering."
   - "Measure +5V_CAN within 4.5-5.5 V and RXD_3V3 <= 3.6 V with U1 powered and bus idle before connecting GPIO22."
   - "Bench capture needs a third, ACKing CAN node because U1 is Silent and the TWAI controller is listen-only."
-  - "Native Proteus project creation/import in a licensed Proteus installation."
+  - "Import civic-workbench-rev-b-sim.edf in a licensed Proteus 9.2, save the .pdsprj and record the simulation run."
 
 references:
   esp32_twai: "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html"

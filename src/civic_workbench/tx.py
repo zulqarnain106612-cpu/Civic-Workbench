@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any
-from uuid import uuid4
 
 from .contracts import ContractViolation, validate_record
 from .storage import SessionStore
@@ -43,7 +42,7 @@ class TxScheduler:
         except ContractViolation:
             raise
         if target != "simulation":
-            event = self.store.add_tx_audit(request["request_id"], session_id, target, "rejected", {
+            self.store.add_tx_audit(request["request_id"], session_id, target, "rejected", {
                 "reason": "hardware transmission is disabled; this host API never calls a physical TX endpoint",
                 "request": request,
                 "physical_tx_performed": False,

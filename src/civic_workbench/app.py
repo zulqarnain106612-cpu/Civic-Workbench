@@ -124,6 +124,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         path = unquote(urlparse(self.path).path)
         q = self._query()
+        with self.service.lock:
+            self._dispatch_get(path, q)
+
+    def _dispatch_get(self, path: str, q: dict[str, list[str]]) -> None:
         try:
             if path in {"/", "/index.html"}:
                 return self._serve_file("index.html")
@@ -200,7 +204,18 @@ class Handler(BaseHTTPRequestHandler):
         path = unquote(urlparse(self.path).path)
         q = self._query()
         try:
-            body = self._body()
+            body = self._body()  # read before taking the lock so a slow client cannot stall others
+        except ContractViolation as exc:
+            self._error(422, "contract_violation", str(exc))
+            return
+        except OSError:
+            self._error(400, "body_read_failed", "The request body could not be read.")
+            return
+        with self.service.lock:
+            self._dispatch_post(path, q, body)
+
+    def _dispatch_post(self, path: str, q: dict[str, list[str]], body: Any) -> None:
+        try:
             if path == "/api/v1/capture/start":
                 return self._json(202, self.service.start_capture(body))
             if path == "/api/v1/capture/stop":

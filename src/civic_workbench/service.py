@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import threading
 from typing import Any
 from uuid import uuid4
 
@@ -23,6 +24,9 @@ class WorkbenchService:
         self.tx = TxScheduler(self.store, self.bus)
         self.serial = SerialBridge(self.store)
         self.last_device_status: dict[str, Any] | None = None
+        # The HTTP server is threaded; the virtual bus and TX scheduler are not thread-safe on their
+        # own, so every request that reads or changes simulator/TX state holds this lock.
+        self.lock = threading.RLock()
         self.bus.subscribe(self._on_simulated_frame)
 
     def _on_simulated_frame(self, frame: dict[str, Any]) -> None:
@@ -230,13 +234,3 @@ class WorkbenchService:
             {"capability_id": capability_id, "target": target, "executed": False},
         )
         return result
-
-    def hardware_tx_request(self, request: dict[str, Any]) -> dict[str, Any]:
-        # Even if the request shape is valid, no host-side code can enable physical transmission.
-        validate_record("tx-request", request)
-        audit = self.store.add_tx_audit(request["request_id"], None, "hardware", "rejected", {
-            "reason": "hardware TX is hard-disabled in the host service; physical permissions cannot be inferred",
-            "request": request,
-            "physical_tx_performed": False,
-        })
-        raise Conflict("hardware TX is disabled at the host API; only target=simulation is supported. No physical transmission was attempted. Audit ID: " + audit["audit_id"])

@@ -35,6 +35,16 @@ The native `ROOT.DSN` inside a `.pdsprj` is a proprietary binary (`ISIS SCHEMATI
 | A6 | `docs/reference/README.md` called the owner-merged third-party images "internal only" while the repository is public | Wording corrected and public source links added; the owner's decision to publish them is kept |
 | A7 | README delivery summary was stale (95 tests, S04–S12 only) | Rewritten for S00–S15 |
 
+## Repository audit #2 — findings and fixes
+
+| # | Finding | Fix |
+|---|---|---|
+| B1 | Serial bridge `readline()` had no size bound; the 4096-byte check ran only after the whole line was in memory | `readline(MAX_LINE_BYTES + 1)` |
+| B2 | After a stale-stream fault, CAN frame records cleared the fault but `connected` stayed false until a device-status record | Any valid CW1 record restores `connected` |
+| B3 | A serial frame could carry `capture_source` other than hardware, or reuse the UUID of a simulator/import session and be appended to it | Serial frames must be hardware `rx`; a session-ID collision with a non-hardware session is rejected (tests added) |
+| B4 | The threaded HTTP server let concurrent requests mutate the virtual bus and TX scheduler, which have no locking | `WorkbenchService.lock` serialises request dispatch; the body is read before the lock; concurrency test added |
+| B5 | `WorkbenchService.hardware_tx_request` was unused dead code duplicating the API rejection path | Removed |
+
 ## Verification
 
 - `make lint`, `make verify` (unit/integration tests, firmware safety C test, compile, schema, YAML, diff, wheel, design-source) and `pio run` for the NodeMCU-32S profile; results in the commit that adds this report and in `project/progress.json`.

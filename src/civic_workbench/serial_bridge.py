@@ -10,6 +10,9 @@ from .contracts import ContractViolation, validate_record
 from .storage import SessionStore, Conflict, utc_now
 
 
+MAX_LINE_BYTES = 4096
+
+
 class SerialBridge:
     def __init__(self, store: SessionStore):
         self.store = store
@@ -88,7 +91,8 @@ class SerialBridge:
     def _read_loop(self) -> None:
         while not self._stop.is_set():
             try:
-                line = self._serial.readline()
+                # Bounded read: an endless stream without newlines cannot grow memory.
+                line = self._serial.readline(MAX_LINE_BYTES + 1)
                 if not line:
                     reference = self._last_record_monotonic or self._opened_monotonic
                     if reference is not None and time.monotonic() - reference > 5.0:
@@ -98,7 +102,7 @@ class SerialBridge:
                     continue
                 with self._lock:
                     self._status["bytes_received"] += len(line)
-                if len(line) > 4096:
+                if len(line) > MAX_LINE_BYTES:
                     with self._lock:
                         self._status["malformed_records"] += 1
                         self._status["faults"] = sorted(set(self._status.get("faults", []) + ["oversized_serial_line"]))
@@ -139,12 +143,16 @@ class SerialBridge:
                 self._status["connected"] = True
         elif kind == "can_frame":
             validate_record("can-frame", record)
+            if record["capture_source"] != "hardware" or record["direction"] != "rx":
+                raise ContractViolation("serial CW1 frames must be hardware rx observations")
             sid = record["session_id"]
-            self.store.ensure_external_session(
+            session = self.store.ensure_external_session(
                 sid, "hardware", bitrate_bps=self._status.get("bitrate_bps"),
                 firmware_version=self._status.get("firmware_version"),
                 device_id=record.get("device_id"), started_at_utc=record.get("captured_at_utc"),
             )
+            if session["capture_source"] != "hardware":
+                raise ContractViolation("serial frame session_id collides with a non-hardware session")
             # The firmware frame object is stored byte-for-byte as a JSON object: provenance remains intact.
             self.store.add_frame(record)
             with self._lock:
@@ -154,5 +162,6 @@ class SerialBridge:
             raise ContractViolation("unsupported CW1 record type")
         with self._lock:
             self._last_record_monotonic = time.monotonic()
+            self._status["connected"] = True
             self._status["last_record_at_utc"] = utc_now()
             self._status["faults"] = [code for code in self._status.get("faults", []) if code != "serial_stream_stale"]

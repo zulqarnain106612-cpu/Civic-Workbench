@@ -46,6 +46,30 @@ class ApiIntegrationTests(unittest.TestCase):
         parsed = json.loads(content) if content and "application/json" in response_headers.get("Content-Type", "") else content
         return status, response_headers, parsed
 
+    def test_concurrent_simulation_steps_are_serialized(self):
+        scenario = {"name": "concurrency", "bitrate_bps": 500000, "identifier_filter": [], "notes": "synthetic",
+                    "nodes": [{"node_id": "node-a", "arbitration_id": 0x100, "id_format": "standard",
+                               "period_ms": 10, "payload_mode": "counter"}]}
+        status, _, created = self.request("POST", "/api/v1/simulator/scenarios", scenario)
+        self.assertEqual(status, 201)
+        statuses: list[int] = []
+
+        def step():
+            statuses.append(self.request("POST", "/api/v1/simulator/step", {"delta_ms": 50})[0])
+
+        threads = [threading.Thread(target=step) for _ in range(8)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join(timeout=10)
+        self.assertEqual(statuses, [200] * 8)
+        status, _, state = self.request("GET", "/api/v1/simulator/state")
+        self.assertEqual(state["virtual_time_ms"], 400)
+        frames = self.service.store.get_all_frames(created["session"]["session_id"])
+        stamps = [f["captured_monotonic_ns"] for f in frames]
+        self.assertEqual(stamps, sorted(stamps))
+        self.assertEqual(len({f["frame_id"] for f in frames}), len(frames))
+
     def test_simulate_analyze_version_mapping_tx_export_and_import(self):
         status, _, health = self.request("GET", "/api/v1/health")
         self.assertEqual(status, 200)

@@ -269,11 +269,6 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(200, self.service.serial.start(str(body.get("port", "")), int(body.get("baudrate", 115200))))
             if path == "/api/v1/serial/disconnect":
                 return self._json(200, self.service.serial.stop())
-            if path == "/api/v1/import/frame":
-                # Ingest one frame only into an already-open session; never re-label its source.
-                validate_record("can-frame", body)
-                self.service.store.add_frame(body)
-                return self._json(201, {"accepted": True, "frame_id": body["frame_id"]})
             self._error(404, "not_found", "Route not found")
         except NotFound as exc:
             self._error(404, "not_found", str(exc))

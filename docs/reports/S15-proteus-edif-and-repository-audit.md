@@ -45,6 +45,16 @@ The native `ROOT.DSN` inside a `.pdsprj` is a proprietary binary (`ISIS SCHEMATI
 | B4 | The threaded HTTP server let concurrent requests mutate the virtual bus and TX scheduler, which have no locking | `WorkbenchService.lock` serialises request dispatch; the body is read before the lock; concurrency test added |
 | B5 | `WorkbenchService.hardware_tx_request` was unused dead code duplicating the API rejection path | Removed |
 
+## Repository audit #3 — findings and fixes
+
+| # | Finding | Fix |
+|---|---|---|
+| C1 | Undocumented `POST /api/v1/import/frame` let any local client append a frame with any `capture_source` to an open session, bypassing the serial provenance rules; nothing used it | Route removed |
+| C3 | `tests/requirements-traceability.yaml` REQ-PROT-001 still said "native-proteus-blocked" and omitted the EDIF writer and S15 evidence; another limitation cited a stale 95-test count | Updated |
+| C2 | Served routes `POST /api/v1/sessions/{id}/analysis/run` (used by the UI), `GET /api/v1/sessions/{id}/summary` and `GET /api/v1/scenarios` were missing from `contracts/openapi.yaml` | Declared; a test now requires served routes and OpenAPI paths to match exactly |
+
+Audit #4 (lint, full test suite, firmware build, OpenAPI/route parity, documentation status) found no further defects.
+
 ## Verification
 
 - `make lint`, `make verify` (unit/integration tests, firmware safety C test, compile, schema, YAML, diff, wheel, design-source) and `pio run` for the NodeMCU-32S profile; results in the commit that adds this report and in `project/progress.json`.

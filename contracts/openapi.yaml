@@ -187,6 +187,44 @@ paths:
                 $ref: ../schemas/v1/capture-session.schema.json
         '404':
           $ref: '#/components/responses/NotFound'
+  /api/v1/sessions/{session_id}/summary:
+    get:
+      operationId: summarizeSessionByPath
+      summary: Observed identifier/timing summary for one session (same body as /api/v1/analysis/summary)
+      parameters:
+      - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Observed identifier/timing summary
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/sessions/{session_id}/analysis/run:
+    post:
+      operationId: runSessionAnalysis
+      summary: Run deterministic analysis and store evidence-linked candidate findings; raw frames are not changed
+      parameters:
+      - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Summary, stored findings and limitations; raw_frames_mutated is always false
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - session_id
+                - findings
+                - raw_frames_mutated
+                properties:
+                  raw_frames_mutated:
+                    const: false
+        '404':
+          $ref: '#/components/responses/NotFound'
   /api/v1/sessions/{session_id}/frames:
     get:
       operationId: listSessionFrames
@@ -570,6 +608,13 @@ paths:
       responses:
         '200':
           description: Virtual bus state
+  /api/v1/scenarios:
+    get:
+      operationId: listVirtualScenarios
+      summary: List saved synthetic simulator scenarios
+      responses:
+        '200':
+          description: Saved scenarios (source is always simulation)
   /api/v1/simulator/scenarios:
     post:
       operationId: createVirtualScenario

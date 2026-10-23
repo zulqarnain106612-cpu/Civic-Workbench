@@ -202,6 +202,7 @@ requirements:
   REQ-PROT-001:
     implementation:
     - tools/generate_proteus_reference.py
+    - tools/proteus_edif.py
     - hardware/proteus/generated/
     - hardware/reference/esp32-tja1051-netlist.yaml
     tests:
@@ -210,11 +211,13 @@ requirements:
     evidence:
     - docs/reports/S00-environment-report.md
     - docs/reports/S09-proteus-generator-report.md
+    - docs/reports/S15-proteus-edif-and-repository-audit.md
     - hardware/proteus/generated/native-project-status.json
-    status: source-artifacts-generated;native-proteus-blocked
-    limitation: Deterministic JSON, component map, BOM, SVG and manifest are tested.
-      Genuine native DSN/PDSPRJ and import/render are blocked pending an official
-      supported writer/API.
+    status: edif-import-sources-generated-and-verified-offline;proteus-import-pending-licence
+    limitation: Python generates OrCAD EDIF2 schematics (hardware sheet and CAN Bus
+      Analyser simulation bench) for Proteus 9.2 File > Import ECAD Files; stored and
+      drawn netlists are verified offline. Proteus import, .pdsprj save and simulation
+      run are not performed because the installed Proteus reports a licence error.
   REQ-SAFE-001:
     implementation:
     - schemas/v1/safety-state.schema.json
@@ -312,7 +315,7 @@ requirements:
     - docs/reports/S11-benchmark-results.json
     - docs/reports/S12-final-handoff-report.md
     status: make-verify-passed;synthetic-benchmark-and-ESP32-compile-passed
-    limitation: 95 Python tests, native C safety, schemas, YAML, package contents,
+    limitation: The Python test suite (115 tests at S15), native C safety, schemas, YAML, package contents,
       deterministic design sources, synthetic benchmark and firmware compile pass.
       No external penetration test or real-bus performance guarantee is claimed.
   REQ-TOK-001:

@@ -41,7 +41,16 @@ class SerialBridge:
             raise Conflict("serial bridge is already running")
         try:
             import serial
-            connection = serial.Serial(port=port, baudrate=int(baudrate), timeout=0.5, write_timeout=0.5)
+            # Configure before opening: NodeMCU-32S wires DTR/RTS to EN/GPIO0 through its auto-reset
+            # circuit, so asserting them on open would reset the board or enter the bootloader.
+            connection = serial.Serial()
+            connection.port = port
+            connection.baudrate = int(baudrate)
+            connection.timeout = 0.5
+            connection.write_timeout = 0.5
+            connection.dtr = False
+            connection.rts = False
+            connection.open()
         except ImportError as exc:
             raise ContractViolation("pyserial is not installed in the host service environment") from exc
         except Exception as exc:

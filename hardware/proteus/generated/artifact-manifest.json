@@ -1,22 +1,25 @@
 {
-  "design_id": "civic-workbench-original-esp32-tja1051",
+  "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
   "deterministic_outputs": {
-    "README.md": "4ad309bb44d98065fad723029c7c2b88d29ea3456c20bcf2d6784caefc858448",
-    "bill-of-materials.csv": "5c3fafc878d2d69b6617d96383d346ddadf3f3fe64a35f92c4c1cf1546ca8f83",
-    "component-map.json": "4140312898f9e77615bab3a77a74d71a1e41f363b1a45b548fb4ad801e8889cf",
-    "native-project-status.json": "213aadad4ec905c1f974a8fa53e719ac634234f17a06be13a329d73b560b20ab",
-    "reference-design.netlist.json": "98cc9d109a26dd14280a066fbd982e67b8c8d6a55ab192ba1b6991dfa16f1e13",
-    "reference-design.svg": "fd0eb86defd8ff287278a600a79c7cfea65185b7eebee9c5dba148bf21959497"
+    "PROTEUS-CAPTURE.md": "4bbf665a17f04c76a1ed08ce1b8655970f5bc43e8773310c5986f170a5fc09f7",
+    "README.md": "7d45b21828b76357b22e7663209359d79f60d8d8f9914c04bbba3a7b0ed2f0b9",
+    "bill-of-materials.csv": "33e3131d11c73ee98546a53f9da7cda8a39552bd977ac07f03cfce233a849c70",
+    "component-map.json": "406a97f407767682f78bc41f4a3f20a6b0fcf6d350fb3bf5f2f5cd40bd7b2731",
+    "design-checks.json": "da4ab21c238adabf541d35bb1de3dc2622149dc8c546a5527c9cb7a849764b45",
+    "native-project-status.json": "df6ef3a6519c48dfea4a1edec33de823248dba82866e06ad52f3863781c043f2",
+    "reference-design.netlist.json": "964d66f2d7105698db509c9fc6e8e5ea7caf20d15f186151ee0016cb782c44c0",
+    "reference-design.svg": "9d274107487ab449c4c75d4e1f5392ceb8744489c67c45d6c72e8553b954bff9"
   },
   "generator": "tools/generate_proteus_reference.py",
-  "generator_version": "1.0.0",
+  "generator_version": "2.0.0",
   "input": {
     "path": "hardware/reference/esp32-tja1051-netlist.yaml",
-    "sha256": "8e1fc69f66a309e5a2df497d36a40f2b2ce38fdcb224ca908e839884702364bf"
+    "sha256": "848f26a6c69f7c10bbfc66d137e90841f97b7d0804b78aba8179307192d6743c"
   },
   "native_project": {
     "import_render_validation": "not-performed",
     "status": "blocked"
   },
-  "schema_version": 1
+  "revision": "B",
+  "schema_version": 2
 }

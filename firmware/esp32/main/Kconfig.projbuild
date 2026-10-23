@@ -59,9 +59,19 @@ menu "Civic-Workbench firmware"
             module, GPIOs, bitrate, transceiver wiring and hardware interlock
             have been reviewed and documented. This is not permission for TX.
 
+    config CIVIC_RECEIVE_ONLY_BENCH
+        bool "Receive-only bench build (hardware Rev B: S tied HIGH, TXD not wired)"
+        default n
+        help
+            Starts TWAI in listen-only mode without requiring TX-gate or
+            interlock GPIOs, which do not exist on hardware Rev B. Still needs
+            CIVIC_ALLOW_HARDWARE_CAN_INIT and CIVIC_BITRATE_EVIDENCE_CONFIRMED.
+            Mutually exclusive with CIVIC_ALLOW_HARDWARE_CAN_TX (compile error).
+
     config CIVIC_ALLOW_HARDWARE_CAN_TX
         bool "Allow guarded hardware CAN transmission"
         default n
+        depends on !CIVIC_RECEIVE_ONLY_BENCH
         depends on CIVIC_ALLOW_HARDWARE_CAN_INIT
         depends on CIVIC_BITRATE_EVIDENCE_CONFIRMED
         help
@@ -70,6 +80,23 @@ menu "Civic-Workbench firmware"
             blocked by the independent transceiver gate until software arm
             and an active physical-interlock feedback are both observed.
             Repeat scheduling and diagnostic workflows remain out of scope.
+
+    config CIVIC_TX_MIN_INTERVAL_MS
+        int "Minimum spacing between guarded hardware TX frames (ms)"
+        range 10 60000
+        default 100
+        depends on CIVIC_ALLOW_HARDWARE_CAN_TX
+        help
+            Firmware-enforced rate bound, independent of host policy.
+            Frames requested sooner are rejected and audited.
+
+    config CIVIC_TX_MAX_FRAMES_PER_ARM
+        int "Maximum guarded hardware TX frames per software arm"
+        range 1 1000
+        default 10
+        depends on CIVIC_ALLOW_HARDWARE_CAN_TX
+        help
+            After this many frames the firmware disarms; a new explicit arm is required.
 
     config CIVIC_INTERLOCK_ACTIVE_LEVEL
         int "GPIO logic level meaning physical interlock closed"

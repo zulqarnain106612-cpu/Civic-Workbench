@@ -1,36 +1,108 @@
 {
-  "design_id": "civic-workbench-original-esp32-tja1051",
+  "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
   "native_import_status": "not-performed",
   "net_names": [
-    "CAN_HIGH",
-    "CAN_LOW",
-    "LOGIC_GND",
-    "TRANSCEIVER_5V",
-    "TRANSCEIVER_MODE_S",
-    "TRANSCEIVER_RX_TO_TWAI",
-    "TWAI_TX_TO_TRANSCEIVER",
-    "UNRESOLVED_PIN5_DO_NOT_CONNECT"
+    "+5V_CAN",
+    "CANH",
+    "CANL",
+    "GND",
+    "RXD_3V3",
+    "RXD_5V",
+    "S_SILENT",
+    "TXD_5V"
   ],
-  "schema_version": 1,
+  "schema_version": 2,
   "source_netlist": "hardware/reference/esp32-tja1051-netlist.yaml",
   "symbols": [
     {
+      "fitted": true,
       "library_symbol_verified": false,
-      "reason": "Installed Proteus symbol identity not verified.",
       "ref": "U1",
-      "symbol": "TJA1051"
+      "value": "TJA1051T"
     },
     {
+      "fitted": true,
       "library_symbol_verified": false,
-      "reason": "Exact board is specified; physical PCB revision and GPIO21/GPIO22 header continuity have not been checked.",
-      "ref": "U_MCU",
-      "symbol": "NodeMCU-32S board placeholder"
+      "ref": "R1",
+      "value": "10k"
     },
     {
+      "fitted": true,
       "library_symbol_verified": false,
-      "reason": "Not an electrical implementation; design review required.",
-      "ref": "TX_GATE",
-      "symbol": "Conceptual independent hardware gate"
+      "ref": "R2",
+      "value": "10k"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "R3",
+      "value": "12k"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "R4",
+      "value": "20k"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "C1",
+      "value": "100nF X7R 16V"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "C2",
+      "value": "10uF 16V"
+    },
+    {
+      "fitted": false,
+      "library_symbol_verified": false,
+      "ref": "C3",
+      "value": "100pF C0G"
+    },
+    {
+      "fitted": false,
+      "library_symbol_verified": false,
+      "ref": "C4",
+      "value": "100pF C0G"
+    },
+    {
+      "fitted": false,
+      "library_symbol_verified": false,
+      "ref": "R5",
+      "value": "60R 1%"
+    },
+    {
+      "fitted": false,
+      "library_symbol_verified": false,
+      "ref": "R6",
+      "value": "60R 1%"
+    },
+    {
+      "fitted": false,
+      "library_symbol_verified": false,
+      "ref": "C5",
+      "value": "4.7nF"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "J2",
+      "value": "3-pin CAN bench connector"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "J3",
+      "value": "2-pin +5V bench supply input"
+    },
+    {
+      "fitted": true,
+      "library_symbol_verified": false,
+      "ref": "J1",
+      "value": "NodeMCU-32S"
     }
   ]
 }

@@ -1,52 +1,168 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="830" viewBox="0 0 1240 830">
-<rect width="100%" height="100%" fill="#fbfcfe"/>
-<text x="40" y="44" font-family="sans-serif" font-size="25" font-weight="bold" fill="#172c40">Civic-Workbench / NodeMCU-32S + TJA1051</text>
-<text x="40" y="72" font-family="sans-serif" font-size="13" fill="#5c7185">Review artifact only - physical header checks and unresolved values remain open</text>
-<rect x="45" y="135" width="345" height="330" rx="10" fill="#edf4fc" stroke="#486c94" stroke-width="2"/>
-<text x="217" y="172" text-anchor="middle" font-family="sans-serif" font-size="19" font-weight="bold" fill="#1d3b5b">ESP32S NodeMCU / NodeMCU-32S</text>
-<text x="217" y="196" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#435c76">Classic ESP32 / integrated TWAI</text>
-<text x="75" y="245" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_TX_GPIO = 21</text>
-<text x="75" y="276" font-family="monospace" font-size="13" fill="#1d3b5b">TWAI_RX_GPIO = 22</text>
-<text x="75" y="315" font-family="sans-serif" font-size="12" fill="#435c76">GPIO21/22 source mapping selected</text>
-<text x="75" y="341" font-family="sans-serif" font-size="12" fill="#435c76">Verify physical header continuity/revision</text>
-<text x="75" y="392" font-family="sans-serif" font-size="12" fill="#435c76">Hardware initialization and physical TX disabled</text>
-<text x="75" y="418" font-family="sans-serif" font-size="12" fill="#435c76">TX_GATE_GPIO = UNASSIGNED; physical TX OFF</text>
-<rect x="470" y="155" width="300" height="280" rx="10" fill="#f2f8ed" stroke="#658b4a" stroke-width="2"/>
-<text x="620" y="188" text-anchor="middle" font-family="sans-serif" font-size="18" font-weight="bold" fill="#2e5120">U1 / NXP TJA1051 SO8</text>
-<text x="490" y="226" font-family="monospace" font-size="12" fill="#2e5120">Pin 1: TXD</text>
-<text x="490" y="241" font-family="sans-serif" font-size="10" fill="#4c6840">TWAI_TX_TO_TRANSCEIVER</text>
-<text x="490" y="273" font-family="monospace" font-size="12" fill="#2e5120">Pin 2: GND</text>
-<text x="490" y="288" font-family="sans-serif" font-size="10" fill="#4c6840">LOGIC_GND</text>
-<text x="490" y="320" font-family="monospace" font-size="12" fill="#2e5120">Pin 3: VCC</text>
-<text x="490" y="335" font-family="sans-serif" font-size="10" fill="#4c6840">TRANSCEIVER_5V</text>
-<text x="490" y="367" font-family="monospace" font-size="12" fill="#2e5120">Pin 4: RXD</text>
-<text x="490" y="382" font-family="sans-serif" font-size="10" fill="#4c6840">TRANSCEIVER_RX_TO_TWAI</text>
-<text x="642" y="226" font-family="monospace" font-size="12" fill="#2e5120">Pin 5: VARIANT_DEPENDENT_DO_NOT_CONNECT</text>
-<text x="642" y="241" font-family="sans-serif" font-size="10" fill="#4c6840">UNRESOLVED_PIN5_DO_NOT_CONNECT</text>
-<text x="642" y="273" font-family="monospace" font-size="12" fill="#2e5120">Pin 6: CANL</text>
-<text x="642" y="288" font-family="sans-serif" font-size="10" fill="#4c6840">CAN_LOW</text>
-<text x="642" y="320" font-family="monospace" font-size="12" fill="#2e5120">Pin 7: CANH</text>
-<text x="642" y="335" font-family="sans-serif" font-size="10" fill="#4c6840">CAN_HIGH</text>
-<text x="642" y="367" font-family="monospace" font-size="12" fill="#2e5120">Pin 8: S</text>
-<text x="642" y="382" font-family="sans-serif" font-size="10" fill="#4c6840">TRANSCEIVER_MODE_S</text>
-<path d="M390 285 H445 V285 H470" stroke="#4e789e" stroke-width="3" fill="none"/>
-<path d="M390 315 H432 V389 H470" stroke="#4e789e" stroke-width="3" fill="none"/>
-<text x="428" y="260" font-family="sans-serif" font-size="10" fill="#385d7e" text-anchor="middle">TWAI TX</text>
-<text x="430" y="406" font-family="sans-serif" font-size="10" fill="#385d7e" text-anchor="middle">TWAI RX</text>
-<path d="M770 310 H870 V230 H925" stroke="#48783f" stroke-width="3" fill="none"/>
-<path d="M770 365 H885 V470 H925" stroke="#48783f" stroke-width="3" fill="none"/>
-<rect x="925" y="188" width="260" height="90" rx="8" fill="#fff8e9" stroke="#a9843c" stroke-width="2"/>
-<text x="1055" y="220" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#6b4d12">CANH / CANL</text>
-<text x="1055" y="244" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6b4d12">Connector pinout TBD</text>
-<rect x="925" y="428" width="260" height="100" rx="8" fill="#fff0ee" stroke="#bf6861" stroke-width="2"/>
-<text x="1055" y="459" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="bold" fill="#7c2923">Silent / TX interlock</text>
-<text x="1055" y="482" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#7c2923">Independent hardware gate required</text>
-<text x="1055" y="501" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#7c2923">Values/topology review required</text>
-<path d="M217 465 V540 H620 V435" stroke="#8f743d" stroke-width="2" stroke-dasharray="7 6" fill="none"/>
-<rect x="45" y="565" width="1140" height="180" rx="9" fill="#fff9e9" stroke="#c29a47" stroke-width="1.5"/>
-<text x="70" y="600" font-family="sans-serif" font-size="17" font-weight="bold" fill="#765718">Open electrical / CAD decisions</text>
-<text x="72" y="630" font-family="sans-serif" font-size="13" fill="#765718">- Confirm the exact marked TJA1051 pin-5 function before assigning its net or power rail.</text>
-<text x="72" y="657" font-family="sans-serif" font-size="13" fill="#765718">- Decoupling, transient protection, connector pinout and bus termination remain unassigned.</text>
-<text x="72" y="684" font-family="sans-serif" font-size="13" fill="#765718">- TJA1051 S must default HIGH (Silent), including MCU reset/unpowered conditions.</text>
-<text x="72" y="711" font-family="sans-serif" font-size="13" fill="#765718">- Native Proteus DSN/PDSPRJ generation/import is blocked pending supported automation.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="940" viewBox="0 0 1400 940">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="10" y="10" width="1380" height="920" fill="none" stroke="#1b2a3a" stroke-width="2"/>
+<text x="30" y="44" font-family="sans-serif" font-size="22" text-anchor="start" font-weight="bold" fill="#1b2a3a">Civic-Workbench - NodeMCU-32S + NXP TJA1051 receive-only CAN interface</text>
+<text x="30" y="68" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#55606b">Rev B | civic-workbench-nodemcu32s-tja1051-receive-only | net-label schematic generated from hardware/reference/esp32-tja1051-netlist.yaml</text>
+<rect x="60" y="130" width="230" height="250" fill="#f3f7fb" stroke="#1b2a3a" stroke-width="2"/>
+<text x="175" y="160" font-family="sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#1b2a3a">J1  NodeMCU-32S</text>
+<text x="175" y="178" font-family="sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#55606b">classic ESP32 / TWAI</text>
+<text x="280" y="224" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">GPIO22 (hdr 36)</text>
+<line x1="290" y1="220" x2="340" y2="220" stroke="#1b2a3a" stroke-width="2"/>
+<text x="346" y="224" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#1f5f99">RXD_3V3</text><circle cx="340" cy="220" r="3" fill="#1f5f99"/>
+<text x="280" y="279" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">GPIO21 (hdr 33)</text>
+<line x1="290" y1="275" x2="330" y2="275" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="324" y1="269" x2="336" y2="281" stroke="#b23a2e" stroke-width="2"/>
+<line x1="324" y1="281" x2="336" y2="269" stroke="#b23a2e" stroke-width="2"/>
+<text x="345" y="279" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#b23a2e">NC - listen-only, TX not wired</text>
+<text x="280" y="334" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">GND (hdr 38)</text>
+<line x1="290" y1="330" x2="340" y2="330" stroke="#1b2a3a" stroke-width="2"/>
+<text x="346" y="334" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#b23a2e">GND</text><circle cx="340" cy="330" r="3" fill="#b23a2e"/>
+<rect x="640" y="150" width="200" height="230" fill="#f4f9f1" stroke="#1b2a3a" stroke-width="2"/>
+<text x="740" y="128" font-family="sans-serif" font-size="15" text-anchor="middle" font-weight="bold" fill="#1b2a3a">U1  NXP TJA1051T  SO8</text>
+<text x="740" y="144" font-family="sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#55606b">marking: NXP TJA1051 25 06 ND312</text>
+<line x1="580" y1="185" x2="640" y2="185" stroke="#1b2a3a" stroke-width="2"/>
+<text x="648" y="189" font-family="monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">TXD</text>
+<text x="636" y="180" font-family="sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#55606b">1</text>
+<text x="574" y="189" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">TXD_5V</text><circle cx="580" cy="185" r="3" fill="#1f5f99"/>
+<line x1="580" y1="237" x2="640" y2="237" stroke="#1b2a3a" stroke-width="2"/>
+<text x="648" y="241" font-family="monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">GND</text>
+<text x="636" y="232" font-family="sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#55606b">2</text>
+<text x="574" y="241" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="580" cy="237" r="3" fill="#b23a2e"/>
+<line x1="580" y1="289" x2="640" y2="289" stroke="#1b2a3a" stroke-width="2"/>
+<text x="648" y="293" font-family="monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">VCC</text>
+<text x="636" y="284" font-family="sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#55606b">3</text>
+<text x="574" y="293" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">+5V_CAN</text><circle cx="580" cy="289" r="3" fill="#b23a2e"/>
+<line x1="580" y1="341" x2="640" y2="341" stroke="#1b2a3a" stroke-width="2"/>
+<text x="648" y="345" font-family="monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">RXD</text>
+<text x="636" y="336" font-family="sans-serif" font-size="10" text-anchor="end" font-weight="normal" fill="#55606b">4</text>
+<text x="574" y="345" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">RXD_5V</text><circle cx="580" cy="341" r="3" fill="#1f5f99"/>
+<line x1="840" y1="341" x2="900" y2="341" stroke="#1b2a3a" stroke-width="2"/>
+<text x="832" y="345" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">n.c.</text>
+<text x="844" y="336" font-family="sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#55606b">5</text>
+<line x1="894" y1="335" x2="906" y2="347" stroke="#b23a2e" stroke-width="2"/>
+<line x1="894" y1="347" x2="906" y2="335" stroke="#b23a2e" stroke-width="2"/>
+<text x="912" y="345" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#b23a2e">open</text>
+<line x1="840" y1="289" x2="900" y2="289" stroke="#1b2a3a" stroke-width="2"/>
+<text x="832" y="293" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">CANL</text>
+<text x="844" y="284" font-family="sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#55606b">6</text>
+<text x="906" y="293" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#1f5f99">CANL</text><circle cx="900" cy="289" r="3" fill="#1f5f99"/>
+<line x1="840" y1="237" x2="900" y2="237" stroke="#1b2a3a" stroke-width="2"/>
+<text x="832" y="241" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">CANH</text>
+<text x="844" y="232" font-family="sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#55606b">7</text>
+<text x="906" y="241" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#1f5f99">CANH</text><circle cx="900" cy="237" r="3" fill="#1f5f99"/>
+<line x1="840" y1="185" x2="900" y2="185" stroke="#1b2a3a" stroke-width="2"/>
+<text x="832" y="189" font-family="monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">S</text>
+<text x="844" y="180" font-family="sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#55606b">8</text>
+<text x="906" y="189" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#1f5f99">S_SILENT</text><circle cx="900" cy="185" r="3" fill="#1f5f99"/>
+<line x1="1000" y1="130" x2="1000" y2="150" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="1000" y1="200" x2="1000" y2="220" stroke="#1b2a3a" stroke-width="2"/>
+<rect x="991" y="150" width="18" height="50" fill="none" stroke="#1b2a3a" stroke-width="2"/>
+<text x="1016" y="172" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1b2a3a">R1</text>
+<text x="1016" y="187" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b2a3a">10k</text>
+<text x="994" y="134" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">+5V_CAN</text><circle cx="1000" cy="130" r="3" fill="#b23a2e"/>
+<text x="994" y="224" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">S_SILENT</text><circle cx="1000" cy="220" r="3" fill="#1f5f99"/>
+<line x1="1120" y1="130" x2="1120" y2="150" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="1120" y1="200" x2="1120" y2="220" stroke="#1b2a3a" stroke-width="2"/>
+<rect x="1111" y="150" width="18" height="50" fill="none" stroke="#1b2a3a" stroke-width="2"/>
+<text x="1136" y="172" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1b2a3a">R2</text>
+<text x="1136" y="187" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b2a3a">10k</text>
+<text x="1114" y="134" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">+5V_CAN</text><circle cx="1120" cy="130" r="3" fill="#b23a2e"/>
+<text x="1114" y="224" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">TXD_5V</text><circle cx="1120" cy="220" r="3" fill="#1f5f99"/>
+<line x1="1000" y1="300" x2="1000" y2="320" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="1000" y1="370" x2="1000" y2="390" stroke="#1b2a3a" stroke-width="2"/>
+<rect x="991" y="320" width="18" height="50" fill="none" stroke="#1b2a3a" stroke-width="2"/>
+<text x="1016" y="342" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1b2a3a">R3</text>
+<text x="1016" y="357" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b2a3a">12k</text>
+<text x="994" y="304" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">RXD_5V</text><circle cx="1000" cy="300" r="3" fill="#1f5f99"/>
+<text x="994" y="394" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">RXD_3V3</text><circle cx="1000" cy="390" r="3" fill="#1f5f99"/>
+<line x1="1120" y1="300" x2="1120" y2="320" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="1120" y1="370" x2="1120" y2="390" stroke="#1b2a3a" stroke-width="2"/>
+<rect x="1111" y="320" width="18" height="50" fill="none" stroke="#1b2a3a" stroke-width="2"/>
+<text x="1136" y="342" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1b2a3a">R4</text>
+<text x="1136" y="357" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b2a3a">20k</text>
+<text x="1114" y="304" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">RXD_3V3</text><circle cx="1120" cy="300" r="3" fill="#1f5f99"/>
+<text x="1114" y="394" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="1120" cy="390" r="3" fill="#b23a2e"/>
+<line x1="1240" y1="130" x2="1240" y2="168" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="1224" y1="168" x2="1256" y2="168" stroke="#1b2a3a" stroke-width="3"/>
+<line x1="1224" y1="180" x2="1256" y2="180" stroke="#1b2a3a" stroke-width="3"/>
+<line x1="1240" y1="180" x2="1240" y2="220" stroke="#1b2a3a" stroke-width="2"/>
+<text x="1262" y="172" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1b2a3a">C1</text>
+<text x="1262" y="187" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b2a3a">100nF</text>
+<text x="1234" y="134" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">+5V_CAN</text><circle cx="1240" cy="130" r="3" fill="#b23a2e"/>
+<text x="1234" y="224" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="1240" cy="220" r="3" fill="#b23a2e"/>
+<line x1="1240" y1="300" x2="1240" y2="338" stroke="#1b2a3a" stroke-width="2"/>
+<line x1="1224" y1="338" x2="1256" y2="338" stroke="#1b2a3a" stroke-width="3"/>
+<line x1="1224" y1="350" x2="1256" y2="350" stroke="#1b2a3a" stroke-width="3"/>
+<line x1="1240" y1="350" x2="1240" y2="390" stroke="#1b2a3a" stroke-width="2"/>
+<text x="1262" y="342" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1b2a3a">C2</text>
+<text x="1262" y="357" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b2a3a">10uF</text>
+<text x="1234" y="304" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">+5V_CAN</text><circle cx="1240" cy="300" r="3" fill="#b23a2e"/>
+<text x="1234" y="394" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="1240" cy="390" r="3" fill="#b23a2e"/>
+<rect x="60" y="470" width="190" height="150" fill="#fffaf0" stroke="#1b2a3a" stroke-width="2"/>
+<text x="155" y="495" font-family="sans-serif" font-size="14" text-anchor="middle" font-weight="bold" fill="#1b2a3a">J2  CAN bench</text>
+<text x="235" y="534" font-family="sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">1</text>
+<line x1="250" y1="530" x2="300" y2="530" stroke="#1b2a3a" stroke-width="2"/>
+<text x="306" y="534" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#1f5f99">CANH</text><circle cx="300" cy="530" r="3" fill="#1f5f99"/>
+<text x="235" y="566" font-family="sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">2</text>
+<line x1="250" y1="562" x2="300" y2="562" stroke="#1b2a3a" stroke-width="2"/>
+<text x="306" y="566" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#1f5f99">CANL</text><circle cx="300" cy="562" r="3" fill="#1f5f99"/>
+<text x="235" y="598" font-family="sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">3</text>
+<line x1="250" y1="594" x2="300" y2="594" stroke="#1b2a3a" stroke-width="2"/>
+<text x="306" y="598" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#b23a2e">GND</text><circle cx="300" cy="594" r="3" fill="#b23a2e"/>
+<rect x="420" y="470" width="190" height="110" fill="#fffaf0" stroke="#1b2a3a" stroke-width="2"/>
+<text x="515" y="495" font-family="sans-serif" font-size="14" text-anchor="middle" font-weight="bold" fill="#1b2a3a">J3  +5 V bench in</text>
+<text x="595" y="534" font-family="sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">1</text>
+<line x1="610" y1="530" x2="660" y2="530" stroke="#1b2a3a" stroke-width="2"/>
+<text x="666" y="534" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#b23a2e">+5V_CAN</text><circle cx="660" cy="530" r="3" fill="#b23a2e"/>
+<text x="595" y="566" font-family="sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#1b2a3a">2</text>
+<line x1="610" y1="562" x2="660" y2="562" stroke="#1b2a3a" stroke-width="2"/>
+<text x="666" y="566" font-family="monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#b23a2e">GND</text><circle cx="660" cy="562" r="3" fill="#b23a2e"/>
+<text x="820" y="470" font-family="sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#8a8f96">Optional bus parts - NOT FITTED (fit only per bench topology)</text>
+<line x1="830" y1="500" x2="830" y2="520" stroke="#8a8f96" stroke-width="2"/>
+<line x1="830" y1="570" x2="830" y2="590" stroke="#8a8f96" stroke-width="2"/>
+<rect x="821" y="520" width="18" height="50" fill="none" stroke="#8a8f96" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="846" y="542" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#8a8f96">R5</text>
+<text x="846" y="557" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#8a8f96">60R 1% DNP</text>
+<text x="824" y="504" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">CANH</text><circle cx="830" cy="500" r="3" fill="#1f5f99"/>
+<text x="824" y="594" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">SPLIT</text><circle cx="830" cy="590" r="3" fill="#1f5f99"/>
+<line x1="940" y1="500" x2="940" y2="520" stroke="#8a8f96" stroke-width="2"/>
+<line x1="940" y1="570" x2="940" y2="590" stroke="#8a8f96" stroke-width="2"/>
+<rect x="931" y="520" width="18" height="50" fill="none" stroke="#8a8f96" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="956" y="542" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#8a8f96">R6</text>
+<text x="956" y="557" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#8a8f96">60R 1% DNP</text>
+<text x="934" y="504" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">SPLIT</text><circle cx="940" cy="500" r="3" fill="#1f5f99"/>
+<text x="934" y="594" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">CANL</text><circle cx="940" cy="590" r="3" fill="#1f5f99"/>
+<line x1="1050" y1="500" x2="1050" y2="538" stroke="#8a8f96" stroke-width="2"/>
+<line x1="1034" y1="538" x2="1066" y2="538" stroke="#8a8f96" stroke-width="3"/>
+<line x1="1034" y1="550" x2="1066" y2="550" stroke="#8a8f96" stroke-width="3"/>
+<line x1="1050" y1="550" x2="1050" y2="590" stroke="#8a8f96" stroke-width="2"/>
+<text x="1072" y="542" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#8a8f96">C5</text>
+<text x="1072" y="557" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#8a8f96">4.7nF DNP</text>
+<text x="1044" y="504" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">SPLIT</text><circle cx="1050" cy="500" r="3" fill="#1f5f99"/>
+<text x="1044" y="594" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="1050" cy="590" r="3" fill="#b23a2e"/>
+<line x1="1150" y1="500" x2="1150" y2="538" stroke="#8a8f96" stroke-width="2"/>
+<line x1="1134" y1="538" x2="1166" y2="538" stroke="#8a8f96" stroke-width="3"/>
+<line x1="1134" y1="550" x2="1166" y2="550" stroke="#8a8f96" stroke-width="3"/>
+<line x1="1150" y1="550" x2="1150" y2="590" stroke="#8a8f96" stroke-width="2"/>
+<text x="1172" y="542" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#8a8f96">C3</text>
+<text x="1172" y="557" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#8a8f96">100pF DNP</text>
+<text x="1144" y="504" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">CANH</text><circle cx="1150" cy="500" r="3" fill="#1f5f99"/>
+<text x="1144" y="594" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="1150" cy="590" r="3" fill="#b23a2e"/>
+<line x1="1250" y1="500" x2="1250" y2="538" stroke="#8a8f96" stroke-width="2"/>
+<line x1="1234" y1="538" x2="1266" y2="538" stroke="#8a8f96" stroke-width="3"/>
+<line x1="1234" y1="550" x2="1266" y2="550" stroke="#8a8f96" stroke-width="3"/>
+<line x1="1250" y1="550" x2="1250" y2="590" stroke="#8a8f96" stroke-width="2"/>
+<text x="1272" y="542" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#8a8f96">C4</text>
+<text x="1272" y="557" font-family="sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#8a8f96">100pF DNP</text>
+<text x="1244" y="504" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#1f5f99">CANL</text><circle cx="1250" cy="500" r="3" fill="#1f5f99"/>
+<text x="1244" y="594" font-family="monospace" font-size="12" text-anchor="end" font-weight="bold" fill="#b23a2e">GND</text><circle cx="1250" cy="590" r="3" fill="#b23a2e"/>
+<rect x="30" y="660" width="1340" height="255" fill="#fbfbf6" stroke="#c9b98a"/>
+<text x="50" y="688" font-family="sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#1b2a3a">Design notes</text>
+<text x="50" y="716" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">1. U1 is the plain TJA1051 (pin 5 n.c.): VIO = VCC, so TXD/S need &gt;= 0.7 x VCC = 3.5 V. A 3.3 V ESP32 cannot drive them directly.</text>
+<text x="50" y="743" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">2. R1 holds S HIGH from +5V_CAN -&gt; Silent mode whenever U1 is powered, independent of the ESP32. No GPIO touches S.</text>
+<text x="50" y="770" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">3. GPIO21 (TWAI TX) is not wired; R2 keeps TXD recessive. Rev B cannot transmit. TX needs a separately reviewed revision.</text>
+<text x="50" y="797" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">4. R3/R4 divide RXD (5 V logic) to &lt;= 3.44 V at VCC = 5.5 V for GPIO22. Never connect RXD directly to the ESP32.</text>
+<text x="50" y="824" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">5. Power U1 from a current-limited 5.0 V bench supply (J3), not from ESP32 3.3 V. Bench GND, NodeMCU GND and CAN GND are common.</text>
+<text x="50" y="851" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">6. Listen-only + Silent never ACKs: a bench capture needs a third CAN node that ACKs. Do not terminate onto a vehicle bus.</text>
+<text x="50" y="878" font-family="sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#1b2a3a">7. Generated design checks: ALL PASS (design-checks.json). Not bench-validated.</text>
 </svg>

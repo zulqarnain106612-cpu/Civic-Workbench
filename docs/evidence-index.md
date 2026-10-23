@@ -14,3 +14,4 @@
 | Security/faults | docs/security-review.md, docs/fault-matrix.md, tests/test_api_security.py | Unit/HTTP tests, not a penetration test or external deployment approval |
 | Performance | tools/benchmark.py, docs/reports/S11-benchmark-results.json | Single synthetic workload and host measurement only |
 | Stage handoff | docs/reports/S04-browser-ui-report.md through S13-hardware-baseline-and-pin-map.md, project/progress.json | Current implementation, verification and open gaps |
+| S14 Rev B receive-only design and audit fixes | hardware/reference/esp32-tja1051-netlist.yaml, hardware/proteus/generated/, docs/reference/, docs/reports/S14-rev-b-receive-only-and-audit-remediation.md, tests/test_proteus_generator.py, tests/test_firmware_can_core.py, tests/test_serial_bridge_open.py | Host tests and paper design checks; no bench or native Proteus evidence |

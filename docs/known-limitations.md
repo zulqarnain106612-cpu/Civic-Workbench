@@ -1,9 +1,9 @@
 # Known Limitations and Unverified Requirements
 
-1. **Native Proteus file:** deterministic JSON connectivity, BOM, component-map and SVG review artifacts exist. A native .DSN/.PDSPRJ file has not been created/imported/rendered because a supported official Python writer/API was not confirmed. The native-project-status artifact is the source of truth.
-2. **Physical bench:** the specified NodeMCU-32S and NXP TJA1051 SO8 are now reflected in the board profile, source pin map and generated source artifacts. Physical PCB revision/header continuity, IC pin-1 orientation, supply/Silent-bias circuit and bench behavior are not yet measured. No firmware was flashed.
+1. **Native Proteus file:** the Rev B schematic SVG, netlist, BOM, design checks and a Proteus capture sheet are generated. A native .pdsprj has not been created: no official Python writer exists, the installed Proteus is a demonstration profile, and the generating session had no shell on the Proteus host. See native-project-status.json.
+2. **Physical bench:** Rev B receive-only interface values are defined and checked on paper (design-checks.json). Header continuity, pin-1 orientation, Silent-bias and RXD levels, and bench behaviour are not yet measured. No firmware was flashed.
 3. **CAN bus:** no vehicle bitrate/topology/safe tap point or identifier has been observed. No live capture or transmission on the Civic occurred.
-4. **Host TX:** repeat scheduling, cancellation and audit work end-to-end on the virtual bus. The host has no physical TX control path. The firmware offers a guarded single-frame C API, but the CW1 protocol is read-only and does not expose host commands for it.
+4. **Host TX:** Rev B hardware cannot transmit (TXD not wired, S tied HIGH). repeat scheduling, cancellation and audit work end-to-end on the virtual bus. The host has no physical TX control path. The firmware offers a guarded single-frame C API, but the CW1 protocol is read-only and does not expose host commands for it.
 5. **Diagnostic workflows:** capability evidence/gates are implemented as metadata and simulation-only eligibility evaluation. No Honda-specific ECU address/service or executable vehicle diagnostic is shipped.
 6. **Browser validation:** static files/API are covered by tests; no full cross-browser visual certification or device accessibility audit was performed.
 7. **Performance:** benchmark figures reflect a synthetic single-host run, not UART/CAN throughput, physical real-time latency or multi-user server capacity.

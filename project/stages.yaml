@@ -261,3 +261,21 @@ stages:
   - Hardware initialization, bitrate evidence, and hardware TX authorization remain disabled.
   - Tests and exact board-profile compilation pass; no physical bench test is claimed without measurement evidence.
   delivery_state: source-mapped-build-and-guard-tests-pending-physical-bench
+
+- id: S14
+  title: Receive-only interface Rev B, audit remediation and bench enablement
+  goal: Make the NodeMCU-32S + plain TJA1051T receive-only interface electrically correct and startable, and close the 2026-10-23 audit findings.
+  deliverables:
+  - rev-b-netlist-with-level-shifting-and-silent-bias
+  - generated-schematic-bom-design-checks-and-proteus-capture-sheet
+  - receive-only-bench-firmware-build
+  - serial-open-without-auto-reset
+  - firmware-tx-rate-limit-and-audit
+  acceptance:
+  - S is pulled to the transceiver VCC rail; RXD reaches the ESP32 only through a divider within ESP32 limits; GPIO21 does not drive TXD; pin 5 open.
+  - Generated design checks pass and the committed bundle matches the generator.
+  - CONFIG_CIVIC_RECEIVE_ONLY_BENCH starts listen-only without TX gate/interlock GPIOs and cannot be combined with hardware TX.
+  - Host serial bridge deasserts DTR/RTS before opening the port.
+  - Firmware guarded TX enforces a minimum interval and per-arm frame budget and logs every attempt.
+  - No bench, vehicle or native-Proteus acceptance is claimed without evidence.
+  delivery_state: source-design-and-tests-complete; native-Proteus-and-physical-bench-pending

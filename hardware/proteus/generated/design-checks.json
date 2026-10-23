@@ -1,0 +1,56 @@
+{
+  "all_pass": true,
+  "assumptions": {
+    "esp32_vdd_v": 3.3,
+    "s_iih_max_a": 1e-05,
+    "tja1051_vcc_range_v": [
+      4.5,
+      5.5
+    ],
+    "tja1051_vih_fraction_of_vio": 0.7
+  },
+  "checks": [
+    {
+      "id": "RXD_DIVIDER_MAX",
+      "limit_v": 3.6,
+      "pass": true,
+      "rule": "RXD_3V3 at VCC max must not exceed ESP32 VDD+0.3 V",
+      "value_v": 3.438
+    },
+    {
+      "id": "RXD_DIVIDER_MIN",
+      "limit_v": 2.475,
+      "pass": true,
+      "rule": "RXD_3V3 HIGH at VCC min must exceed ESP32 VIH (0.75 VDD)",
+      "value_v": 2.812
+    },
+    {
+      "id": "S_SILENT_HIGH",
+      "limit_v": 3.15,
+      "pass": true,
+      "rule": "S held >= 0.7 VCC (Silent) by R1 to +5V_CAN",
+      "value_v": 4.4
+    },
+    {
+      "id": "S_NOT_MCU_DRIVEN",
+      "pass": true,
+      "rule": "No MCU GPIO is connected to S in the receive-only revision"
+    },
+    {
+      "id": "TXD_NOT_MCU_DRIVEN",
+      "pass": true,
+      "rule": "GPIO21 does not drive TXD (3.3 V is below TXD VIH = 3.5 V)"
+    },
+    {
+      "id": "PIN5_OPEN",
+      "pass": true,
+      "rule": "Pin 5 left open: fail-safe for n.c., VIO and EN variants (AH1014 Table 21)"
+    },
+    {
+      "id": "TERMINATION_NOT_FITTED",
+      "pass": true,
+      "rule": "Termination is a bus-topology decision and is not fitted by default"
+    }
+  ],
+  "schema_version": 1
+}

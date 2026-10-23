@@ -12,6 +12,26 @@
 #include "freertos/task.h"
 #include "sdkconfig.h"
 
+#if defined(CONFIG_CIVIC_RECEIVE_ONLY_BENCH) && CONFIG_CIVIC_RECEIVE_ONLY_BENCH
+#define CIVIC_RECEIVE_ONLY 1
+#if defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX) && CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX
+#error "CIVIC_RECEIVE_ONLY_BENCH and CIVIC_ALLOW_HARDWARE_CAN_TX are mutually exclusive"
+#endif
+#else
+#define CIVIC_RECEIVE_ONLY 0
+#endif
+
+#if !CIVIC_RECEIVE_ONLY && defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX) && CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX \
+    && defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT) && CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT \
+    && defined(CONFIG_CIVIC_BITRATE_EVIDENCE_CONFIRMED) && CONFIG_CIVIC_BITRATE_EVIDENCE_CONFIRMED
+#define CIVIC_TX_BUILD 1
+#if !defined(CONFIG_CIVIC_TX_MIN_INTERVAL_MS) || !defined(CONFIG_CIVIC_TX_MAX_FRAMES_PER_ARM)
+#error "TX builds require CIVIC_TX_MIN_INTERVAL_MS and CIVIC_TX_MAX_FRAMES_PER_ARM"
+#endif
+#else
+#define CIVIC_TX_BUILD 0
+#endif
+
 static const char *TAG = "civic_can";
 static bool s_driver_installed;
 static bool s_hardware_ready;
@@ -24,12 +44,30 @@ static portMUX_TYPE s_counter_lock = portMUX_INITIALIZER_UNLOCKED;
 static uint64_t s_rx_frames_dequeued;
 static uint64_t s_software_dropped_frames;
 static uint64_t s_malformed_frames;
+#if CIVIC_TX_BUILD
+/* Firmware-side TX bounds, independent of host policy: minimum spacing and a per-arm budget. */
+static uint32_t s_tx_frames_this_arm;
+static bool s_tx_has_last;
+static int64_t s_tx_last_us;
+static uint32_t s_tx_audit_sequence;
 
+static void tx_audit(const civic_can_tx_request_t *request, const char *result)
+{
+    ++s_tx_audit_sequence;
+    ESP_LOGW(TAG, "TX_AUDIT seq=%lu id=0x%08lx ext=%u rtr=%u dlc=%u frames_this_arm=%lu result=%s",
+             (unsigned long)s_tx_audit_sequence, (unsigned long)request->arbitration_id,
+             request->extended_id ? 1U : 0U, request->remote_frame ? 1U : 0U, (unsigned)request->dlc,
+             (unsigned long)s_tx_frames_this_arm, result);
+}
+#endif
+
+#if !CIVIC_RECEIVE_ONLY
 static uint64_t gpio_pin_mask(int gpio_num)
 {
     /* Caller validates the pin before use; avoid a compile-time -1 shift warning. */
     return UINT64_C(1) << (unsigned int)gpio_num;
 }
+#endif
 
 static bool gpio_is_flash_reserved(int gpio)
 {
@@ -218,12 +256,19 @@ esp_err_t civic_can_init(void)
     s_software_armed = false;
     s_hardware_configuration_accepted = false;
 
+    esp_err_t err = ESP_OK;
+#if CIVIC_RECEIVE_ONLY
+    /* Receive-only bench build: hardware holds the transceiver in Silent mode and TXD is not
+     * wired (hardware Rev B). No TX gate or interlock GPIO exists, so none is configured. */
+    ESP_LOGW(TAG, "Receive-only bench build: TX gate/interlock not used; listen-only enforced");
+#else
     /* Safe-state output is initialized before any TWAI controller setup. */
-    esp_err_t err = civic_safety_init_inhibited();
+    err = civic_safety_init_inhibited();
     if (err != ESP_OK) {
         ESP_LOGW(TAG, "TX gate pin is not safely configured; refusing TWAI startup");
         return err;
     }
+#endif
 
 #if !defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT) || !CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT
     ESP_LOGW(TAG, "Hardware CAN startup disabled by default configuration");
@@ -236,27 +281,32 @@ esp_err_t civic_can_init(void)
 
     if (CONFIG_CIVIC_TWAI_TX_GPIO < 0 || CONFIG_CIVIC_TWAI_TX_GPIO > 33
         || CONFIG_CIVIC_TWAI_RX_GPIO < 0 || CONFIG_CIVIC_TWAI_RX_GPIO > 39
-        || CONFIG_CIVIC_INTERLOCK_SENSE_GPIO < 0 || CONFIG_CIVIC_INTERLOCK_SENSE_GPIO > 39
         || CONFIG_CIVIC_TWAI_TX_GPIO == CONFIG_CIVIC_TWAI_RX_GPIO
+        || gpio_is_flash_reserved(CONFIG_CIVIC_TWAI_TX_GPIO)
+        || gpio_is_flash_reserved(CONFIG_CIVIC_TWAI_RX_GPIO)
+        || gpio_is_strapping(CONFIG_CIVIC_TWAI_TX_GPIO)
+        || gpio_is_strapping(CONFIG_CIVIC_TWAI_RX_GPIO)
+        || gpio_is_console_reserved(CONFIG_CIVIC_TWAI_TX_GPIO)
+        || gpio_is_console_reserved(CONFIG_CIVIC_TWAI_RX_GPIO)) {
+        ESP_LOGE(TAG, "TWAI GPIO mapping is unset, reused, flash/console-reserved, or strapping; refusing TWAI startup");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+#if !CIVIC_RECEIVE_ONLY
+    if (CONFIG_CIVIC_INTERLOCK_SENSE_GPIO < 0 || CONFIG_CIVIC_INTERLOCK_SENSE_GPIO > 39
         || CONFIG_CIVIC_TWAI_TX_GPIO == CONFIG_CIVIC_INTERLOCK_SENSE_GPIO
         || CONFIG_CIVIC_TWAI_RX_GPIO == CONFIG_CIVIC_INTERLOCK_SENSE_GPIO
         || CONFIG_CIVIC_TX_GATE_REQUEST_GPIO < 0 || CONFIG_CIVIC_TX_GATE_REQUEST_GPIO > 33
         || CONFIG_CIVIC_TX_GATE_REQUEST_GPIO == CONFIG_CIVIC_TWAI_TX_GPIO
         || CONFIG_CIVIC_TX_GATE_REQUEST_GPIO == CONFIG_CIVIC_TWAI_RX_GPIO
         || CONFIG_CIVIC_TX_GATE_REQUEST_GPIO == CONFIG_CIVIC_INTERLOCK_SENSE_GPIO
-        || gpio_is_flash_reserved(CONFIG_CIVIC_TWAI_TX_GPIO)
-        || gpio_is_flash_reserved(CONFIG_CIVIC_TWAI_RX_GPIO)
         || gpio_is_flash_reserved(CONFIG_CIVIC_INTERLOCK_SENSE_GPIO)
         || gpio_is_flash_reserved(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO)
-        || gpio_is_strapping(CONFIG_CIVIC_TWAI_TX_GPIO)
-        || gpio_is_strapping(CONFIG_CIVIC_TWAI_RX_GPIO)
         || gpio_is_strapping(CONFIG_CIVIC_INTERLOCK_SENSE_GPIO)
         || gpio_is_strapping(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO)
-        || gpio_is_console_reserved(CONFIG_CIVIC_TWAI_TX_GPIO)
-        || gpio_is_console_reserved(CONFIG_CIVIC_TWAI_RX_GPIO)
         || gpio_is_console_reserved(CONFIG_CIVIC_INTERLOCK_SENSE_GPIO)
         || gpio_is_console_reserved(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO)) {
-        ESP_LOGE(TAG, "GPIO mapping is unset, reused, flash/console-reserved, or strapping; refusing TWAI startup");
+        ESP_LOGE(TAG, "TX gate/interlock GPIO mapping is unset, reused, flash/console-reserved, or strapping; refusing TWAI startup");
         return ESP_ERR_INVALID_ARG;
     }
 
@@ -273,6 +323,7 @@ esp_err_t civic_can_init(void)
     if (err != ESP_OK) {
         return err;
     }
+#endif
 
     s_hardware_configuration_accepted = true;
     s_frame_queue = xQueueCreate(
@@ -293,7 +344,7 @@ esp_err_t civic_can_init(void)
     /* No TX queue: a disarmed request must never be queued for later surprise transmission. */
     general_config.tx_queue_len = 0U;
 
-#if defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX) && CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX \
+#if !CIVIC_RECEIVE_ONLY && defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX) && CONFIG_CIVIC_ALLOW_HARDWARE_CAN_TX \
     && defined(CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT) && CONFIG_CIVIC_ALLOW_HARDWARE_CAN_INIT \
     && defined(CONFIG_CIVIC_BITRATE_EVIDENCE_CONFIRMED) && CONFIG_CIVIC_BITRATE_EVIDENCE_CONFIRMED
     general_config.mode = TWAI_MODE_NORMAL;
@@ -504,6 +555,8 @@ esp_err_t civic_can_set_software_armed(bool armed)
         return err == ESP_OK ? ESP_ERR_INVALID_STATE : err;
     }
 
+    s_tx_frames_this_arm = 0U;
+    s_tx_has_last = false;
     set_software_armed_state(true);
     ESP_LOGW(TAG, "TX software arm active; independent physical interlock remains required");
     return ESP_OK;
@@ -557,13 +610,29 @@ esp_err_t civic_can_transmit_guarded(
         memcpy(message.data, request->data, request->dlc);
     }
 
+    if (s_tx_frames_this_arm >= (uint32_t)CONFIG_CIVIC_TX_MAX_FRAMES_PER_ARM) {
+        tx_audit(request, "REJECTED_ARM_BUDGET_EXHAUSTED_DISARMED");
+        (void)civic_can_set_software_armed(false);
+        return ESP_ERR_INVALID_STATE;
+    }
+    const int64_t now_us = esp_timer_get_time();
+    if (s_tx_has_last && (now_us - s_tx_last_us) < (int64_t)CONFIG_CIVIC_TX_MIN_INTERVAL_MS * 1000) {
+        tx_audit(request, "REJECTED_RATE_LIMIT");
+        return ESP_ERR_TIMEOUT;
+    }
+
     /* TX queue is configured as length zero, so no frame remains queued after timeout/disarm. */
     err = twai_transmit(&message, pdMS_TO_TICKS(timeout_ms));
+    s_tx_has_last = true;
+    s_tx_last_us = now_us;
     if (err != ESP_OK) {
+        tx_audit(request, "FAILED_DISARMED");
         (void)civic_can_set_software_armed(false);
         ESP_LOGE(TAG, "Guarded TX failed: %s; TX request has been disarmed", esp_err_to_name(err));
         return err;
     }
+    ++s_tx_frames_this_arm;
+    tx_audit(request, "SENT");
 
     /* Re-check after the send; hardware interlock is still the immediate physical barrier. */
     if (!interlock_is_active()) {

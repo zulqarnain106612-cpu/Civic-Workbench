@@ -117,8 +117,10 @@ class FirmwareSourceGuardTests(unittest.TestCase):
         self.assertIn("GPIO21/TWAI_TX", notes)
         self.assertIn("GPIO22/TWAI_RX", notes)
         self.assertIn("NXP TJA1051 marked NXP TJA1051 25 06 ND312", notes)
-        self.assertIn("not a validated schematic or assembled circuit", notes)
-        self.assertIn("Pin 5 remains unconnected pending confirmation", notes)
+        self.assertIn("nothing is bench-measured yet", notes)
+        self.assertIn("R1 10k to +5V_CAN = Silent", notes)
+        self.assertIn("GPIO21 (TWAI_TX, header 33) is reserved and left unconnected", notes)
+        self.assertIn("leaves pin 5 open", notes)
 
 
 if __name__ == "__main__":

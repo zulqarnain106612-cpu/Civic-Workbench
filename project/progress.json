@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S00-S13-source-and-host-verified; S13-physical-bench-pending; S07-physical-TX-disabled; S09-native-Proteus-blocked",
+  "overall_status": "S00-S14-source-and-host-verified; S13/S14-physical-bench-pending; S07-physical-TX-disabled; S09-native-Proteus-blocked",
   "application_implementation_status": "local-ui-api-storage-analysis-simulation-cad-source-packaging-and-host-integration-verified",
   "physical_hardware_validation_status": "not_performed",
-  "last_updated": "2026-10-22",
-  "current_focus": "NODEMCU32S_TJA1051_RECEIVE_ONLY_BENCH",
+  "last_updated": "2026-10-23",
+  "current_focus": "NODEMCU32S_TJA1051_RECEIVE_ONLY_BENCH_REV_B",
   "stage_status": {
     "S00": "complete",
     "S01": "complete",
@@ -20,7 +20,8 @@
     "S10": "API-session-export-import-and-security-integration-tests-passed",
     "S11": "integrated-suite-package-schema-synchronization-and-20k-synthetic-benchmark-passed",
     "S12": "source-and-host-delivery-verified; physical-validation-not-performed",
-    "S13": "fixed-part-source-mapping-and-nodemcu32s-build-verified; physical-bench-pending"
+    "S13": "fixed-part-source-mapping-and-nodemcu32s-build-verified; physical-bench-pending",
+    "S14": "rev-b-design-firmware-and-host-fixes-tested; physical-bench-and-native-Proteus-pending"
   },
   "baseline_evidence": {
     "requirements_file": "project/requirements.yaml",
@@ -105,7 +106,8 @@
     "S10": "docs/reports/S10-integration-report.md",
     "S11": "docs/reports/S11-hardening-performance-report.md",
     "S12": "docs/reports/S12-final-handoff-report.md",
-    "S13": "docs/reports/S13-hardware-baseline-and-pin-map.md"
+    "S13": "docs/reports/S13-hardware-baseline-and-pin-map.md",
+    "S14": "docs/reports/S14-rev-b-receive-only-and-audit-remediation.md"
   },
   "s02_evidence": {
     "report": "docs/reports/S02-firmware-report.md",
@@ -348,5 +350,20 @@
     "schema_package_yaml_checks": "15 versioned schemas synchronized and validated; project YAML parsed; wheel assets passed",
     "git_diff_check": "passed before final metadata changes; rerun after all updates",
     "transceiver_variant_safety_gate": "Exact NXP TJA1051 marking retained; no substitute and no suffix inference; pin 5 remains disconnected and power-up blocked until its function is confirmed for this item"
+  },
+  "s14_evidence": {
+    "report": "docs/reports/S14-rev-b-receive-only-and-audit-remediation.md",
+    "design_source": "hardware/reference/esp32-tja1051-netlist.yaml (Rev B)",
+    "generated_bundle": "hardware/proteus/generated/",
+    "design_checks": "hardware/proteus/generated/design-checks.json (all pass)",
+    "owner_reference_material": "docs/reference/",
+    "tests": [
+      "tests/test_proteus_generator.py",
+      "tests/test_firmware_can_core.py::FirmwareReceiveOnlyBenchTests",
+      "tests/test_serial_bridge_open.py",
+      "tests/firmware/test_can_core_mock.c (TX rate/budget)"
+    ],
+    "native_proteus": "not created; see native-project-status.json",
+    "physical_validation": "not performed"
   }
 }

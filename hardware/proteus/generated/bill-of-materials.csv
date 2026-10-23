@@ -1,7 +1,16 @@
-Reference,Manufacturer,Part,Package,Status,Notes
-U1,NXP,TJA1051,SO8 / SOT96-1,required,Reported marking: NXP TJA1051 25 06 ND312; no substitutions; verify SO8 pin 1 before assembly
-U_MCU,Espressif / NodeMCU,ESP32S NodeMCU / NodeMCU-32S,board module,specified,GPIO21 TWAI TX and GPIO22 TWAI RX source mapping; verify physical board revision and header continuity
-J1,TBD,CAN connector,TBD,not-selected,CANH/CANL/ground pins unverified
-R-SILENT,TBD,Silent-mode pull-up,TBD,value-unassigned,Must hold TJA1051 S HIGH if MCU is reset/unpowered
-C-VCC,TBD,VCC decoupling,TBD,value-unassigned,Determine from final reviewed design
-C-LOGIC,TBD,Variant-dependent pin-5 logic decoupling,TBD,value-unassigned,Only populate if confirmed by the exact marked component datasheet
+Reference,Value,Package,Fitted,Nets,Purpose
+J1,ESP32S NodeMCU / NodeMCU-32S,board,yes,GPIO22=RXD_3V3 GPIO21=NC_GPIO21 GND=GND,Controller board; verify header continuity
+U1,TJA1051T (marking NXP TJA1051 25 06 ND312; no substitution),SO8,yes,1=TXD_5V 2=GND 3=+5V_CAN 4=RXD_5V 5=NC_PIN5 6=CANL 7=CANH 8=S_SILENT,
+R1,10k,0805,yes,1=S_SILENT 2=+5V_CAN,Holds S HIGH (Silent) from the transceiver's own rail; F2/F5. Drop at 10 uA max IIH = 0.1 V.
+R2,10k,0805,yes,1=TXD_5V 2=+5V_CAN,Holds TXD recessive (HIGH) because GPIO21 is not connected; supplements the internal pull-up.
+R3,12k,0805,yes,1=RXD_5V 2=RXD_3V3,RXD divider top; F3.
+R4,20k,0805,yes,1=RXD_3V3 2=GND,"RXD divider bottom: 4.5 V -> 2.81 V, 5.0 V -> 3.13 V, 5.5 V -> 3.44 V."
+C1,100nF X7R 16V,0805,yes,1=+5V_CAN 2=GND,"U1 local decoupling, placed at pins 3/2; F6."
+C2,10uF 16V,1206,yes,1=+5V_CAN 2=GND,Supply buffer; F6.
+C3,100pF C0G,0805,DNP,1=CANH 2=GND,Optional ESD/EMC near connector; F7.
+C4,100pF C0G,0805,DNP,1=CANL 2=GND,"Optional, matched with C3; F7."
+R5,60R 1%,1206,DNP,1=CANH 2=SPLIT,Split termination - fit ONLY when this node is a bus end of an isolated bench bus; F7.
+R6,60R 1%,1206,DNP,1=SPLIT 2=CANL,Split termination half; F7.
+C5,4.7nF,0805,DNP,1=SPLIT 2=GND,Split termination centre tap; F7.
+J2,3-pin CAN bench connector,2.54 mm header,yes,1=CANH 2=CANL 3=GND,
+J3,2-pin +5V bench supply input,2.54 mm header,yes,1=+5V_CAN 2=GND,

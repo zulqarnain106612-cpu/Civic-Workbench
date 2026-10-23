@@ -18,11 +18,11 @@ electrical_reference_from_datasheet:
     required_range_v: [4.5, 5.5]
   pin5_variant_dependent:
     pin: 5
-    role: "Exact physical NXP TJA1051 variant is not established by this configuration; do not assign VIO, EN, or NC without authoritative evidence for this marked item"
-    connection_state: "DO_NOT_CONNECT until function is established; no power-up before confirmation"
+    role: "n.c. on the plain TJA1051T (owner-supplied datasheet and AH1014 Fig 13)"
+    connection_state: "LEFT OPEN. Open pin 5 is fail-safe for n.c., VIO and EN variants (AH1014 Table 21); no longer blocks power-up"
   gnd: {pin: 2, role: "Common logic/transceiver ground"}
-  txd: {pin: 1, role: "ESP32 TWAI TX output to transceiver"}
-  rxd: {pin: 4, role: "Transceiver RX output to ESP32 TWAI RX input"}
+  txd: {pin: 1, role: "Transmit data input, VIH >= 0.7 VCC (3.5 V); Rev B: not driven by ESP32, held recessive by R2 10k to +5V_CAN"}
+  rxd: {pin: 4, role: "Receive data output at VCC (5 V) logic; Rev B: via R3 12k / R4 20k divider to ESP32 GPIO22"}
   canl: {pin: 6, role: "CAN bus low"}
   canh: {pin: 7, role: "CAN bus high"}
   s:
@@ -30,16 +30,16 @@ electrical_reference_from_datasheet:
     role: "Transceiver operating mode control"
     normal_mode: "LOW; permits transmit and receive"
     silent_mode: "HIGH; disables transmitter while receiver remains active"
-    default: "HIGH, provided by a hardware-defined state"
+    default: "HIGH via R1 10k to +5V_CAN (Rev B); never driven by the ESP32"
 pin_mapping:
   board_pinout_source: "PlatformIO nodemcu-32s board target plus Espressif classic-ESP32 GPIO documentation"
   twai_tx_gpio: 21
-  mapping_to_transceiver: "ESP32 GPIO21/TWAI_TX -> TJA1051 pin 1 TXD"
+  mapping_to_transceiver: "ESP32 GPIO21/TWAI_TX is reserved but NOT wired in Rev B (receive-only); 3.3 V cannot meet TXD VIH"
   twai_rx_gpio: 22
-  mapping_from_transceiver: "TJA1051 pin 4 RXD -> ESP32 GPIO22/TWAI_RX"
+  mapping_from_transceiver: "TJA1051 pin 4 RXD -> R3/R4 divider -> ESP32 GPIO22/TWAI_RX (header pin 36)"
   reserved_functions: "GPIO21/22 reserved by this design for TWAI; do not reuse them for I2C."
   pinout_verification_state: "Source-mapped; physical header continuity and PCB revision have not been measured."
-  s_control: "Receive-only design intent: pin 8 S held HIGH only after exact physical pinout and circuit review; no direct MCU control. TX remains disabled."
+  s_control: "Receive-only: pin 8 S held HIGH by R1 to +5V_CAN; no MCU control. TX hardware-impossible in Rev B."
   bus_connection: "Provide accessible CANH, CANL, signal ground, and an explicitly documented connector/pinout."
 design_requirements:
   - "Never connect CANH/CANL directly to ESP32 GPIO."
@@ -53,7 +53,8 @@ design_requirements:
   - "Use only the specified physical NXP TJA1051 marked NXP TJA1051 25 06 ND312; do not substitute a different transceiver or development-board circuit."
 open_items:
   - "On the physical NodeMCU-32S, verify board silkscreen/revision and continuity of GPIO21/GPIO22 headers before wiring."
-  - "Preserve the exact marking NXP TJA1051 25 06 ND312 and do not substitute another part. Confirm physical SO8 pin-1 orientation and the exact pin-5 function before wiring; do not energize the circuit while pin 5 remains unresolved."
-  - "Complete component-value and failure-mode review for the receive-only Silent bias and supply decoupling."
+  - "Preserve the exact marking NXP TJA1051 25 06 ND312 and do not substitute another part. Confirm physical SO8 pin-1 orientation before wiring. Pin 5 stays open (fail-safe)."
+  - "Before connecting GPIO22, power U1 alone and measure RXD_3V3 <= 3.6 V and S >= 3.5 V."
+  - "Receive-only component values are defined in hardware/reference/esp32-tja1051-netlist.yaml (Rev B) and checked by design-checks.json; bench measurement still pending."
   - "Select connector, supply protection, and termination/jumper policy from the actual intended bus topology; no default vehicle termination."
   - "Do not enable firmware hardware initialization until the controlled bench supply, transceiver wiring, and independently evidenced bitrate are reviewed."

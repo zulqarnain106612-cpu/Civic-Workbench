@@ -1,136 +1,400 @@
 {
-  "artifacts": {
-    "import_render_validation": "not performed",
-    "native_proteus_project": "not generated",
-    "python_generator": "planned S09"
+  "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
+  "nets": {
+    "+5V_CAN": [
+      "C1.1",
+      "C2.1",
+      "J3.1",
+      "R1.2",
+      "R2.2",
+      "U1.3"
+    ],
+    "CANH": [
+      "J2.1",
+      "U1.7"
+    ],
+    "CANL": [
+      "J2.2",
+      "U1.6"
+    ],
+    "GND": [
+      "C1.2",
+      "C2.2",
+      "J1.GND",
+      "J2.3",
+      "J3.2",
+      "R4.2",
+      "U1.2"
+    ],
+    "RXD_3V3": [
+      "J1.GPIO22",
+      "R3.2",
+      "R4.1"
+    ],
+    "RXD_5V": [
+      "R3.1",
+      "U1.4"
+    ],
+    "S_SILENT": [
+      "R1.1",
+      "U1.8"
+    ],
+    "TXD_5V": [
+      "R2.1",
+      "U1.1"
+    ]
   },
-  "can_bus": {
-    "connector": {
-      "nets": [
-        "CAN_HIGH",
-        "CAN_LOW",
-        "LOGIC_GND"
-      ],
-      "pinout_status": "unknown"
-    },
-    "protection": {
-      "status": "to be designed and reviewed for intended connection point"
-    },
-    "termination": {
-      "fitted_by_default": false,
-      "policy": "Only add/enable termination after intended topology and existing bus termination are established."
-    }
-  },
-  "controller": {
-    "board_id": "nodemcu-32s",
-    "gpio_assignment_status": "source-mapped to the specified NodeMCU-32S; physical header continuity/revision remains to be checked on the actual board",
-    "package_or_module": "NodeMCU-32S board",
-    "rx_gpio": 22,
-    "target": "ESP32S NodeMCU / NodeMCU-32S, classic ESP32 with integrated TWAI",
-    "twai_driver": "ESP-IDF TWAI API, pinned PlatformIO build",
-    "tx_gpio": 21
-  },
-  "design_id": "civic-workbench-original-esp32-tja1051",
-  "open_items": [
-    "Exact ESP32 module/board and available non-strapping GPIOs",
-    "Document and review hardware gate topology, component values and failure modes",
-    "Confirm intended CAN connector and protection design",
-    "Confirm transceiver supply and power sequencing for chosen installation",
-    "Generate native Proteus artifact and validate actual import/render with installed Proteus version"
+  "no_connect": [
+    "J1.GPIO21",
+    "U1.5"
   ],
-  "power_and_decoupling": {
-    "decoupling": {
-      "requirements": [
-        "Place local decoupling next to U1 VCC/GND.",
-        "Finalize any pin-5 logic-supply decoupling only if the exact physical variant confirms pin 5 is VIO.",
-        "Record exact capacitor values, voltage ratings and placement evidence in the generated artifact manifest."
-      ],
-      "status": "must be defined and reviewed during native schematic generation"
+  "revision": "B",
+  "schema_version": 2,
+  "source": {
+    "artifacts": {
+      "import_render_validation": "not performed",
+      "native_proteus_project": "not generated - see hardware/proteus/generated/native-project-status.json",
+      "python_generator": "tools/generate_proteus_reference.py"
     },
-    "logic_supply": {
-      "evidence": "Target original ESP32 uses 3.3 V I/O; validate against exact board.",
-      "net": "MCU_IO_3V3",
-      "nominal_v": 3.3
-    },
-    "pin5_variant_gate": {
-      "status": "unresolved for the exact physical marking; do not connect or power until pin-5 function is confirmed"
-    },
-    "transceiver_supply": {
-      "constraints_v": [
-        4.5,
-        5.5
-      ],
-      "evidence": "NXP TJA1051 datasheet limits.",
-      "net": "TRANSCEIVER_5V",
-      "nominal_v": 5.0
-    }
-  },
-  "references": {
-    "esp32_twai": "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html",
-    "tja1051_datasheet": "https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf"
-  },
-  "schema_version": 1,
-  "status": "schematic-source-contract; not a generated or validated native schematic",
-  "transceiver": {
-    "manufacturer": "NXP",
-    "marking_code_interpretation": "Not decoded; preserve the complete owner-supplied marking literally.",
-    "package": "SO8",
-    "package_code": "SOT96-1",
-    "part": "TJA1051",
-    "pins": {
-      "1": {
-        "name": "TXD",
-        "net": "TWAI_TX_TO_TRANSCEIVER"
-      },
-      "2": {
-        "name": "GND",
-        "net": "LOGIC_GND"
-      },
-      "3": {
-        "name": "VCC",
-        "net": "TRANSCEIVER_5V"
-      },
-      "4": {
-        "name": "RXD",
-        "net": "TRANSCEIVER_RX_TO_TWAI"
-      },
-      "5": {
-        "name": "VARIANT_DEPENDENT_DO_NOT_CONNECT",
-        "net": "UNRESOLVED_PIN5_DO_NOT_CONNECT"
-      },
-      "6": {
-        "name": "CANL",
-        "net": "CAN_LOW"
-      },
-      "7": {
-        "name": "CANH",
-        "net": "CAN_HIGH"
-      },
-      "8": {
-        "name": "S",
-        "net": "TRANSCEIVER_MODE_S"
+    "can_bus": {
+      "connector": "J2",
+      "termination": {
+        "fitted_by_default": false,
+        "policy": "bus-topology decision; never terminate onto a vehicle network blindly"
       }
     },
-    "reference_designator": "U1",
-    "reported_top_marking": "NXP TJA1051 25 06 ND312",
-    "substitutions_allowed": false
-  },
-  "tx_inhibit": {
-    "default_state": "silent",
-    "gate": {
-      "circuit_status": "not yet generated or bench validated",
-      "implementation_requirement": "a physical interlock and firmware TX request must both be necessary to pull S LOW",
-      "mcu_request_gpio": null,
-      "note": "MCU request signal must never directly connect to S as the only safety control.",
-      "physical_interlock_gpio_feedback": null
+    "components": [
+      {
+        "fitted": true,
+        "nets": {
+          "1": "TXD_5V",
+          "2": "GND",
+          "3": "+5V_CAN",
+          "4": "RXD_5V",
+          "5": "NC_PIN5",
+          "6": "CANL",
+          "7": "CANH",
+          "8": "S_SILENT"
+        },
+        "package": "SO8",
+        "ref": "U1",
+        "value": "TJA1051T"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "S_SILENT",
+          "2": "+5V_CAN"
+        },
+        "package": "0805",
+        "purpose": "Holds S HIGH (Silent) from the transceiver's own rail; F2/F5. Drop at 10 uA max IIH = 0.1 V.",
+        "ref": "R1",
+        "value": "10k"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "TXD_5V",
+          "2": "+5V_CAN"
+        },
+        "package": "0805",
+        "purpose": "Holds TXD recessive (HIGH) because GPIO21 is not connected; supplements the internal pull-up.",
+        "ref": "R2",
+        "value": "10k"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "RXD_5V",
+          "2": "RXD_3V3"
+        },
+        "package": "0805",
+        "purpose": "RXD divider top; F3.",
+        "ref": "R3",
+        "value": "12k"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "RXD_3V3",
+          "2": "GND"
+        },
+        "package": "0805",
+        "purpose": "RXD divider bottom: 4.5 V -> 2.81 V, 5.0 V -> 3.13 V, 5.5 V -> 3.44 V.",
+        "ref": "R4",
+        "value": "20k"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "+5V_CAN",
+          "2": "GND"
+        },
+        "package": "0805",
+        "purpose": "U1 local decoupling, placed at pins 3/2; F6.",
+        "ref": "C1",
+        "value": "100nF X7R 16V"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "+5V_CAN",
+          "2": "GND"
+        },
+        "package": "1206",
+        "purpose": "Supply buffer; F6.",
+        "ref": "C2",
+        "value": "10uF 16V"
+      },
+      {
+        "fitted": false,
+        "nets": {
+          "1": "CANH",
+          "2": "GND"
+        },
+        "package": "0805",
+        "purpose": "Optional ESD/EMC near connector; F7.",
+        "ref": "C3",
+        "value": "100pF C0G"
+      },
+      {
+        "fitted": false,
+        "nets": {
+          "1": "CANL",
+          "2": "GND"
+        },
+        "package": "0805",
+        "purpose": "Optional, matched with C3; F7.",
+        "ref": "C4",
+        "value": "100pF C0G"
+      },
+      {
+        "fitted": false,
+        "nets": {
+          "1": "CANH",
+          "2": "SPLIT"
+        },
+        "package": "1206",
+        "purpose": "Split termination - fit ONLY when this node is a bus end of an isolated bench bus; F7.",
+        "ref": "R5",
+        "value": "60R 1%"
+      },
+      {
+        "fitted": false,
+        "nets": {
+          "1": "SPLIT",
+          "2": "CANL"
+        },
+        "package": "1206",
+        "purpose": "Split termination half; F7.",
+        "ref": "R6",
+        "value": "60R 1%"
+      },
+      {
+        "fitted": false,
+        "nets": {
+          "1": "SPLIT",
+          "2": "GND"
+        },
+        "package": "0805",
+        "purpose": "Split termination centre tap; F7.",
+        "ref": "C5",
+        "value": "4.7nF"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "CANH",
+          "2": "CANL",
+          "3": "GND"
+        },
+        "package": "2.54 mm header",
+        "ref": "J2",
+        "value": "3-pin CAN bench connector"
+      },
+      {
+        "fitted": true,
+        "nets": {
+          "1": "+5V_CAN",
+          "2": "GND"
+        },
+        "package": "2.54 mm header",
+        "ref": "J3",
+        "value": "2-pin +5V bench supply input"
+      }
+    ],
+    "controller": {
+      "board_id": "nodemcu-32s",
+      "connections": [
+        {
+          "header_pin": 36,
+          "net": "RXD_3V3",
+          "pin": "GPIO22",
+          "role": "TWAI RX input"
+        },
+        {
+          "header_pin": 33,
+          "net": "NC_GPIO21",
+          "pin": "GPIO21",
+          "role": "TWAI TX output - intentionally NOT connected in Rev B (listen-only)"
+        },
+        {
+          "header_pin": 38,
+          "net": "GND",
+          "pin": "GND"
+        }
+      ],
+      "gpio_assignment_status": "header numbers from owner pinout image; verify by continuity on the physical board",
+      "ref": "J1",
+      "rx_gpio": 22,
+      "target": "ESP32S NodeMCU / NodeMCU-32S, classic ESP32 with integrated TWAI",
+      "tx_gpio": 21
     },
-    "silent_bias": {
-      "baseline_policy": "Permanently receive-only during S13; S is not driven directly by an ESP32 GPIO.",
-      "implementation": "external resistor pull-up from U1 pin 8 S to MCU_IO_3V3",
-      "requirement": "value must be assigned and reviewed in schematic stage; default must hold S HIGH with unpowered/reset MCU",
-      "value": null
+    "design_checks": {
+      "esp32_vih_min_v": 2.475,
+      "rxd_divider_max_v": 3.44,
+      "rxd_divider_min_v": 2.81,
+      "s_high_v_min": 4.4,
+      "s_vih_required_v_at_5v5": 3.85,
+      "txd_high_v_min": 4.4
     },
-    "silent_level": "high",
-    "transceiver_mode_pin": "U1 pin 8 S"
+    "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
+    "evidence": {
+      "application_note": "NXP AH1014 Application Hints, Rev. 01.40, 2015-04-27 (owner-supplied pages in docs/reference/nxp-ah1014/)",
+      "datasheet": "NXP TJA1051 product data sheet (owner copy Rev. 06, 2011-03-25; current: https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf)",
+      "facts_used": [
+        {
+          "fact": "Plain TJA1051 (pin 5 n.c.): VIO and EN are internally connected to VCC.",
+          "id": "F1",
+          "source": "AH1014 Fig 13 remark (owner screenshot)"
+        },
+        {
+          "fact": "TXD and S VIH min = 0.7 x VIO; for plain TJA1051 that is 0.7 x VCC = 3.5 V at VCC = 5 V.",
+          "id": "F2",
+          "source": "TJA1051 datasheet Table 7 (current revision)"
+        },
+        {
+          "fact": "RXD HIGH level is referenced to VIO (= VCC on plain TJA1051), i.e. ~5 V; ESP32 GPIO is a 3.3 V domain.",
+          "id": "F3",
+          "source": "TJA1051 datasheet Table 7; ESP32 datasheet"
+        },
+        {
+          "fact": "Pin 5 left open: n.c. variant no effect; VIO variant -> undervoltage, Off mode, passive to bus; EN variant -> Normal/Silent not selectable. Open pin 5 is fail-safe for every variant.",
+          "id": "F4",
+          "source": "AH1014 Table 21 (owner screenshot)"
+        },
+        {
+          "fact": "S open -> Silent mode not selectable (S has internal pull-down). An explicit pull-up is therefore mandatory for Silent.",
+          "id": "F5",
+          "source": "AH1014 Table 21; datasheet pin description"
+        },
+        {
+          "fact": "VCC 4.5-5.5 V; local 47-100 nF decoupling; ~10 uF regulator buffer for TJA1051 at 500 kbit/s.",
+          "id": "F6",
+          "source": "AH1014 7.1.1 and Table 14 (owner screenshots)"
+        },
+        {
+          "fact": "Bus-end nodes use split termination 2 x 60 ohm + 4.7 nF; optional 100 pF on CANH/CANL; stub nodes unterminated or weak.",
+          "id": "F7",
+          "source": "AH1014 7.4 and Fig 45/typical application (owner screenshots)"
+        },
+        {
+          "fact": "Absolute maximum on TXD, RXD, S: -0.3 V to +7 V.",
+          "id": "F8",
+          "source": "TJA1051 datasheet Table 5"
+        }
+      ],
+      "owner_board_pinout": "docs/reference/nodemcu-32s/nodemcu-32s-pinout.png"
+    },
+    "open_items": [
+      "Continuity-check NodeMCU-32S header pins 33 (GPIO21), 36 (GPIO22), 38 (GND) against the physical board.",
+      "Confirm SO8 pin-1 orientation of the marked U1 before soldering.",
+      "Measure +5V_CAN within 4.5-5.5 V and RXD_3V3 <= 3.6 V with U1 powered and bus idle before connecting GPIO22.",
+      "Bench capture needs a third, ACKing CAN node because U1 is Silent and the TWAI controller is listen-only.",
+      "Native Proteus project creation/import in a licensed Proteus installation."
+    ],
+    "rails": [
+      {
+        "net": "+5V_CAN",
+        "nominal_v": 5.0,
+        "range_v": [
+          4.5,
+          5.5
+        ],
+        "source": "external regulated, current-limited bench supply (set 5.0 V, limit 150 mA)"
+      },
+      {
+        "net": "+3V3_MCU",
+        "nominal_v": 3.3,
+        "source": "NodeMCU-32S on-board regulator (USB powered)"
+      },
+      {
+        "net": "GND",
+        "source": "common: bench supply 0 V, NodeMCU GND, U1 pin 2, CAN signal ground"
+      }
+    ],
+    "references": {
+      "esp32_twai": "https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/twai.html",
+      "tja1051_datasheet": "https://www.nxp.com/docs/en/data-sheet/TJA1051.pdf"
+    },
+    "revision": "B",
+    "schema_version": 2,
+    "scope": "Receive-only (Silent) bench interface. The transmitter is hardware-disabled by pin 8 S pulled to the transceiver VCC rail, and ESP32 GPIO21 is NOT connected to TXD. A future transmit path needs a separate reviewed revision.",
+    "status": "reviewed-source netlist for the receive-only bench baseline; not bench-validated; native Proteus import not performed",
+    "transceiver": {
+      "manufacturer": "NXP",
+      "marking_code_interpretation": "Not decoded; preserved literally.",
+      "package": "SO8",
+      "package_code": "SOT96-1",
+      "part": "TJA1051",
+      "pins": {
+        "1": {
+          "name": "TXD",
+          "net": "TXD_5V"
+        },
+        "2": {
+          "name": "GND",
+          "net": "GND"
+        },
+        "3": {
+          "name": "VCC",
+          "net": "+5V_CAN"
+        },
+        "4": {
+          "name": "RXD",
+          "net": "RXD_5V"
+        },
+        "5": {
+          "name": "n.c.",
+          "net": "NC_PIN5"
+        },
+        "6": {
+          "name": "CANL",
+          "net": "CANL"
+        },
+        "7": {
+          "name": "CANH",
+          "net": "CANH"
+        },
+        "8": {
+          "name": "S",
+          "net": "S_SILENT"
+        }
+      },
+      "ref": "U1",
+      "reported_top_marking": "NXP TJA1051 25 06 ND312",
+      "substitutions_allowed": false,
+      "variant": "TJA1051T (pin 5 n.c.) per owner-supplied datasheet and AH1014 pages"
+    },
+    "tx_inhibit": {
+      "default_state": "silent",
+      "future_tx_revision": "Requires a reviewed 3.3 V -> 5 V TXD buffer and an interlock-gated S pull-down. Not part of Rev B.",
+      "silent_bias": {
+        "implementation": "R1 10k from S to +5V_CAN",
+        "mcu_connection": "none"
+      },
+      "transceiver_mode_pin": "U1 pin 8 S",
+      "txd_drive": "none from MCU in Rev B; R2 holds recessive"
+    }
   }
 }

@@ -61,6 +61,7 @@ package-check:
 
 design-source:
 	$(PYTHON) tools/generate_proteus_reference.py --output hardware/proteus/generated
+	$(PYTHON) tools/generate_eagle_schematic.py --output hardware/proteus/generated/civic-workbench-rev-b.sch
 
 benchmark:
 	PYTHONPATH=src $(PYTHON) tools/benchmark.py --frames $(BENCH_FRAMES)

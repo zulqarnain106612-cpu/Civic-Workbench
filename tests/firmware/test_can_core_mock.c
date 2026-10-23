@@ -8,6 +8,7 @@
 #include "sdkconfig.h"
 #include "civic_can.h"
 #include "civic_safety.h"
+#include "esp_timer.h"
 #include "mock_esp.h"
 
 static unsigned int s_assertions;
@@ -146,9 +147,35 @@ int main(void)
     CHECK(sent.data_length_code == 2U);
     CHECK(sent.data[0] == 0xAAU && sent.data[1] == 0x55U);
 
+    /* Firmware rate bound: an immediate second frame is rejected without disarming. */
+    CHECK(civic_can_transmit_guarded(&tx, 50U) == ESP_ERR_TIMEOUT);
+    CHECK(mock_twai_tx_count() == 1U);
+    CHECK(civic_can_get_diagnostics(&diagnostics) == ESP_OK);
+    CHECK(diagnostics.software_armed);
+    for (unsigned int i = 0U; i < 2U * CONFIG_CIVIC_TX_MIN_INTERVAL_MS; ++i) {
+        (void)esp_timer_get_time(); /* mock clock advances 1 ms per call */
+    }
+    CHECK(civic_can_transmit_guarded(&tx, 50U) == ESP_OK);
+    CHECK(mock_twai_tx_count() == 2U);
+    for (unsigned int i = 0U; i < 2U * CONFIG_CIVIC_TX_MIN_INTERVAL_MS; ++i) {
+        (void)esp_timer_get_time();
+    }
+    CHECK(civic_can_transmit_guarded(&tx, 50U) == ESP_OK);
+    CHECK(mock_twai_tx_count() == 3U);
+    for (unsigned int i = 0U; i < 2U * CONFIG_CIVIC_TX_MIN_INTERVAL_MS; ++i) {
+        (void)esp_timer_get_time();
+    }
+    /* Per-arm budget (3) exhausted: rejected and disarmed; gate request released. */
+    CHECK(civic_can_transmit_guarded(&tx, 50U) == ESP_ERR_INVALID_STATE);
+    CHECK(mock_twai_tx_count() == 3U);
+    CHECK(mock_gpio_level(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO) == 0);
+    CHECK(civic_can_get_diagnostics(&diagnostics) == ESP_OK);
+    CHECK(!diagnostics.software_armed);
+    CHECK(civic_can_set_software_armed(true) == ESP_OK);
+
     tx.arbitration_id = 0x800U;
     CHECK(civic_can_transmit_guarded(&tx, 50U) == ESP_ERR_INVALID_ARG);
-    CHECK(mock_twai_tx_count() == 1U);
+    CHECK(mock_twai_tx_count() == 3U);
     tx.arbitration_id = 0x321U;
 
     mock_set_interlock_level(0);
@@ -156,7 +183,7 @@ int main(void)
     CHECK(mock_gpio_level(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO) == 0);
     CHECK(civic_can_get_diagnostics(&diagnostics) == ESP_OK);
     CHECK(!diagnostics.software_armed);
-    CHECK(mock_twai_tx_count() == 1U);
+    CHECK(mock_twai_tx_count() == 3U);
 
     /* Queue saturation while armed is an explicit disarm condition. */
     mock_set_interlock_level(CONFIG_CIVIC_INTERLOCK_ACTIVE_LEVEL);
@@ -194,7 +221,7 @@ int main(void)
     CHECK(!diagnostics.software_armed);
     CHECK(mock_gpio_level(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO) == 0);
     CHECK(civic_can_transmit_guarded(&tx, 50U) == ESP_ERR_INVALID_STATE);
-    CHECK(mock_twai_tx_count() == 1U);
+    CHECK(mock_twai_tx_count() == 3U);
 
     printf("CAN_CORE_ASSERTIONS=%u\n", s_assertions);
     return 0;

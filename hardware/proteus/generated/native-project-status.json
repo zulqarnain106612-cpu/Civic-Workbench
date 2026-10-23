@@ -1,21 +1,23 @@
 {
+  "blockers": [
+    "Native ROOT.DSN inside .pdsprj is a proprietary binary format with no official Python writer.",
+    "The installed registry profile is labelled 'Demonstration'; demonstration editions are not expected to save designs - verify on the machine.",
+    "The generating session had no shell access to the Proteus host, so no import/render could be attempted."
+  ],
   "completed_artifacts": [
     "reference-design.netlist.json",
+    "design-checks.json",
     "reference-design.svg",
     "component-map.json",
     "bill-of-materials.csv",
+    "PROTEUS-CAPTURE.md",
     "artifact-manifest.json"
   ],
-  "evidence": [
-    "Local .pdsprj samples are ZIP packages containing PROJECT.XML, ROOT.CDB and proprietary binary ROOT.DSN (ISIS SCHEMATIC FILE).",
-    "The inspected installation did not contain an identified official Python native-schematic writer.",
-    "The official Labcenter schematic/download pages inspected do not document an official Python-native schematic writer."
-  ],
   "native_artifact_created": false,
-  "note": "SVG is only a review companion. It is not a native Proteus schematic.",
+  "note": "SVG is a review schematic, not a native Proteus file.",
   "official_python_schematic_generation_api_confirmed": false,
-  "proteus_version_inspected": "8.3.19906.0 (registry-path inference; entitlement unverified)",
-  "required_next_action": "Confirm an official Labcenter-supported automation API or utility, then create and import/render a native project using the licensed toolchain.",
-  "schema_version": 1,
+  "proteus_version_inspected": "8.3.19906.0 under Wine (registry label: Proteus 8 Demonstration)",
+  "required_next_action": "In a licensed Proteus 8 install, capture the schematic manually from PROTEUS-CAPTURE.md, save as hardware/proteus/native/civic-workbench-rev-b.pdsprj, and record the import/render evidence.",
+  "schema_version": 2,
   "status": "blocked"
 }

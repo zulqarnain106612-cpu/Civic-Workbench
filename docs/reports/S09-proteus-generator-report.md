@@ -26,3 +26,8 @@ To close the remaining native-artifact gap, confirm a Labcenter-supported automa
 ## Acceptance evidence
 
 The generator output is deterministic from the tracked netlist; tests compare hashes across independent output directories, validate the BOM/netlist labels, and assert that native-project-status remains accurately blocked.
+
+
+## 2026-10-23 update (S14)
+
+The generator now emits the Rev B receive-only design: net-label schematic SVG, resolved netlist, BOM with DNP parts, `design-checks.json` and `PROTEUS-CAPTURE.md`. Native project remains blocked; see docs/reports/S14-rev-b-receive-only-and-audit-remediation.md.

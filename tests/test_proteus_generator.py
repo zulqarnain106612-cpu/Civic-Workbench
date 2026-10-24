@@ -107,6 +107,10 @@ class ProteusGeneratorTests(unittest.TestCase):
             self.assertIn(["edifLevel", "0"], tree)
             self.assertIn("(pageSize", text)
             self.assertIn('(program "CAPTURE.EXE"', text)
+            # Proteus counts only instances and nets that sit inside the schematic page.
+            page = next(proteus_edif._find(tree, "page"))
+            self.assertTrue(any(isinstance(n, list) and n[0] == "instance" for n in page))
+            self.assertTrue(any(isinstance(n, list) and n[0] == "net" for n in page))
 
     def test_edif_stored_and_drawn_netlists_match_reviewed_netlist(self):
         for simulation in (False, True):

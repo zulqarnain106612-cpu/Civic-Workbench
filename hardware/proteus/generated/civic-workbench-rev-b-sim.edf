@@ -257,7 +257,7 @@
         (interface)
         (contents
         (page (rename &PAGE1 "PAGE1")
-          (pageSize (rectangle (pt 0 0) (pt 6000 1200))))
+          (pageSize (rectangle (pt 0 0) (pt 6000 1200)))
         (instance J1
           (viewRef Normal (cellRef NODEMCU32S_HDR (libraryRef CIVIC_LIB)))
           (transform (orientation R0) (origin (pt 170 800)))
@@ -480,5 +480,5 @@
           (figure WIRE (path (pointList (pt 560 780) (pt 520 780))))
           (figure WIRE (path (pointList (pt 520 780) (pt 520 520))))
           (figure WIRE (path (pointList (pt 520 520) (pt 1390 520)))))
-        ))))
+        )))))
   (design CIVIC_WORKBENCH_REV_B_SIM (cellRef CIVIC_WORKBENCH_REV_B_SIM (libraryRef DESIGNS))))

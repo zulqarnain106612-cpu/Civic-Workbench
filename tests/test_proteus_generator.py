@@ -107,6 +107,10 @@ class ProteusGeneratorTests(unittest.TestCase):
             self.assertIn(["edifLevel", "0"], tree)
             self.assertIn("(pageSize", text)
             self.assertIn('(program "CAPTURE.EXE"', text)
+            # Proteus IMPORTER.dll turns a cell into a component only for viewType SCHEMATIC + cellType GENERIC.
+            for cell in proteus_edif._find(tree, "cell"):
+                self.assertIn(["cellType", "GENERIC"], cell)
+                self.assertTrue(any(["viewType", "SCHEMATIC"] in v for v in proteus_edif._find(cell, "view")))
             # Proteus counts only instances and nets that sit inside the schematic page.
             page = next(proteus_edif._find(tree, "page"))
             self.assertTrue(any(isinstance(n, list) and n[0] == "instance" for n in page))

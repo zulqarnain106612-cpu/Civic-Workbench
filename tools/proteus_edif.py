@@ -90,7 +90,7 @@ def _cell(part: Part) -> str:
         f"    (cell {ident(part.cell)}",
         "      (cellType GENERIC)",
         "      (view Normal",
-        "        (viewType NETLIST)",
+        "        (viewType SCHEMATIC)",  # Proteus IMPORTER makes a component only from SCHEMATIC + GENERIC
         "        (interface",
         *ports,
         "          (symbol",

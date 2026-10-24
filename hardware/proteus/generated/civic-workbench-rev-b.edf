@@ -17,7 +17,7 @@
     (cell NODEMCU32S_HDR
       (cellType GENERIC)
       (view Normal
-        (viewType NETLIST)
+        (viewType SCHEMATIC)
         (interface
           (port (rename P36 "GPIO22") (designator "36") (direction INOUT))
           (port (rename P33 "GPIO21") (designator "33") (direction INOUT))
@@ -42,7 +42,7 @@
     (cell TJA1051T_SO8
       (cellType GENERIC)
       (view Normal
-        (viewType NETLIST)
+        (viewType SCHEMATIC)
         (interface
           (port (rename P1 "TXD") (designator "1") (direction INOUT))
           (port (rename P2 "GND") (designator "2") (direction INOUT))
@@ -92,7 +92,7 @@
     (cell RES_2P
       (cellType GENERIC)
       (view Normal
-        (viewType NETLIST)
+        (viewType SCHEMATIC)
         (interface
           (port (rename P1 "1") (designator "1") (direction INOUT))
           (port (rename P2 "2") (designator "2") (direction INOUT))
@@ -112,7 +112,7 @@
     (cell CAP_2P
       (cellType GENERIC)
       (view Normal
-        (viewType NETLIST)
+        (viewType SCHEMATIC)
         (interface
           (port (rename P1 "1") (designator "1") (direction INOUT))
           (port (rename P2 "2") (designator "2") (direction INOUT))
@@ -132,7 +132,7 @@
     (cell CONN_CAN_3P
       (cellType GENERIC)
       (view Normal
-        (viewType NETLIST)
+        (viewType SCHEMATIC)
         (interface
           (port (rename P1 "CANH") (designator "1") (direction INOUT))
           (port (rename P2 "CANL") (designator "2") (direction INOUT))
@@ -157,7 +157,7 @@
     (cell CONN_PWR_2P
       (cellType GENERIC)
       (view Normal
-        (viewType NETLIST)
+        (viewType SCHEMATIC)
         (interface
           (port (rename P1 "+5V") (designator "1") (direction INOUT))
           (port (rename P2 "GND") (designator "2") (direction INOUT))

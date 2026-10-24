@@ -452,14 +452,16 @@ esp_err_t twai_receive(twai_message_t *message, TickType_t timeout_ticks)
         return ESP_ERR_INVALID_ARG;
     }
     pthread_mutex_lock(&g_driver_mutex);
-    if (!g_driver_installed || g_status.state != TWAI_STATE_RUNNING) {
+    /* ESP-IDF documents INVALID_STATE only for a driver that is not installed; a bus-off or
+     * stopped controller simply delivers no new frames, so this mock times out instead. */
+    if (!g_driver_installed) {
         pthread_mutex_unlock(&g_driver_mutex);
         return ESP_ERR_INVALID_STATE;
     }
 
     struct timespec deadline;
     realtime_deadline(&deadline, timeout_ticks);
-    while (g_driver_rx_count == 0U && g_status.state == TWAI_STATE_RUNNING) {
+    while (g_driver_rx_count == 0U) {
         if (timeout_ticks == 0U) {
             pthread_mutex_unlock(&g_driver_mutex);
             return ESP_ERR_TIMEOUT;
@@ -472,11 +474,6 @@ esp_err_t twai_receive(twai_message_t *message, TickType_t timeout_ticks)
             return ESP_ERR_TIMEOUT;
         }
     }
-    if (g_status.state != TWAI_STATE_RUNNING) {
-        pthread_mutex_unlock(&g_driver_mutex);
-        return ESP_ERR_INVALID_STATE;
-    }
-
     *message = g_driver_rx[g_driver_rx_head];
     g_driver_rx_head = (g_driver_rx_head + 1U) % MOCK_TWAI_RX_CAPACITY;
     --g_driver_rx_count;

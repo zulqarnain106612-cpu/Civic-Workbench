@@ -39,7 +39,7 @@
             (commentGraphics (annotate (stringDisplay "GND" (display PINNAME (origin (pt 134 -60))))))
             (keywordDisplay designator (display PARTREFERENCE (origin (pt 0 12))))
             (propertyDisplay VALUE (display PARTVALUE (origin (pt 0 -92))))))))
-    (cell TJA1051T_SO8
+    (cell TJA1051_SO8
       (cellType GENERIC)
       (view Normal
         (viewType SCHEMATIC)
@@ -266,10 +266,10 @@
           (property BOARD (string "nodemcu-32s"))
           (property SIM_NOTE (string "Header only; ESP32 is not simulated")))
         (instance U1
-          (viewRef Normal (cellRef TJA1051T_SO8 (libraryRef CIVIC_LIB)))
+          (viewRef Normal (cellRef TJA1051_SO8 (libraryRef CIVIC_LIB)))
           (transform (orientation R0) (origin (pt 590 800)))
           (designator "U1")
-          (property VALUE (string "TJA1051T"))
+          (property VALUE (string "NXP TJA1051 (marking 25 06 ND312)"))
           (property PACKAGE (string "SO8"))
           (property FITTED (string "yes"))
           (property MARKING (string "NXP TJA1051 25 06 ND312"))

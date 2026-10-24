@@ -26,6 +26,9 @@ def uuid_text() -> str:
     return str(uuid4())
 
 
+STORAGE_SCHEMA_VERSION = 1  # SQLite PRAGMA user_version; bump only with a tested migration
+
+
 class StorageError(RuntimeError):
     pass
 
@@ -70,6 +73,13 @@ class SessionStore:
 
     def _initialise(self) -> None:
         with self._lock, self._db() as db:
+            # Fail closed on a database written by a newer, unknown storage layout instead of
+            # silently reading or mutating it. Version 0 is a fresh file or the pre-stamp v1 layout.
+            found = int(db.execute("PRAGMA user_version").fetchone()[0])
+            if found > STORAGE_SCHEMA_VERSION:
+                raise StorageError(
+                    f"database storage schema {found} is newer than supported {STORAGE_SCHEMA_VERSION}; "
+                    "refusing to open it")
             db.execute("PRAGMA journal_mode=WAL")
             db.executescript("""
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -129,6 +139,7 @@ class SessionStore:
                     created_at_utc TEXT NOT NULL
                 );
             """)
+            db.execute(f"PRAGMA user_version={STORAGE_SCHEMA_VERSION}")
 
     def log_event(self, level: str, code: str, message: str, details: dict[str, Any] | None = None) -> None:
         with self._lock, self._db() as db:

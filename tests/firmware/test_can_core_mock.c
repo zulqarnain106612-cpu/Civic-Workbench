@@ -210,7 +210,22 @@ int main(void)
     CHECK(diagnostics.rx_missed_count == 3U);
     CHECK(diagnostics.rx_overrun_count == 4U);
 
+    /* Bus-off while armed: twai_receive() keeps timing out, so the RX pump must notice the
+     * controller state itself, disarm and release the gate request without any TX call. */
+    mock_set_interlock_level(CONFIG_CIVIC_INTERLOCK_ACTIVE_LEVEL);
+    CHECK(civic_can_set_software_armed(true) == ESP_OK);
+    CHECK(mock_gpio_level(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO) == 1);
     mock_twai_set_state(TWAI_STATE_BUS_OFF);
+    bool disarmed_by_pump = false;
+    for (unsigned int attempt = 0U; attempt < 100U && !disarmed_by_pump; ++attempt) {
+        const struct timespec pause = {.tv_sec = 0, .tv_nsec = 10L * 1000L * 1000L};
+        nanosleep(&pause, NULL);
+        CHECK(civic_can_get_diagnostics(&diagnostics) == ESP_OK);
+        disarmed_by_pump = !diagnostics.software_armed;
+    }
+    CHECK(disarmed_by_pump);
+    CHECK(mock_gpio_level(CONFIG_CIVIC_TX_GATE_REQUEST_GPIO) == 0);
+
     CHECK(civic_can_request_bus_recovery() == ESP_OK);
     CHECK(civic_can_get_diagnostics(&diagnostics) == ESP_OK);
     CHECK(diagnostics.controller_state == CIVIC_CAN_CONTROLLER_RECOVERING);

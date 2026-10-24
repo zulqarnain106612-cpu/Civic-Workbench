@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "project": "Civic-Workbench",
-  "overall_status": "S00-S15-source-and-host-verified; S13/S14-physical-bench-pending; S07-physical-TX-disabled; S09/S15-Proteus-import-pending-licence",
+  "overall_status": "software-complete-with-physical-validation-pending; CAN-003-hardware-TX-BLOCKED; PROT-001-native-Proteus-NOT_PERFORMED",
   "application_implementation_status": "local-ui-api-storage-analysis-simulation-cad-source-packaging-and-host-integration-verified",
   "physical_hardware_validation_status": "not_performed",
-  "last_updated": "2026-10-23",
+  "last_updated": "2026-10-25",
   "current_focus": "NODEMCU32S_TJA1051_RECEIVE_ONLY_BENCH_REV_B",
   "stage_status": {
     "S00": "complete",
@@ -22,7 +22,8 @@
     "S12": "source-and-host-delivery-verified; physical-validation-not-performed",
     "S13": "fixed-part-source-mapping-and-nodemcu32s-build-verified; physical-bench-pending",
     "S14": "rev-b-design-firmware-and-host-fixes-tested; physical-bench-and-native-Proteus-pending",
-    "S15": "edif-proteus-import-sources-and-simulation-bench-generated-and-offline-verified; Proteus-import-and-run-blocked-by-licence"
+    "S15": "edif-proteus-import-sources-and-simulation-bench-generated-and-offline-verified; Proteus-import-and-run-blocked-by-licence",
+    "S16": "final-completion-audit: defects fixed and verified on host; physical bench, vehicle and native Proteus gates NOT_PERFORMED"
   },
   "baseline_evidence": {
     "requirements_file": "project/requirements.yaml",
@@ -109,7 +110,8 @@
     "S12": "docs/reports/S12-final-handoff-report.md",
     "S13": "docs/reports/S13-hardware-baseline-and-pin-map.md",
     "S14": "docs/reports/S14-rev-b-receive-only-and-audit-remediation.md",
-    "S15": "docs/reports/S15-proteus-edif-and-repository-audit.md"
+    "S15": "docs/reports/S15-proteus-edif-and-repository-audit.md",
+    "S16": "docs/reports/FINAL-COMPLETION-AUDIT.md"
   },
   "s02_evidence": {
     "report": "docs/reports/S02-firmware-report.md",

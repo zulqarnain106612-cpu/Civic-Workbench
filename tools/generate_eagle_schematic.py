@@ -165,7 +165,7 @@ def build(design) -> ET.ElementTree:
     sheet = sub(sub(sch, "sheets"), "sheet")
     plain = sub(sheet, "plain")
     sub(plain, "text", x=10 * G, y=60 * G, size=3.81, layer=97).text = \
-        f"Civic-Workbench Rev {design['revision']} - NodeMCU-32S + NXP TJA1051T receive-only CAN"
+        f"Civic-Workbench Rev {design['revision']} - NodeMCU-32S + NXP TJA1051 receive-only CAN"
     notes = ["U1 S pulled to +5V_CAN (Silent). GPIO21 not wired: Rev B cannot transmit.",
              "RXD -> R3/R4 divider -> GPIO22 (<= 3.44 V). U1 pin 5 open (fail-safe).",
              "R5, R6, C3, C4, C5 = DNP: fit only per bench bus topology. Never terminate onto a vehicle bus.",

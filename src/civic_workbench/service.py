@@ -99,6 +99,9 @@ class WorkbenchService:
         manifest = self.store.get_session(request["session_id"])
         if manifest["ended_at_utc"] is not None:
             return manifest
+        if self.bus.session_id == request["session_id"]:
+            # Pending virtual TX must not survive the session: abort and audit before finalizing.
+            self.tx.abort_all("capture_stopped")
         finished = self.store.finish_session(request["session_id"], manifest.get("user_notes", ""))
         if self.bus.session_id == request["session_id"]:
             self.bus._session_id = None

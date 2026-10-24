@@ -257,7 +257,7 @@
       </classes>
       <parts>
         <part name="J1" library="civic_workbench" deviceset="NODEMCU32S" device="" value="NodeMCU-32S" />
-        <part name="U1" library="civic_workbench" deviceset="TJA1051" device="" value="TJA1051T" />
+        <part name="U1" library="civic_workbench" deviceset="TJA1051" device="" value="NXP TJA1051 (marking 25 06 ND312)" />
         <part name="R1" library="civic_workbench" deviceset="R" device="" value="10k" />
         <part name="R2" library="civic_workbench" deviceset="R" device="" value="10k" />
         <part name="R3" library="civic_workbench" deviceset="R" device="" value="12k" />
@@ -275,7 +275,7 @@
       <sheets>
         <sheet>
           <plain>
-            <text x="25.4" y="152.4" size="3.81" layer="97">Civic-Workbench Rev B - NodeMCU-32S + NXP TJA1051T receive-only CAN</text>
+            <text x="25.4" y="152.4" size="3.81" layer="97">Civic-Workbench Rev B - NodeMCU-32S + NXP TJA1051 receive-only CAN</text>
             <text x="25.4" y="144.78" size="1.778" layer="97">U1 S pulled to +5V_CAN (Silent). GPIO21 not wired: Rev B cannot transmit.</text>
             <text x="25.4" y="139.7" size="1.778" layer="97">RXD -&gt; R3/R4 divider -&gt; GPIO22 (&lt;= 3.44 V). U1 pin 5 open (fail-safe).</text>
             <text x="25.4" y="134.62" size="1.778" layer="97">R5, R6, C3, C4, C5 = DNP: fit only per bench bus topology. Never terminate onto a vehicle bus.</text>

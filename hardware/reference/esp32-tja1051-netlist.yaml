@@ -22,7 +22,7 @@ evidence:
       fact: "RXD HIGH level is referenced to VIO (= VCC on plain TJA1051), i.e. ~5 V; ESP32 GPIO is a 3.3 V domain."
       source: "TJA1051 datasheet Table 7; ESP32 datasheet"
     - id: F4
-      fact: "Pin 5 left open: n.c. variant no effect; VIO variant -> undervoltage, Off mode, passive to bus; EN variant -> Normal/Silent not selectable. Open pin 5 is fail-safe for every variant."
+      fact: "Pin 5 left open: n.c. variant no effect; VIO variant -> undervoltage, Off mode, passive to bus; EN variant -> Normal/Silent not selectable. Open pin 5 is electrically fail-safe for every variant, but reception works only if pin 5 is n.c."
       source: "AH1014 Table 21 (owner screenshot)"
     - id: F5
       fact: "S open -> Silent mode not selectable (S has internal pull-down). An explicit pull-up is therefore mandatory for Silent."
@@ -58,7 +58,7 @@ transceiver:
   ref: U1
   manufacturer: NXP
   part: TJA1051
-  variant: "TJA1051T (pin 5 n.c.) per owner-supplied datasheet and AH1014 pages"
+  variant: "NOT CONFIRMED. The marking is not decoded into an orderable type. The owner-supplied datasheet/AH1014 pages describe the pin-5 n.c. type; whether the installed IC is that type must be confirmed on the bench (open item)."
   reported_top_marking: "NXP TJA1051 25 06 ND312"
   marking_code_interpretation: "Not decoded; preserved literally."
   substitutions_allowed: false
@@ -75,7 +75,7 @@ transceiver:
     8: {name: S, net: "S_SILENT"}
 
 components:
-  - {ref: U1, value: "TJA1051T", package: "SO8", fitted: true, nets: {1: TXD_5V, 2: GND, 3: "+5V_CAN", 4: RXD_5V, 5: NC_PIN5, 6: CANL, 7: CANH, 8: S_SILENT}}
+  - {ref: U1, value: "NXP TJA1051 (marking 25 06 ND312)", package: "SO8", fitted: true, nets: {1: TXD_5V, 2: GND, 3: "+5V_CAN", 4: RXD_5V, 5: NC_PIN5, 6: CANL, 7: CANH, 8: S_SILENT}}
   - {ref: R1, value: "10k", package: "0805", fitted: true, nets: {1: S_SILENT, 2: "+5V_CAN"}, purpose: "Holds S HIGH (Silent) from the transceiver's own rail; F2/F5. Drop at 10 uA max IIH = 0.1 V."}
   - {ref: R2, value: "10k", package: "0805", fitted: true, nets: {1: TXD_5V, 2: "+5V_CAN"}, purpose: "Holds TXD recessive (HIGH) because GPIO21 is not connected; supplements the internal pull-up."}
   - {ref: R3, value: "12k", package: "0805", fitted: true, nets: {1: RXD_5V, 2: RXD_3V3}, purpose: "RXD divider top; F3."}
@@ -118,6 +118,7 @@ artifacts:
 open_items:
   - "Continuity-check NodeMCU-32S header pins 33 (GPIO21), 36 (GPIO22), 38 (GND) against the physical board."
   - "Confirm SO8 pin-1 orientation of the marked U1 before soldering."
+  - "Confirm the pin-5 function of the installed U1 (n.c., VIO or EN). Rev B receives only if pin 5 is n.c.; with VIO/EN it stays safely passive but receives nothing."
   - "Measure +5V_CAN within 4.5-5.5 V and RXD_3V3 <= 3.6 V with U1 powered and bus idle before connecting GPIO22."
   - "Bench capture needs a third, ACKing CAN node because U1 is Silent and the TWAI controller is listen-only."
   - "Import civic-workbench-rev-b-sim.edf in a licensed Proteus 9.2, save the .pdsprj and record the simulation run."

@@ -82,7 +82,7 @@
         },
         "package": "SO8",
         "ref": "U1",
-        "value": "TJA1051T"
+        "value": "NXP TJA1051 (marking 25 06 ND312)"
       },
       {
         "fitted": true,
@@ -283,7 +283,7 @@
           "source": "TJA1051 datasheet Table 7; ESP32 datasheet"
         },
         {
-          "fact": "Pin 5 left open: n.c. variant no effect; VIO variant -> undervoltage, Off mode, passive to bus; EN variant -> Normal/Silent not selectable. Open pin 5 is fail-safe for every variant.",
+          "fact": "Pin 5 left open: n.c. variant no effect; VIO variant -> undervoltage, Off mode, passive to bus; EN variant -> Normal/Silent not selectable. Open pin 5 is electrically fail-safe for every variant, but reception works only if pin 5 is n.c.",
           "id": "F4",
           "source": "AH1014 Table 21 (owner screenshot)"
         },
@@ -313,6 +313,7 @@
     "open_items": [
       "Continuity-check NodeMCU-32S header pins 33 (GPIO21), 36 (GPIO22), 38 (GND) against the physical board.",
       "Confirm SO8 pin-1 orientation of the marked U1 before soldering.",
+      "Confirm the pin-5 function of the installed U1 (n.c., VIO or EN). Rev B receives only if pin 5 is n.c.; with VIO/EN it stays safely passive but receives nothing.",
       "Measure +5V_CAN within 4.5-5.5 V and RXD_3V3 <= 3.6 V with U1 powered and bus idle before connecting GPIO22.",
       "Bench capture needs a third, ACKing CAN node because U1 is Silent and the TWAI controller is listen-only.",
       "Import civic-workbench-rev-b-sim.edf in a licensed Proteus 9.2, save the .pdsprj and record the simulation run."
@@ -388,7 +389,7 @@
       "ref": "U1",
       "reported_top_marking": "NXP TJA1051 25 06 ND312",
       "substitutions_allowed": false,
-      "variant": "TJA1051T (pin 5 n.c.) per owner-supplied datasheet and AH1014 pages"
+      "variant": "NOT CONFIRMED. The marking is not decoded into an orderable type. The owner-supplied datasheet/AH1014 pages describe the pin-5 n.c. type; whether the installed IC is that type must be confirmed on the bench (open item)."
     },
     "tx_inhibit": {
       "default_state": "silent",

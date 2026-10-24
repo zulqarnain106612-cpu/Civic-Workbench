@@ -50,8 +50,12 @@ requirements:
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
     - hardware/reference/safety-interlock.md
-    status: source-and-compile-verified;physical-hardware-validation-pending
-    limitation: NodeMCU-32S board profile, GPIO21/GPIO22 source mapping, and exact TJA1051 pin contract are documented and compile-checked; physical board revision, header continuity, transceiver orientation, power circuit, and isolated-bench behavior remain unverified.
+    status: source-mapped-and-compile-verified;marking-preserved-without-suffix;pin5-variant-unconfirmed;physical-validation-NOT_PERFORMED
+    limitation: >-
+      Board/GPIO source mapping and the literal marking NXP TJA1051 25 06 ND312 agree across the netlist,
+      BOM, EDIF, EAGLE and firmware config (TJA1051T suffix inference removed at the final audit). The
+      installed IC's pin-5 function is unconfirmed: Rev B is fail-safe for every variant but receives only
+      if pin 5 is n.c. Board revision, header continuity, orientation and supply are not measured.
   REQ-CAN-001:
     implementation:
     - schemas/v1/can-frame.schema.json
@@ -100,6 +104,8 @@ requirements:
     - firmware/esp32/main/Kconfig.projbuild
     - firmware/esp32/main/civic_can.c::civic_can_transmit_guarded
     tests:
+    - tests/test_simulator_tx.py::SimulatorAndTxTests::test_stopping_capture_aborts_pending_virtual_tx
+    - tests/test_simulator_tx.py::SimulatorAndTxTests::test_global_abort_cancels_every_pending_request_and_audits
     - tests/test_contracts.py::DiagnosticAndSafetyContractTests
     - tests/firmware/test_safety_policy.c
     - tests/test_firmware_source.py
@@ -109,9 +115,13 @@ requirements:
     - docs/contracts-v1.md
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
-    status: simulation-TX-audit-verified;physical-TX-disabled
-    limitation: Repeats/cancel/audit and denial of hardware-target requests are tested.
-      Physical host-to-firmware TX and vehicle safety operation remain disabled/unverified.
+    status: simulation-TX-cadence-repeat-cancel-global-abort-verified;firmware-guarded-TX-API-mock-verified;host-to-firmware-TX-channel-ABSENT;hardware-TX-BLOCKED-by-Rev-B
+    limitation: >-
+      Virtual-bus TX (format, payload, DLC, cadence, repeats, cancel, global abort, abort on capture stop,
+      audit) is tested. Firmware civic_can_transmit_guarded enforces arm, interlock, rate and per-arm budget
+      in mock tests. CW1 v1 is read-only, so the host cannot command firmware TX, and hardware Rev B cannot
+      transmit (S tied HIGH, TXD not wired). Physical TX needs a reviewed Rev C interlock/level-shift
+      circuit and bench evidence before it can be enabled; it is not represented as available.
   REQ-REV-001:
     implementation:
     - schemas/v1/analysis-finding.schema.json
@@ -138,13 +148,14 @@ requirements:
     - src/civic_workbench/service.py
     - src/civic_workbench/app.py
     tests:
+    - tests/test_storage_and_import_export.py::StorageSchemaVersionTests
     - tests/test_contracts.py::JsonSchemaTests
     - tests/test_storage_and_import_export.py
     - tests/test_api_integration.py
     evidence:
     - docs/contracts-v1.md
     - docs/reports/S05-storage-report.md
-    status: host-persistence-and-round-trip-verified
+    status: host-persistence-round-trip-and-storage-schema-version-verified
     limitation: SQLite/raw JSONL durability, hashes, pagination, bundle import/export
       and rollback tests pass. Imported data authenticity and storage hardware fault
       certification are not claimed.
@@ -155,12 +166,13 @@ requirements:
     - src/civic_workbench/web/styles.css
     - src/civic_workbench/app.py
     tests:
+    - tests/test_ui_accessibility.py
     - tests/test_api_integration.py
     - tests/test_api_security.py
     - tests/test_packaging.py
     evidence:
     - docs/reports/S04-browser-ui-report.md
-    status: host-UI-and-API-integration-verified;visual-certification-pending
+    status: host-UI-and-API-integration-verified;static-keyboard-accessibility-checks;connected-hardware-UI-NOT_PERFORMED
     limitation: Local static UI/API behavior is covered by integration and security
       tests. Cross-browser visual/accessibility certification and connected-hardware
       UI testing were not performed.
@@ -213,11 +225,13 @@ requirements:
     - docs/reports/S09-proteus-generator-report.md
     - docs/reports/S15-proteus-edif-and-repository-audit.md
     - hardware/proteus/generated/native-project-status.json
-    status: edif-import-sources-generated-and-verified-offline;proteus-import-pending-licence
-    limitation: Python generates OrCAD EDIF2 schematics (hardware sheet and CAN Bus
-      Analyser simulation bench) for Proteus 9.2 File > Import ECAD Files; stored and
-      drawn netlists are verified offline. Proteus import, .pdsprj save and simulation
-      run are not performed because the installed Proteus reports a licence error.
+    status: edif-generator-verified-offline;importer-classification-fixed;native-proteus-import-save-simulation-NOT_PERFORMED
+    limitation: >-
+      Python generates OrCAD EDIF2 (hardware sheet and CAN Bus Analyser bench); stored and drawn netlists match
+      the reviewed netlist offline. A real Proteus 9.2 SP1 import on 2026-10-25 exposed two generator defects
+      (instances outside the page; symbol cells not viewType SCHEMATIC, so 0 components and 26 missing
+      connections), both fixed and regression-tested. The corrected files have not been re-imported, saved as
+      .pdsprj or simulated; no native project is claimed.
   REQ-SAFE-001:
     implementation:
     - schemas/v1/safety-state.schema.json
@@ -236,10 +250,12 @@ requirements:
     - docs/reports/S02-firmware-report.md
     - docs/reports/S03-can-transport-report.md
     - hardware/reference/safety-interlock.md
-    status: host-safety-tests-passed;physical-interlock-validation-pending
-    limitation: Fail-closed safety snapshots, 7 native-C assertions, 71 CAN-core mock
-      assertions and TX denial are covered. Independent hardware gate/interlock and
-      vehicle operation remain untested.
+    status: host-safety-and-firmware-mock-tests-passed;bus-off-disarm-fixed;physical-interlock-NOT_PERFORMED
+    limitation: >-
+      Fail-closed snapshots, native-C safety assertions and CAN-core mock assertions pass, including disarm
+      on interlock open, queue overflow, rate/budget limits and (fixed at the final audit) bus-off or
+      error-passive while armed detected by polling controller state. Rev B has no physical interlock
+      because it cannot transmit; independent hardware gate/interlock and vehicle operation are untested.
   REQ-EVID-001:
     implementation:
     - tests/requirements-traceability.yaml
@@ -315,9 +331,11 @@ requirements:
     - docs/reports/S11-benchmark-results.json
     - docs/reports/S12-final-handoff-report.md
     status: make-verify-passed;synthetic-benchmark-and-ESP32-compile-passed
-    limitation: The Python test suite (115 tests at S15), native C safety, schemas, YAML, package contents,
-      deterministic design sources, synthetic benchmark and firmware compile pass.
-      No external penetration test or real-bus performance guarantee is claimed.
+    limitation: >-
+      make test, make lint, make verify (124 Python tests, native C safety and CAN-core mock tests, schemas,
+      YAML, wheel, design sources) and the 20,000-frame synthetic benchmark pass in the audit host. The
+      PlatformIO firmware build could not run in the audit sandbox (package registry blocked); the CI job
+      original-esp32-compile is the build evidence. No penetration test or real-bus throughput is claimed.
   REQ-TOK-001:
     implementation:
     - CLAUDE.md

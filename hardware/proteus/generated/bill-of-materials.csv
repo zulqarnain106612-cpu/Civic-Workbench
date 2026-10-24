@@ -1,6 +1,6 @@
 Reference,Value,Package,Fitted,Nets,Purpose
 J1,ESP32S NodeMCU / NodeMCU-32S,board,yes,GPIO22=RXD_3V3 GPIO21=NC_GPIO21 GND=GND,Controller board; verify header continuity
-U1,TJA1051T (marking NXP TJA1051 25 06 ND312; no substitution),SO8,yes,1=TXD_5V 2=GND 3=+5V_CAN 4=RXD_5V 5=NC_PIN5 6=CANL 7=CANH 8=S_SILENT,
+U1,NXP TJA1051 (marking 25 06 ND312); no substitution; pin-5 variant unconfirmed,SO8,yes,1=TXD_5V 2=GND 3=+5V_CAN 4=RXD_5V 5=NC_PIN5 6=CANL 7=CANH 8=S_SILENT,
 R1,10k,0805,yes,1=S_SILENT 2=+5V_CAN,Holds S HIGH (Silent) from the transceiver's own rail; F2/F5. Drop at 10 uA max IIH = 0.1 V.
 R2,10k,0805,yes,1=TXD_5V 2=+5V_CAN,Holds TXD recessive (HIGH) because GPIO21 is not connected; supplements the internal pull-up.
 R3,12k,0805,yes,1=RXD_5V 2=RXD_3V3,RXD divider top; F3.

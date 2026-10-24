@@ -18,8 +18,8 @@ electrical_reference_from_datasheet:
     required_range_v: [4.5, 5.5]
   pin5_variant_dependent:
     pin: 5
-    role: "n.c. on the plain TJA1051T (owner-supplied datasheet and AH1014 Fig 13)"
-    connection_state: "LEFT OPEN. Open pin 5 is fail-safe for n.c., VIO and EN variants (AH1014 Table 21); no longer blocks power-up"
+    role: "Variant-dependent (n.c., VIO or EN). Not inferred from the marking; owner-supplied datasheet pages show the n.c. type. Unconfirmed for the installed IC."
+    connection_state: "LEFT OPEN. Electrically fail-safe for n.c., VIO and EN variants (AH1014 Table 21); Rev B receives only if pin 5 is n.c., so the function must be confirmed on the bench"
   gnd: {pin: 2, role: "Common logic/transceiver ground"}
   txd: {pin: 1, role: "Transmit data input, VIH >= 0.7 VCC (3.5 V); Rev B: not driven by ESP32, held recessive by R2 10k to +5V_CAN"}
   rxd: {pin: 4, role: "Receive data output at VCC (5 V) logic; Rev B: via R3 12k / R4 20k divider to ESP32 GPIO22"}

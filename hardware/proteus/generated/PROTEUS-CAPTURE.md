@@ -7,7 +7,7 @@ Generated from the reviewed netlist; regenerate with `make design-source` after 
 
 | Ref | Value | Package | Fit |
 |---|---|---|---|
-| U1 | TJA1051T | SO8 | yes |
+| U1 | NXP TJA1051 (marking 25 06 ND312) | SO8 | yes |
 | R1 | 10k | 0805 | yes |
 | R2 | 10k | 0805 | yes |
 | R3 | 12k | 0805 | yes |

@@ -49,6 +49,45 @@ class SimulatorAndTxTests(unittest.TestCase):
             self.assertEqual(len(mutated), len(original))
             self.assertEqual(store.get_all_frames(source["session_id"]), original)
 
+    def test_global_abort_cancels_every_pending_request_and_audits(self):
+        with tempfile.TemporaryDirectory() as temp:
+            store = SessionStore(temp)
+            bus = VirtualCanBus()
+            session = bus.create_session(store, 500000, None)
+            tx = TxScheduler(store, bus)
+            first = tx_request(repeats=3, period_ms=100, timeout_ms=250)
+            second = tx_request(identifier=0x322, repeats=2, period_ms=100, timeout_ms=200)
+            tx.submit(first, "simulation", session["session_id"])
+            tx.submit(second, "simulation", session["session_id"])
+            tx.after_bus_step(bus.advance(store, 0)["frames"])        # first frame of each goes out
+            statuses = {r["request"]["request_id"]: r["status"] for r in tx.list_requests()}
+            self.assertEqual(set(statuses.values()), {"partial"})
+            result = tx.abort_all("test_abort")
+            self.assertEqual(sorted(result["aborted_request_ids"]),
+                             sorted([first["request_id"], second["request_id"]]))
+            self.assertFalse(result["physical_tx_performed"])
+            self.assertEqual(bus.advance(store, 1000)["emitted_count"], 0)
+            self.assertTrue(all(r["status"] == "cancelled" for r in tx.list_requests()))
+            audit = store.list_tx_audit(100)
+            self.assertEqual(sum(1 for a in audit if a["status"] == "cancelled"), 2)
+            self.assertEqual(tx.abort_all()["aborted_count"], 0)      # idempotent
+
+    def test_stopping_capture_aborts_pending_virtual_tx(self):
+        from civic_workbench.service import WorkbenchService
+        from civic_test_helpers import utc_text
+        from uuid import uuid4
+        with tempfile.TemporaryDirectory() as temp:
+            service = WorkbenchService(temp)
+            created = service.create_scenario({"name": "abort-on-stop", "nodes": []})
+            sid = created["session"]["session_id"]
+            request = tx_request(repeats=3, period_ms=100, timeout_ms=250)
+            service.tx.submit(request, "simulation", sid)
+            service.stop_capture({"schema_version": 1, "record_type": "capture_stop", "request_id": str(uuid4()),
+                                  "requested_at_utc": utc_text(), "session_id": sid,
+                                  "requested_by": "integration-test"})
+            self.assertEqual(service.tx.list_requests()[0]["status"], "cancelled")
+            self.assertEqual(service.store.get_session(sid)["record_count"], 0)
+
     def test_virtual_tx_repeats_audit_and_cancellation_do_not_reach_hardware(self):
         with tempfile.TemporaryDirectory() as temp:
             store = SessionStore(temp)

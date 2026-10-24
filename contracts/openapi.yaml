@@ -372,6 +372,34 @@ paths:
                     type: array
                     items:
                       type: object
+  /api/v1/tx/abort:
+    post:
+      operationId: abortAllTx
+      summary: Global abort - cancel every pending or repeating simulation TX request and audit each
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  maxLength: 1000
+      responses:
+        '200':
+          description: Request IDs aborted; physical_tx_performed is always false
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - schema_version
+                - aborted_request_ids
+                - physical_tx_performed
+                properties:
+                  physical_tx_performed:
+                    const: false
   /api/v1/tx/requests/{request_id}/cancel:
     post:
       operationId: cancelTxRequest

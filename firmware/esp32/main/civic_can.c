@@ -177,9 +177,22 @@ static void civic_can_rx_pump(void *unused)
     ESP_LOGI(TAG, "Receive pump started; app queue depth=%u", (unsigned)CONFIG_CIVIC_APP_RX_QUEUE_DEPTH);
 
     for (;;) {
-        if (software_armed_state() && !interlock_is_active()) {
-            ESP_LOGW(TAG, "Physical interlock opened; disarming firmware TX request");
-            (void)civic_can_set_software_armed(false);
+        if (software_armed_state()) {
+            if (!interlock_is_active()) {
+                ESP_LOGW(TAG, "Physical interlock opened; disarming firmware TX request");
+                (void)civic_can_set_software_armed(false);
+            } else {
+                /* twai_receive() does not report bus-off (ESP-IDF documents only TIMEOUT, INVALID_ARG
+                 * and driver-not-installed), so the controller state is polled while armed. */
+                twai_status_info_t status;
+                if (twai_get_status_info(&status) != ESP_OK
+                    || status.state != TWAI_STATE_RUNNING
+                    || status.tx_error_counter >= CIVIC_CAN_TX_ERROR_COUNTER_INHIBIT_THRESHOLD
+                    || status.rx_error_counter >= CIVIC_CAN_TX_ERROR_COUNTER_INHIBIT_THRESHOLD) {
+                    ESP_LOGE(TAG, "TWAI not running or error-passive while armed; forcing TX inhibit");
+                    (void)civic_can_set_software_armed(false);
+                }
+            }
         }
 
         twai_message_t message;
@@ -188,13 +201,7 @@ static void civic_can_rx_pump(void *unused)
             continue;
         }
         if (receive_err != ESP_OK) {
-            twai_status_info_t status;
-            if (twai_get_status_info(&status) == ESP_OK
-                && status.state == TWAI_STATE_BUS_OFF
-                && software_armed_state()) {
-                ESP_LOGE(TAG, "TWAI entered BUS_OFF; forcing TX inhibit");
-                (void)civic_can_set_software_armed(false);
-            } else if (receive_err != ESP_ERR_INVALID_STATE) {
+            if (receive_err != ESP_ERR_INVALID_STATE) {
                 ESP_LOGW(TAG, "TWAI receive failed: %s", esp_err_to_name(receive_err));
             }
             vTaskDelay(pdMS_TO_TICKS(20U));

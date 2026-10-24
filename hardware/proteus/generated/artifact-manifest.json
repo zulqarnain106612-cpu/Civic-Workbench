@@ -1,22 +1,22 @@
 {
   "design_id": "civic-workbench-nodemcu32s-tja1051-receive-only",
   "deterministic_outputs": {
-    "PROTEUS-CAPTURE.md": "bfab5b17397bff47b77122e6b6a9d84b449ae9cb1e3ab579c8e085fd3891af12",
-    "README.md": "7175084ddeb284188d185f6de78981eddbfe1c0b99a0c29726d4ea7b76104457",
-    "bill-of-materials.csv": "33e3131d11c73ee98546a53f9da7cda8a39552bd977ac07f03cfce233a849c70",
-    "civic-workbench-rev-b-sim.edf": "a53efb8dfcd628fddd454a1e1924f1bd4cf7709259702b05911ce776539907b6",
-    "civic-workbench-rev-b.edf": "6bc40b90d1620925d8599aa921c49df491e1e0d16eaea55c1e3291834a90e27a",
-    "component-map.json": "3920ee04175232f5b47c1391ca374508770cd47c84be3b35c6f36ca59cff5760",
+    "PROTEUS-CAPTURE.md": "91bed4617848633c860fba11e63464d685e5428ba12a8f6d02c87838b9e6b669",
+    "README.md": "664b307bd374e310696eeea50a41191a16703e6ca0301bf1733e75c892030333",
+    "bill-of-materials.csv": "82f7b25be709284f655447a3ae1e2843634ff3b3bc0073fca9cc8ec503173fa0",
+    "civic-workbench-rev-b-sim.edf": "b0ed089f892ef086c1950c748ddaed790de12c98822afecbde10fd1445a2bcad",
+    "civic-workbench-rev-b.edf": "862e20b74eef77b414fcf60fba47e79fa8f908fd017f1b4a0d8ea9c393d41165",
+    "component-map.json": "63ff194d0b535724ce40510187d2af31c50bfe067f5410e0240867c505e6366a",
     "design-checks.json": "da4ab21c238adabf541d35bb1de3dc2622149dc8c546a5527c9cb7a849764b45",
     "native-project-status.json": "b23f019649798499c48dc03742ab85792ab2171e699dbef5d04eecb657397b63",
-    "reference-design.netlist.json": "ddea7fef735090e96f3437b889d2894d824528d144e541a061185fdb2c63f38c",
-    "reference-design.svg": "9d274107487ab449c4c75d4e1f5392ceb8744489c67c45d6c72e8553b954bff9"
+    "reference-design.netlist.json": "f9f628882dadd31dff5cc939fc013e580927ff4010da1028deedbf172f71d284",
+    "reference-design.svg": "8584b40d045c86c3ef878a082a841d0769befb7023f327254b0d95c593280d8c"
   },
   "generator": "tools/generate_proteus_reference.py",
   "generator_version": "3.0.0",
   "input": {
     "path": "hardware/reference/esp32-tja1051-netlist.yaml",
-    "sha256": "80a155e8f4671ea06619b1915137e3e674c88d372b28ff72b790f21979e3a1d4"
+    "sha256": "7fecdec237ff51772861d150f462584e84b6fad132521b4b33c78565ca732367"
   },
   "native_project": {
     "import_render_validation": "not-performed",

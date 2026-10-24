@@ -264,7 +264,7 @@ stages:
 
 - id: S14
   title: Receive-only interface Rev B, audit remediation and bench enablement
-  goal: Make the NodeMCU-32S + plain TJA1051T receive-only interface electrically correct and startable, and close the 2026-10-23 audit findings.
+  goal: Make the NodeMCU-32S + NXP TJA1051 (marking 25 06 ND312) receive-only interface electrically correct and startable, and close the 2026-10-23 audit findings.
   deliverables:
   - rev-b-netlist-with-level-shifting-and-silent-bias
   - generated-schematic-bom-design-checks-and-proteus-capture-sheet
@@ -294,3 +294,16 @@ stages:
   - The simulation bench binds Labcenter primitives read from the installed libraries and does not substitute the TJA1051 symbol.
   - Proteus import, save and run are claimed only with recorded evidence.
   delivery_state: edif-sources-generated-and-verified-offline; Proteus-import-pending-licence
+
+- id: S16
+  title: Final completion-claim audit and evidence-based closure
+  goal: Verify the completion claim against the repository, fix confirmed defects and record exact remaining gates.
+  deliverables:
+  - final-completion-audit-report
+  - defect-fixes-with-regression-tests
+  - updated-traceability-and-progress
+  acceptance:
+  - Every MUST requirement has a disposition with evidence or an explicit BLOCKED/NOT_PERFORMED gate.
+  - make test, make lint and make verify pass; firmware build evidence is identified.
+  - No physical, vehicle or native-Proteus acceptance is claimed without evidence.
+  delivery_state: software-complete-with-physical-validation-pending

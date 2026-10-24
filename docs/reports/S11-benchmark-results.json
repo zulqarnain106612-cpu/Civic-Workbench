@@ -1,9 +1,9 @@
 {
-  "created_at_utc": "2026-10-22T00:25:36.256Z",
+  "created_at_utc": "2026-10-24T23:35:08.860Z",
   "environment": {
-    "cpu_count": 4,
-    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
-    "python": "3.14.4",
+    "cpu_count": 2,
+    "platform": "Linux-6.18.44-fc-v153-x86_64-with-glibc2.39",
+    "python": "3.13.17",
     "storage": "temporary SQLite database using batched transaction"
   },
   "kind": "synthetic_benchmark",
@@ -13,10 +13,10 @@
     "Identifiers and byte patterns are deliberately synthetic and imply no Honda mapping."
   ],
   "measurements": {
-    "analysis_frames_per_second": 3330.75,
-    "analysis_seconds": 6.004661,
-    "batch_insert_frames_per_second": 4136.54,
-    "batch_insert_seconds": 4.834956,
+    "analysis_frames_per_second": 30017.17,
+    "analysis_seconds": 0.666285,
+    "batch_insert_frames_per_second": 32085.42,
+    "batch_insert_seconds": 0.623336,
     "findings_generated": 1024,
     "unique_identifiers_summarized": 128
   },

@@ -85,7 +85,7 @@ class ProteusGeneratorTests(unittest.TestCase):
         for ref in ("R5", "R6", "C5", "C3", "C4"):
             self.assertEqual(fitted[ref], "DNP")
         svg = (self.out / "reference-design.svg").read_text()
-        for token in ("NodeMCU-32S", "TJA1051T", "S_SILENT", "RXD_3V3", "ALL PASS"):
+        for token in ("NodeMCU-32S", "TJA1051", "S_SILENT", "RXD_3V3", "ALL PASS"):
             self.assertIn(token, svg)
 
     def _edif(self, simulation: bool):
@@ -144,7 +144,8 @@ class ProteusGeneratorTests(unittest.TestCase):
         self.assertTrue({"U1.7", "U2.3", "U3.1"} <= set(nets["CANH"]))
         self.assertTrue({"U1.6", "U2.4", "U3.2"} <= set(nets["CANL"]))
         self.assertNotIn("SPLIT", nets)                               # DNP excluded from the bench
-        self.assertIn("TJA1051T", text)                               # no silent part substitution
+        self.assertIn("NXP TJA1051 (marking 25 06 ND312)", text)      # no substitution, no suffix inferred
+        self.assertNotIn("TJA1051T", text)
 
     def test_native_project_status_is_honest(self):
         status = json.loads((self.out / "native-project-status.json").read_text())

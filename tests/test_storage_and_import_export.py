@@ -116,5 +116,27 @@ class SessionStorageTests(unittest.TestCase):
                 store.save_finding(manifest["session_id"], finding)
 
 
+class StorageSchemaVersionTests(unittest.TestCase):
+    def test_new_store_is_stamped_and_reopens(self):
+        import sqlite3
+        from civic_workbench.storage import STORAGE_SCHEMA_VERSION
+        with tempfile.TemporaryDirectory() as temp:
+            store = SessionStore(temp)
+            sid = store.create_session(capture_source="simulator", bitrate_bps=500000)["session_id"]
+            with sqlite3.connect(store.db_path) as db:
+                self.assertEqual(db.execute("PRAGMA user_version").fetchone()[0], STORAGE_SCHEMA_VERSION)
+            self.assertTrue(SessionStore(temp).session_exists(sid))
+
+    def test_newer_storage_schema_is_refused(self):
+        import sqlite3
+        from civic_workbench.storage import StorageError
+        with tempfile.TemporaryDirectory() as temp:
+            store = SessionStore(temp)
+            with sqlite3.connect(store.db_path) as db:
+                db.execute("PRAGMA user_version=99")
+            with self.assertRaises(StorageError):
+                SessionStore(temp)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

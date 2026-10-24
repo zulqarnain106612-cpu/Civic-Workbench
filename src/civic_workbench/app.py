@@ -244,6 +244,9 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json(409, self._hardware_reject(body))
                 result = self.service.tx.submit(body, target, session_id)
                 return self._json(202, result)
+            if path == "/api/v1/tx/abort":
+                reason = str(body.get("reason", "operator_global_abort")) if isinstance(body, dict) else "operator_global_abort"
+                return self._json(200, self.service.tx.abort_all(reason))
             if path.startswith("/api/v1/tx/requests/") and path.endswith("/cancel"):
                 request_id = path.split("/")[-2]
                 record = body

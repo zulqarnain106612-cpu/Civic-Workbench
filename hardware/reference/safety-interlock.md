@@ -1,6 +1,6 @@
 # S02 Hardware Foundation — TX Inhibit and Transceiver Interface
 
-**Status:** Rev B receive-only interface defined in `hardware/reference/esp32-tja1051-netlist.yaml` and generated into `hardware/proteus/generated/`. NodeMCU-32S and the NXP TJA1051 marked NXP TJA1051 25 06 ND312 stay fixed; no substitute. The part is the plain TJA1051T (pin 5 n.c.), per the owner-supplied datasheet and AH1014 pages (`docs/reference/`). Electrical checks pass on paper; nothing is bench-measured yet.
+**Status:** Rev B receive-only interface defined in `hardware/reference/esp32-tja1051-netlist.yaml` and generated into `hardware/proteus/generated/`. NodeMCU-32S and the NXP TJA1051 marked NXP TJA1051 25 06 ND312 stay fixed; no substitute. The marking is not decoded into an orderable type; the owner-supplied datasheet and AH1014 pages (`docs/reference/`) describe the pin-5 n.c. type, which is not yet confirmed for the installed IC. Electrical checks pass on paper; nothing is bench-measured yet.
 
 ## Rev B controller/transceiver connections (receive-only)
 
@@ -42,7 +42,8 @@ The PlatformIO board target is **NodeMCU-32S (nodemcu-32s), classic ESP32 only**
 - [x] Exact transceiver identity and marking retained: NXP TJA1051 marked NXP TJA1051 25 06 ND312; no substitute.
 - [ ] Physical board silkscreen/revision and GPIO21/GPIO22 header continuity checked with a meter.
 - [ ] Confirm physical SO8 pin-1 orientation and footprint before wiring.
-- [x] Pin 5: plain TJA1051T (n.c.) per owner-supplied datasheet/AH1014; left open, which is fail-safe for every variant (AH1014 Table 21).
+- [x] Pin 5 left open: electrically fail-safe for n.c., VIO and EN variants (AH1014 Table 21).
+- [ ] Confirm the installed U1 pin-5 function; Rev B receives only if pin 5 is n.c.
 - [x] Supply decoupling, Silent-mode bias, RXD level shifting and connectors defined in Rev B (design-checks.json passes).
 - [ ] Power U1 alone; measure +5V_CAN, S >= 3.5 V and RXD_3V3 <= 3.6 V before connecting GPIO22.
 - [ ] Bench-verify Silent-mode behavior and reset/power-loss state with the exact parts.

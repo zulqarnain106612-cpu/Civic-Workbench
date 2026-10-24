@@ -104,14 +104,25 @@ class TxScheduler:
                 "completed_at_utc": self._utc(), "status": status, "frames_sent": request["sent_count"],
                 "error_code": None, "details": "Cancellation only affects pending virtual-bus events.", "audit": audit}
 
+    def abort_all(self, reason: str = "operator_global_abort") -> dict[str, Any]:
+        """Global abort: cancel every pending/repeating simulation request and audit each one."""
+        aborted = []
+        for request_id, request in self._requests.items():
+            if request["status"] in {"queued", "partial"}:
+                self.cancel(request_id, reason)
+                aborted.append(request_id)
+        self.store.log_event("WARNING", "tx.global_abort", "Aborted all pending simulation TX requests",
+                             {"aborted_request_ids": aborted, "reason": reason[:1000]})
+        return {"schema_version": 1, "aborted_request_ids": aborted, "aborted_count": len(aborted),
+                "physical_tx_performed": False, "reason": reason[:1000]}
+
     def after_step(self, request_id: str) -> None:
         request = self._requests.get(request_id)
         if not request or request["cancelled"]:
             return
         record = request["request"]
         request["sent_count"] += 1
-        if request["sent_count"] >= record["repeat_count"]:
-            request["status"] = "sent"
+        request["status"] = "sent" if request["sent_count"] >= record["repeat_count"] else "partial"
         self.store.add_tx_audit(request_id, request["session_id"], "simulation",
                                 "sent" if request["status"] == "sent" else "partial", {
             "frames_sent": request["sent_count"], "repeat_count": record["repeat_count"],
